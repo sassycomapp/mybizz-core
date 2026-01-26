@@ -1,5 +1,11 @@
 components:
-- layout_properties: {slot: default}
+- components:
+  - event_bindings: {}
+    layout_properties: {grid_position: 'TRBUKX,ZPVBVB'}
+    name: button_1
+    properties: {}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+  layout_properties: {slot: default}
   name: content_panel
   properties: {}
   type: ColumnPanel
@@ -14,5 +20,5 @@ is_package: true
 slots:
   slot_1:
     index: 0
-    set_layout_properties: {grid_position: 'NKBFGN,RKDETG'}
+    set_layout_properties: {grid_position: 'UYKPQW,ULUAWY'}
     target: {name: content_panel, type: container}
