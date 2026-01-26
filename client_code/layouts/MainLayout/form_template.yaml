@@ -11,4 +11,8 @@ container:
   properties: {html: '@theme:standard-page.html'}
   type: HtmlTemplate
 is_package: true
-slots: {}
+slots:
+  slot_1:
+    index: 0
+    set_layout_properties: {grid_position: 'GEKUGM,OTGCZY'}
+    target: {name: content_panel, type: container}

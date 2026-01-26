@@ -86,4 +86,8 @@ container:
   properties: {html: '@theme:standard-page.html'}
   type: HtmlTemplate
 is_package: true
-slots: {}
+slots:
+  slot_1:
+    index: 1
+    set_layout_properties: {grid_position: 'JNCEVP,SQNYZI'}
+    target: {name: content_panel, type: container}
