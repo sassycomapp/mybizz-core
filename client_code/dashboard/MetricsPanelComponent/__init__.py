@@ -1,4 +1,4 @@
-from ._anvil_designer import MetricsPanelTemplate
+from ._anvil_designer import MetricsPanelComponentTemplate
 from anvil import *
 import m3.components as m3
 from routing import router
@@ -12,7 +12,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 
 
-class MetricsPanel(MetricsPanelTemplate):
+class MetricsPanelComponent(MetricsPanelComponentTemplate):
   """Dashboard metrics widget showing key business indicators"""
 
   def __init__(self, **properties):

@@ -23,7 +23,7 @@ components:
       type: DropDown
     - components:
       - name: repeating_panel_1
-        properties: {item_template: products.InvoiceListForm.RowTemplate1}
+        properties: {item_template: products.InvoiceListForm.InvoiceRowTemplate}
         type: RepeatingPanel
       layout_properties: {grid_position: 'RKEERZ,HBPHBI'}
       name: dg_invoices

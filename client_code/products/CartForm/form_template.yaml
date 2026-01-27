@@ -12,7 +12,7 @@ components:
       type: Button
     - layout_properties: {grid_position: 'HZGOJY,ATTPNO'}
       name: rp_cart_items
-      properties: {item_template: products.CartForm.CartItemTemplate}
+      properties: {item_template: products.CartForm.CartIRowTemplate}
       type: RepeatingPanel
     - components:
       - layout_properties: {grid_position: 'RTNOZG,EOTPHJ'}

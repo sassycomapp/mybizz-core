@@ -1,4 +1,4 @@
-from ._anvil_designer import VariantItemTemplateTemplate
+from ._anvil_designer import VariantRowTemplateTemplate
 from anvil import *
 import m3.components as m3
 from routing import router
@@ -12,7 +12,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 
 
-class VariantItemTemplate(VariantItemTemplateTemplate):
+class VariantRowTemplate(VariantRowTemplateTemplate):
   def __init__(self, **properties):
     self.item = properties.get('item')
     self.init_components(**properties)
