@@ -9,9 +9,14 @@ from .. import startup
 
 class HomePage(HomePageTemplate):
   def __init__(self, **properties):
-    # Initialize UI components
-    self.init_components(**properties)
+    user = anvil.users.get_user()
+    if user:
+      if user['role'] in ['owner', 'manager', 'admin', 'staff']:
+        open_form('dashboard.DashboardForm')
+        return
+      else:
+        open_form('customers.ClientPortalForm')
+        return
 
-    # Initialize application logic ONCE
-    # (routing, auth decisions, layout selection)
-    startup.initialize_app_once()
+    # If not logged in, continue with HomePage display
+    self.init_components(**properties)
