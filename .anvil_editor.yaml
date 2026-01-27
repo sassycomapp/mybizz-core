@@ -49,7 +49,7 @@ unique_ids:
     crm.ContactEditorForm: '1768978602453259485050127.4668'
     crm.ContactImportForm: '1768978620199633470957004.8561'
     crm.ContactListForm: '1768978560411759254967369.3265'
-    crm.ContactTimelineItemTemplate: '1768979228229938875136745.9718'
+    crm.ContactTimelineRowTemplate: '1768979228229938875136745.9718'
     crm.EmailBroadcastForm: '1769000545834785859368531.9915'
     crm.EmailCampaignEditorForm: '17690005146115667656137.730348'
     crm.EmailCampaignListForm: '1769000487920777733946829.7872'
