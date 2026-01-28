@@ -9,7 +9,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import re  # ← Only add this for slug generation
-
+# Test
 class LoginForm(LoginFormTemplate):
   def __init__(self, **properties):
     self.init_components(**properties)
