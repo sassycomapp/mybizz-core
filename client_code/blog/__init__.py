@@ -1,19 +1,18 @@
-import anvil.server
-import anvil.google.auth, anvil.google.drive
-from anvil.google.drive import app_files
-import stripe.checkout
-import anvil.users
-import anvil.tables as tables
-import anvil.tables.query as q
-from anvil.tables import app_tables
-# This is a package.
-# You can define variables and functions here, and use them from any form. For example, in a top-level form:
-#
-#    from .. import Package1
-#
-#    Package1.say_hello()
-#
+"""
+Blog Package
 
+M3-compliant blog management module.
 
-def say_hello():
-  print("Hello, world")
+Contains:
+    - BlogEditorForm: Create/edit blog posts
+    - BlogListForm: Manage blog posts
+    - BlogPostDetailForm: View blog post details
+    - CategoryManagementForm: Manage blog categories
+    - CategoryEditorModal: Create/edit categories
+    - PublicBlogForm: Public blog listing
+
+Architecture:
+    UI Forms → server_code/server_blog/ (business logic)
+"""
+
+__all__ = []
