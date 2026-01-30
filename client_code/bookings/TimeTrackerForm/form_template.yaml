@@ -57,7 +57,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'GGCLRJ,VXCCVN'}
       name: rp_entries
-      properties: {item_template: bookings.TimeTrackerForm.TimeEntryTemplate}
+      properties: {item_template: bookings.TimeTrackerForm.TimeEntryRowTemplate}
       type: RepeatingPanel
     - layout_properties: {grid_position: 'LHWAKD,KKWKKA'}
       name: lbl_total_unbilled

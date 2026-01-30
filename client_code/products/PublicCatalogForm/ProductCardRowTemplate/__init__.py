@@ -1,4 +1,4 @@
-from ._anvil_designer import ProductCardTemplateTemplate
+from ._anvil_designer import ProductCardRowTemplateTemplate
 from anvil import *
 import m3.components as m3
 from routing import router
@@ -12,7 +12,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 
 
-class ProductCardTemplate(ProductCardTemplateTemplate):
+class ProductCardRowTemplate(ProductCardRowTemplateTemplate):
   def __init__(self, **properties):
     self.item = properties.get('item')
     self.init_components(**properties)

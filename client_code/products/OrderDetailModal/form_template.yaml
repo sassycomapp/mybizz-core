@@ -23,7 +23,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'QJYUDZ,VPLNYW'}
       name: rp_items
-      properties: {item_template: products.OrderDetailModal.OrderItemTemplate}
+      properties: {item_template: products.OrderDetailModal.OrderItemRowTemplate}
       type: RepeatingPanel
     - layout_properties: {grid_position: 'IBOXTI,QTLYAS'}
       name: lbl_subtotal

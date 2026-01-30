@@ -16,7 +16,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'KHGXWY,WYPLPL'}
       name: rp_notes
-      properties: {item_template: bookings.ClientNotesForm.ClientNoteTemplate}
+      properties: {item_template: bookings.ClientNotesForm.ClientNoteRowTemplate}
       type: RepeatingPanel
     layout_properties: {grid_position: 'ACPLOI,WDKUCP'}
     name: ColumnPanel

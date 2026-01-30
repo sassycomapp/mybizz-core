@@ -1,4 +1,4 @@
-from ._anvil_designer import TimeEntryTemplateTemplate
+from ._anvil_designer import TimeEntryRowTemplateTemplate
 from anvil import *
 import anvil.server
 import anvil.google.auth, anvil.google.drive
@@ -9,7 +9,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 
-class TimeEntryTemplate(TimeEntryTemplateTemplate):
+class TimeEntryRowTemplate(TimeEntryRowTemplateTemplate):
   def __init__(self, **properties):
     self.item = properties.get('item')
     self.init_components(**properties)

@@ -20,7 +20,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'IWZWSR,JJDWCD'}
       name: rp_top_resources
-      properties: {item_template: bookings.BookingAnalyticsWidget.TopResourceTemplate}
+      properties: {item_template: bookings.BookingAnalyticsWidget.TopResourceRowTemplate}
       type: RepeatingPanel
     - layout_properties: {grid_position: 'NGGHHP,CKIKKA'}
       name: lbl_peak_times_section

@@ -35,7 +35,7 @@ components:
       type: DropDown
     - layout_properties: {grid_position: 'EXGYZM,DIQJWQ'}
       name: rp_products
-      properties: {item_template: products.PublicCatalogForm.ProductCardTemplate}
+      properties: {item_template: products.PublicCatalogForm.ProductCardRowTemplate}
       type: RepeatingPanel
     layout_properties: {grid_position: 'PODEJZ,WHHBDO'}
     name: col_content

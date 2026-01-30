@@ -1,8 +1,7 @@
-from ._anvil_designer import TicketItemTemplateTemplate
+from ._anvil_designer import LandingPageTemplateSelectorFormTemplate
 from anvil import *
-import m3.components as m3
-from routing import router
 import anvil.server
+from routing import router
 import anvil.google.auth, anvil.google.drive
 from anvil.google.drive import app_files
 import stripe.checkout
@@ -12,7 +11,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 
 
-class TicketItemTemplate(TicketItemTemplateTemplate):
+class LandingPageTemplateSelectorForm(LandingPageTemplateSelectorFormTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)

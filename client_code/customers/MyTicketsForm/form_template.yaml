@@ -17,7 +17,7 @@ components:
       type: DropDown
     - layout_properties: {grid_position: 'JXGOCS,OTDMAN'}
       name: rp_tickets
-      properties: {item_template: customers.MyTicketsForm.TicketItemTemplate}
+      properties: {item_template: customers.MyTicketsForm.TicketItemRowTemplate}
       type: RepeatingPanel
     - layout_properties: {grid_position: 'ITTQDE,SZUCVV'}
       name: lbl_no_tickets
