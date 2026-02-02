@@ -1934,9 +1934,9 @@ dependencies:
   resolution_hints: {app_id: 4UK6WHQ6UX7AKELK, name: Material 3 Theme, package_name: m3}
   version: {version_tag: v1.2.6}
 metadata: {description: 'mybizz_core_v1_dev ', title: MyBizz Master Template}
-name: mybizz_core_v1.3_dev
+name: mybizz-core
 native_deps: {head_html: ''}
-package_name: mybizz_core_v1_3_dev
+package_name: mybizz_core
 renamed: true
 runtime_options:
   client_version: '3'
