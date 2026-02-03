@@ -1,19 +1,7 @@
 components:
-- layout_properties: {grid_position: 'CGRZBY,QYYYZA'}
-  name: lbl_name
+- layout_properties: {grid_position: 'SEXJQQ,MOPBRP'}
+  name: content_panel
   properties: {}
-  type: Label
-- layout_properties: {grid_position: 'CGRZBY,KDTQEO'}
-  name: lbl_slug
-  properties: {}
-  type: Label
-- layout_properties: {grid_position: 'CGRZBY,GOXAUQ'}
-  name: link_edit
-  properties: {}
-  type: Link
-- layout_properties: {grid_position: 'CGRZBY,IKVKIX'}
-  name: link_delete
-  properties: {}
-  type: Link
+  type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true
