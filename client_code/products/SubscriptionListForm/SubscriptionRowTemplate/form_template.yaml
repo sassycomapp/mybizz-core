@@ -1,31 +1,7 @@
 components:
-- components:
-  - layout_properties: {grid_position: 'NRKBDJ,UTXXHD'}
-    name: lbl_customer
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'NRKBDJ,WUOIGY'}
-    name: lbl_plan
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'NRKBDJ,ICSBOB'}
-    name: lbl_amount
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'NRKBDJ,LKUTZH'}
-    name: lbl_status
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'NRKBDJ,UKLOKI'}
-    name: lbl_next_bill
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'NRKBDJ,WOKSFU'}
-    name: link_manage
-    properties: {}
-    type: Link
+- components: []
   layout_properties: {column: 'null'}
-  name: column_1
+  name: content_panel
   properties: {}
   type: ColumnPanel
 container: {type: DataRowPanel}

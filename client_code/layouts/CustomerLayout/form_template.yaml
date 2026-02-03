@@ -1,6 +1,6 @@
 components:
 - layout_properties: {slot: default}
-  name: column_panel_1
+  name: content_panel
   properties: {}
   type: ColumnPanel
 container:
