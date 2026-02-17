@@ -33,3 +33,6 @@ def test_uplink_connection() -> dict:
         "server_module": "server_shared.utilities",
     }
 
+@anvil.server.callable
+def uplink_smoketest_20260217_module() -> dict:
+  return {"status": "success"}
