@@ -1,4 +1,4 @@
-﻿"""Server module for appointment_reminders."""
+"""Server module for appointment_reminders."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

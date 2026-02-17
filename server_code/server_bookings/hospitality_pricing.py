@@ -1,4 +1,4 @@
-﻿"""Server module for hospitality_pricing."""
+"""Server module for hospitality_pricing."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

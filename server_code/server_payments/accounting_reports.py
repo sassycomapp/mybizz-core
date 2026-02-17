@@ -1,4 +1,4 @@
-﻿"""Server module for accounting_reports."""
+"""Server module for accounting_reports."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

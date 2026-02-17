@@ -1,4 +1,4 @@
-﻿"""Server package for server_bookings."""
+"""Server package for server_bookings."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

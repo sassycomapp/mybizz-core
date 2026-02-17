@@ -1,4 +1,4 @@
-﻿"""Server module for seo_service."""
+"""Server module for seo_service."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

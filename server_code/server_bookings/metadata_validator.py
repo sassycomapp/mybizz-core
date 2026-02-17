@@ -1,4 +1,4 @@
-﻿"""Server module for metadata_validator."""
+"""Server module for metadata_validator."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

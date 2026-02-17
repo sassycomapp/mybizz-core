@@ -1,4 +1,4 @@
-﻿"""Server module for chatbot_service."""
+"""Server module for chatbot_service."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

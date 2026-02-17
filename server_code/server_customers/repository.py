@@ -1,4 +1,4 @@
-﻿"""Server module for repository."""
+"""Server module for repository."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

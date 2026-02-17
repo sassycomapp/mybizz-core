@@ -1,5 +1,45 @@
 unique_ids:
   assets:
+    1.2 Authentication System/ui_setup_login_form.md: 54OHLOIUHFMMJLV2QEBV7TAQ2KIDPS5C
+    1.2 Authentication System/ui_setup_request_login_form.md: 5CC53CHRJP3BQWDD3OE7D7CDMCYTCYKN
+    Anvil_Methods/README.md: QCIU76WDXUED2N3WSKRKSFF2BNYD57JR
+    Anvil_Methods/anvil_cop_agent_readiness.md: RBCI4YNK3BOQYI6HZ2CDKOMWFD7O4N44
+    Anvil_Methods/anvil_cop_coding.md: SYYUWLMEPZCB7D63ZQRMPNZDTEJSMSOB
+    Anvil_Methods/anvil_cop_components_and_widgets.md: 7IL7HQAT4SGTIFGQ5KTUTTUDAUBMUL4B
+    Anvil_Methods/anvil_cop_data_tables.md: JO4PEIIQTG2RD3IGHMNEO4P7FND2RMXQ
+    Anvil_Methods/anvil_cop_data_tables_assessment.md: 74JY2YRO4AX66UEXMJ66UQGTIULLFBQS
+    Anvil_Methods/anvil_cop_m3_navigation_routing.md: IFU57KJ5QYPVRTQBGAHRSZGMOQYZDYPR
+    Anvil_Methods/anvil_cop_testing.md: ASRADZEDAFKY2CH4KTXVEBQ5ZLILKD4S
+    Anvil_Methods/anvil_cop_uplink.md: N2K2GRUMJL4A27AKEAHJL6PC35LCBV5Z
+    Anvil_Methods/anvil_full_components_list.md: D6V4UPCDXGXML3Q2EVHAKVXQRWZ4T4YG
+    Anvil_Methods/anvil_m3_component_recommendations.md: 7FD7DTTTQFIMDRTSADIIKDYC7BGYXJQR
+    Anvil_Methods/anvil_m3_quick_reference.md: HP5DTT4JLJ3WHNVAPKNAD5B26BZZ2VHY
+    Anvil_Methods/anvil_packages_namespaces.md: NBQDU2E6QVM357ZQMNVQI52MUNPKQC53
+    Anvil_Methods/anvil_slidesheets.md: 2RYYD22U5ZQNERDWCLPQZAKSYXX4K3NI
+    Anvil_Methods/anvil_startup.md: 2NC5E5WDYLX4DSTDY6VO3QVKZSG2RFCY
+    Backup_Temp/config-wip.yaml: UJVGAMSEIJ4Z7TUNPMVMAPWKEBPCFMUF
+    Backup_Temp/uplink-issue.md: B37O4DUR6JBWJMXLTI6PI37EQTP344UK
+    Mybizz_Methods/01_conceptual_design.md: 72FZXBE3WI7QYT7S4XHTGD5QV37PT7J6
+    Mybizz_Methods/02_dev_policy.md: PVEF5KNMASVPNPC27WWM3LRR6IFN3IMQ
+    Mybizz_Methods/03_dev_plan.md: U3JWEKKR4QD4AVWYCIQXIEQ5GJEL554K
+    Mybizz_Methods/04_architecture_specification.md: X323CCDB7ORO5JECN4WPZLN5TCHHOCX2
+    Mybizz_Methods/05_nomenclature.md: XARTOWKOUZKDJJ7Y4TMBDZ6WWYZXWBX4
+    Mybizz_Methods/06_database_schema.md: YM7VD6MSYCVT5BGGGGNMHBQ2GFGESQXJ
+    Mybizz_Methods/07_user-flows.md: V2ZYX37B22Z6OGHURKRHACTVHXBCUK6R
+    Mybizz_Methods/08_sitemap.md: 272TFSVKKAZEGVIDM6RP5HX3KYMSCJ53
+    Mybizz_Methods/09_project_status.md: UDE2FDBKFTISZGBEKTVGWAT65DIOURWY
+    Mybizz_Methods/10_ref_security_compliance.md: LURJEJOIXQT2ATLMN7PESNOIJOTTWVW4
+    Mybizz_Methods/11_crm_server_implementation_reference.md: PNYG7I7QVOD6A7KWODE6LSTUQANBD7ZT
+    Mybizz_Methods/12a_client-scaffold.md: WM4YVF6NOPWZFLUUITCASQQS75JBLV3M
+    Mybizz_Methods/12a_client_scaffold.xlsx: 7J3T6QCOTR5BXH5TXYRFXJCWKZCVI4H4
+    Mybizz_Methods/12b_server_scaffold.xlsx: XQYSAC27LIU6ZJCOIQFBA2HQWJNTYP7K
+    Mybizz_Methods/~$12a_client_scaffold.xlsx: P3PBAUZXNCQKIQZ7W52WUPZD76E6VPVS
+    System_Methods/continue_guide_cheatsheet.md: YSOPJ6ALLTJDZEIGCKSVP6VELPOCP7FO
+    System_Methods/ide_config_credentials.md: 4TOI7A37PHR6BHCBLWMOQJ5HOHDVP3RI
+    System_Methods/ide_config_integrations.md: D73NOVZUZPSWQQX2PL43IXDZARSHDCYM
+    System_Methods/ide_cop_backup.md: CBM366KAMFKKLX3AZENJP2UXWARZ7MCA
+    System_Methods/project_guide_docs_map.md: KDDDDTU4T234VOWAQ2E4OZ7P5XWYHKWG
+    david's_dev_journal.md: KBQ3FBEIF74XCKADKPRGJMJ6BSHMH6XO
     standard-page.html: Z75GSAFSQH23SFODXM6PRXUFJWW7GBYI
     theme.css: I2FPNXRZTUWISJC44L6JNICLXMHT6OT4
   forms:
@@ -218,7 +258,11 @@ unique_ids:
     shared: '1767517904154196907642619.5383'
     shared.component_renderer: '1767522559256439768977490.7387'
     shared.notification_helper: '1767874915567344358865472.5094'
-  scripts: {}
+  scripts:
+    confirm_uplink: 62SUB3VQL3WGZIL4HWGAWTZR6OGIVPH2
+    test_uplink: GFNXU4HI7OEPTT3LC2CF7NGAO7S5U2D3
+    uplink: I3DRFHZO3C7G6ZFAIV5ZDMKLGR6HRMTJ
+    uplink_connect: DZPXKPSMIVDIK5GZH62WQX2LLP3ITKEC
   server_modules:
     ServerCode: '1769963235002379015159385.51764'
     server_analytics: '1767523415223348681311721.7667'

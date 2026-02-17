@@ -1,4 +1,4 @@
-﻿"""Server module for recurring_service."""
+"""Server module for recurring_service."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files

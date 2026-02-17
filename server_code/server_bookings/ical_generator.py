@@ -1,4 +1,4 @@
-﻿"""Server module for ical_generator."""
+"""Server module for ical_generator."""
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files
