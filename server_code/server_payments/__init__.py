@@ -1,1 +1,1 @@
-﻿"""Server package scaffold for server_payments."""
+"""Server package scaffold for server_payments."""
