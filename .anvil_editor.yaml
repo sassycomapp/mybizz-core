@@ -1,5 +1,41 @@
 unique_ids:
   assets:
+    1.2 Authentication System/ui_setup_login_form.md: JQJU6VSYEGKLPQNHBVEEKPV4TZN7JBGA
+    1.2 Authentication System/ui_setup_request_login_form.md: XHT5TS3PIJB36CUSGLU7QU5Z3ZG76473
+    Anvil_Methods/README.md: RAHQSERKK65IGWJRZGP6IUJVVQ6FXCQ6
+    Anvil_Methods/anvil_cop_coding.md: 7GIX2WZ7SS3IX2JX64ERZ7XGYKQVC7T4
+    Anvil_Methods/anvil_cop_components_and_widgets.md: TW2TXSVOKBRZTWZDNDDH2N6LLR6ZWUYL
+    Anvil_Methods/anvil_cop_data_tables.md: 4ZMYOYUDCAZ7XLAS4BJ5C3CPIN7RZIWQ
+    Anvil_Methods/anvil_cop_data_tables_assessment.md: DALDLSDVNWSLHBBLB4XLCV627OUS2GXF
+    Anvil_Methods/anvil_cop_m3_navigation_routing.md: NHBN3NUU2DXFMMC4DUVAVO3CUL6Z5576
+    Anvil_Methods/anvil_cop_testing.md: HCRND4JXIGHF5ZG5BQ4ZIFUFYV3CYDFA
+    Anvil_Methods/anvil_cop_uplink.md: 3HUYL4CRBBENAT2N7MOZEA6HDWCGIF5W
+    Anvil_Methods/anvil_full_components_list.md: 2IQJWWT363JIO2BPCIPCGI36OM7MQVO6
+    Anvil_Methods/anvil_m3_component_recommendations.md: 4UORQVSCBCZJ2SLOJT7RHPVUWFC3HJV6
+    Anvil_Methods/anvil_m3_quick_reference.md: XEBAI2BYGABXKURD3SQIOCVFSDPHFXAZ
+    Anvil_Methods/anvil_packages_namespaces.md: EXRWDFV2ERGWCGJGHJ3SIDRFPHP3IMJ3
+    Anvil_Methods/anvil_slidesheets.md: RTPV4S77LA2VHR6PA2BUOV7ECUB6542F
+    Anvil_Methods/anvil_startup.md: P2DEE47UJHFMMCFJ7C7OFJCQ2YMUN42B
+    Factory_Methods/backup_strategy_analysis.md: I3Q2ARWBF5MVZDODLK64J7SYUCVPXPFV
+    Factory_Methods/droid_document_mapping.md.md: 6FTUAZI65TH6RVJ3TSPBSIIDAWFDNEJ6
+    Factory_Methods/droid_specification_template.md: P4OSRQIGJGTGL4TME7M77ECM62Y3C5GT
+    Factory_Methods/factory_cop_agent_readiness.md: IUOKS6TSI6PTJVPKQSOEQT652UAM6FC3
+    Mybizz_Methods/01_conceptual_design.md: QDYL6QLIEMXNU4STITLAO3N2SQ6HMBZP
+    Mybizz_Methods/02_dev_policy.md: ZK3ACDQQF73K2EAB3PGXSDTKDJFMONCE
+    Mybizz_Methods/03_dev_plan.md: 4VFGKLAMMUALNJYKKGTCZMTRCISCXB3R
+    Mybizz_Methods/04_architecture_specification.md: FQ6UEYW2J6LBNXL6VUXXABU4YHI65BJI
+    Mybizz_Methods/05_nomenclature.md: TGQIUJEO2G4FEV7BDFYIGOIGW6KPMBSV
+    Mybizz_Methods/06_database_schema.md: VY6MXZZM5FVLVS4NZOGJSILPPBOPPZRX
+    Mybizz_Methods/07_user-flows.md: RKF7HFKXYZJ6P7RUHCQZQUVJ43IX2X73
+    Mybizz_Methods/08_sitemap.md: ZXX3KL7THCWPJ5KITCFFPL5G2MNJGGN2
+    Mybizz_Methods/09_project_status.md: EOCLEIEEDVVGCT7PYMYFYNGN4P2YMJR5
+    Mybizz_Methods/10_ref_security_compliance.md: 6T2N3T5FMTJNGHNTR6SZCWHLBZSSI4SV
+    Mybizz_Methods/11_crm_server_implementation_reference.md: CLDM6HDC57RSHBJRVO22BSUANWMZ3VXK
+    Mybizz_Methods/12a_client-scaffold.md: NCOHBISJXTP2Q7BYSEQR2NVOJ55GUBKG
+    Mybizz_Methods/12a_client_scaffold.xlsx: G34N4ATIKD42XBLWZHIQLITCYDLJG2QN
+    Mybizz_Methods/12b_server_scaffold.xlsx: WZC3CVVI5UXIOPQEZRH6ITBQETCT42LW
+    Mybizz_Methods/~$12a_client_scaffold.xlsx: E3N73NY4X7XUJQ3KR2VUG3K65UXK2A2Z
+    david's_dev_journal.md: IOUDFOI4GBJBJFUIB5K2ZQZDDUDP67BM
     standard-page.html: Z75GSAFSQH23SFODXM6PRXUFJWW7GBYI
     theme.css: I2FPNXRZTUWISJC44L6JNICLXMHT6OT4
   forms:
