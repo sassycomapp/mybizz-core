@@ -1,53 +1,23 @@
 # Anvil Uplink Setup and Usage Guide
 
 ## Overview
+Anvil Uplink lets local Python scripts connect to your Anvil app. For MyBizz, always use **Server Uplink** so the script can call `@anvil.server.callable` functions and access server-side logic.
 
-Anvil Uplink allows external Python scripts to connect to your Anvil application, enabling automation, data processing, and integration with local systems. This document provides essential information for setting up, starting, using, and testing Anvil Uplink.
+**Server vs Client Uplink**
+- **Server Uplink:** Full server privileges (required for server functions and Data Tables access).
+- **Client Uplink:** Same restrictions as client code (not suitable for MyBizz server-side work).
 
-## Uplink Key
-Enable Server Uplink.
-For your use case — running Python scripts locally in VSCode that call your Anvil app's server functions — Server Uplink is correct.
-Server Uplink means your local script connects as if it were a server module. It can call @anvil.server.callable functions, access Data Tables, and run server-side logic.
-Client Uplink means your local script connects as if it were browser/client code. It cannot access Data Tables directly and has the same restrictions as client-side code — which is the opposite of what you need.
-Your scripts/test_uplink.py and scripts/uplink.py are all written expecting Server Uplink. The key it generates goes into your ANVIL_UPLINK_KEY environment variable as documented in your anvil_cop_uplink.md.
-
-Anvil uplink key has been deleted. I will create new anvil uplink:
-
-
-
-The Server Uplink Key is: "server_JTC5YBCKEFJNKXLMOLXV3TNO-TUYORZGLGKI2HE4F"
-
-
-
-Test the version of anvil-uplink or run : pip install anvil-uplink
-
-
-
-Copy and paste this code into the top of your python program:
-
-
-
-import anvil.server  anvil.server.connect("server_JTC5YBCKEFJNKXLMOLXV3TNO-TUYORZGLGKI2HE4F")
-
-
-
-You can now use the uplink locally
-
-
-
-https://anvil.works/docs/uplink
+Reference: https://anvil.works/docs/uplink
 
 ## Setup Configurations
 
 ### Prerequisites
-
 1. An Anvil account with an active application
-2. Python 3.7 or higher installed locally
+2. Python 3.7+ installed locally
 3. Anvil Uplink package installed: `pip install anvil-uplink`
 
 ### Environment Configuration
-
-Set your Uplink key as an environment variable:
+Set your Uplink key as an environment variable.
 
 **Windows (PowerShell):**
 ```powershell
@@ -59,187 +29,94 @@ $env:ANVIL_UPLINK_KEY = "your-uplink-key-here"
 export ANVIL_UPLINK_KEY="your-uplink-key-here"
 ```
 
-**Important:** Never hardcode your Uplink key in scripts. Always use environment variables.
+**Important:** Never hardcode your Uplink key in scripts or commits.
 
-### Required Files
+### Required Files (Repo)
+- `scripts/uplink_connect.py` — Simple connect + wait
+- `scripts/test_uplink.py` — Smoke test server call
+- `scripts/uplink.py` — Long-running uplink process
 
-The following scripts are provided in your project:
-- `scripts/uplink_connect.py` - Simple connection script
-- `scripts/test_uplink.py` - Connection testing script
-- `scripts/uplink.py` - Persistent connection script
+## Quick Start (Recommended)
 
-## How to Start Uplink
+### Step 1: Verify install
+```bash
+python -m pip show anvil-uplink
+```
 
-### Method 1: Simple Connection
-
-Run the simple connection script:
+### Step 2: Start simple connection
 ```bash
 python scripts/uplink_connect.py
 ```
+This will connect and wait until you press Enter to disconnect.
 
-This will:
-1. Connect to Anvil using your UPLINK_KEY environment variable
-2. Display a success message
-3. Wait for you to press Enter to disconnect
-
-### Method 2: Persistent Connection
-
-For long-running operations, use the persistent connection:
-```bash
-python scripts/uplink.py
-```
-
-This script:
-1. Connects to Anvil
-2. Registers a test function
-3. Waits indefinitely for calls
-
-### Method 3: Programmatic Connection
-
-In your own scripts, use:
-```python
-import anvil.server
-import os
-
-uplink_key = os.environ.get('ANVIL_UPLINK_KEY')
-anvil.server.connect(uplink_key)
-# Your code here
-anvil.server.disconnect()
-```
-
-## How to Use Uplink
-
-### Calling Server Functions
-
-Once connected, you can call server functions defined in your Anvil app:
-```python
-result = anvil.server.call('your_server_function', arg1, arg2)
-```
-
-### Registering Functions
-
-Register functions that can be called from your Anvil app:
-```python
-@anvil.server.callable
-def my_function(arg1, arg2):
-    # Process data
-    return result
-```
-
-### Working with Data Tables
-
-Access Data Tables through server functions only:
-```python
-# In your Anvil app server module:
-@anvil.server.callable
-def get_contacts():
-    return app_tables.contacts.search()
-
-# In your Uplink script:
-contacts = anvil.server.call('get_contacts')
-```
-
-## How to Run Tests
-
-### Test Connection
-
-Run the provided test script:
+### Step 3: Run the smoke test
 ```bash
 python scripts/test_uplink.py
 ```
+The test script calls the server function `uplink_smoketest_20260217_module` and prints the status.
 
-This script will:
-1. Connect to Anvil using your UPLINK_KEY
-2. Call the `test_uplink_connection` server function
-3. Display the results
-4. Disconnect cleanly
+## Server Smoke Test Function
+Add this to a **server module** in the Anvil editor:
 
-### Manual Testing
+```python
+import anvil.server
 
-You can also manually test your connection:
+@anvil.server.callable
+def uplink_smoketest_20260217_module() -> dict:
+    """Minimal Uplink smoke test."""
+    return {"status": "success"}
+```
+
+## Programmatic Connection Example
 ```python
 import anvil.server
 import os
 
-uplink_key = os.environ.get('ANVIL_UPLINK_KEY')
-anvil.server.connect(uplink_key)
+uplink_key = os.environ.get("ANVIL_UPLINK_KEY")
+if not uplink_key:
+    raise RuntimeError("ANVIL_UPLINK_KEY not set")
 
+anvil.server.connect(uplink_key)
 try:
-    result = anvil.server.call('test_uplink_connection')
-    print(f"Test result: {result}")
+    result = anvil.server.call("uplink_smoketest_20260217_module")
+    print(result)
 finally:
     anvil.server.disconnect()
 ```
-
-### Testing Your Own Functions
-
-Create a test script for your functions:
-```python
-import anvil.server
-import os
-
-uplink_key = os.environ.get('ANVIL_UPLINK_KEY')
-anvil.server.connect(uplink_key)
-
-try:
-    # Test your functions here
-    result = anvil.server.call('your_function_name', test_args)
-    print(f"Function result: {result}")
-    
-    # Verify results
-    assert result == expected_value
-    print("✅ Test passed")
-    
-except Exception as e:
-    print(f"❌ Test failed: {e}")
-    
-finally:
-    anvil.server.disconnect()
-```
-
-## Best Practices
-
-1. **Always disconnect** after your operations complete
-2. **Use environment variables** for your Uplink key
-3. **Handle exceptions** properly to avoid hanging connections
-4. **Test functions** before using them in production
-5. **Log operations** for debugging and audit purposes
 
 ## Troubleshooting
 
-### Common Issues
+### 1) Missing module errors
+If you see errors like:
+```
+No module named 'stripe'
+```
+Remove or comment out imports for modules not enabled in Anvil, or enable the service in the Anvil app.
 
-1. **"ANVIL_UPLINK_KEY environment variable not set"**
-   - Solution: Set the environment variable as described in Setup Configurations
+### 2) Function not registered
+If you see:
+```
+No server function matching "..." has been registered
+```
+Confirm the function exists in a **server module**, then **save + restart** the server runtime.
 
-2. **Connection timeouts**
-   - Solution: Check your internet connection and firewall settings
+### 3) Hidden BOM / control character
+If you see:
+```
+invalid non-printable character U+FEFF
+```
+Remove the hidden BOM in the Anvil editor by retyping the first line, then save.
 
-3. **Authentication errors**
-   - Solution: Verify your Uplink key in the Anvil dashboard
-
-### Debugging Tips
-
-1. Add verbose logging to see connection details:
-   ```python
-   import logging
-   logging.basicConfig(level=logging.DEBUG)
-   ```
-
-2. Test with the simplest possible script first:
-   ```python
-   import anvil.server
-   import os
-   
-   anvil.server.connect(os.environ.get('ANVIL_UPLINK_KEY'))
-   print("Connected!")
-   anvil.server.disconnect()
-   ```
+## Best Practices
+1. Always disconnect after operations complete
+2. Keep uplink keys in environment variables
+3. Use smoke tests before running full integration tasks
+4. Restart server runtime after changes in the Anvil editor
+5. Log operations when running integration scripts
 
 ## Security Considerations
+1. Never commit Uplink keys to version control
+2. Rotate keys regularly in the Anvil dashboard
+3. Use Server Uplink only for trusted scripts
 
-1. **Never commit Uplink keys** to version control
-2. **Rotate keys regularly** through the Anvil dashboard
-3. **Use least-privilege principles** - only expose necessary functions
-4. **Monitor connection logs** for unauthorized access
 
