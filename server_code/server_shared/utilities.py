@@ -24,3 +24,17 @@ def test_uplink_connection_v2() -> dict:
     "timestamp": datetime.datetime.now().isoformat(),
     "server_module": "server_shared.utilities",
   }
+
+  @anvil.server.callable
+  def uplink_smoketest_20260217() -> dict:
+    """
+    Unique Uplink smoke test.
+    Returns:
+        dict: Status info for Uplink verification.
+    """
+    return {"status": "success"}
+
+
+@anvil.server.callable
+def uplink_smoketest_20260217_module() -> dict:
+  return {"status": "success"}
