@@ -1,11 +1,35 @@
-﻿"""Server scaffold module for utilities."""
+﻿"""Server module for utilities."""
 
-from __future__ import annotations
+import anvil.google.auth, anvil.google.drive, anvil.google.mail
+from anvil.google.drive import app_files
+import anvil.stripe
+import anvil.secrets
+import anvil.files
+from anvil.files import data_files
+import anvil.email
+import anvil.users
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+import anvil.server
 import logging
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
 
-def placeholder() -> None:
-    """Placeholder for future implementation; add logic per coding standards."""
-    logger.debug("%s placeholder called", "utilities")
+@anvil.server.callable
+def test_uplink_connection() -> dict:
+    """
+    Return status information for Uplink verification.
+
+    Returns:
+        dict: Status information.
+    """
+    return {
+        "status": "success",
+        "message": "Uplink connection is working!",
+        "timestamp": datetime.now().isoformat(),
+        "server_module": "server_shared.utilities",
+    }
+
