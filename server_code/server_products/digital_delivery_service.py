@@ -2,7 +2,7 @@
 
 import anvil.google.auth, anvil.google.drive, anvil.google.mail
 from anvil.google.drive import app_files
-import anvil.stripe
+#import anvil.stripe
 import anvil.secrets
 import anvil.files
 from anvil.files import data_files
