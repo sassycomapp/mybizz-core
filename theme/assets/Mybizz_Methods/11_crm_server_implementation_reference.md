@@ -1,3 +1,9 @@
+---
+description: "11_crm_server_implementation_reference.md - Mybizz crm server implementation reference"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # CRM & Marketing - Server Implementation Reference
 
 **Version:** 1.0 (Corrected for anvil.yaml compliance)  

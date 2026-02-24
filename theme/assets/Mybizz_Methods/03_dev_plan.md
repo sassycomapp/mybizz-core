@@ -1,3 +1,10 @@
+---
+description: "03_dev_plan.md - Mybizz development plan"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+
 # Mybizz V1.x Development Plan
 
 **Version:** 12.0  

@@ -1,0 +1,10 @@
+name: Continue Documentation MCP
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: continue-docs                 # Name for @continue-docs
+    command: npx
+    args:
+      - "-y"
+      - "@continuedev/continue-docs-mcp"  # Manual npx instead of 'uses'
+

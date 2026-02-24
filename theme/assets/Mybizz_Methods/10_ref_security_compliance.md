@@ -1,3 +1,9 @@
+---
+description: "10_ref_security_compliance.md - Mybizz Security Coopliance reference"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Security & Compliance Reference
 
 **Document Type:** Reference Material  

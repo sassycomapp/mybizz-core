@@ -1,3 +1,9 @@
+---
+description: "09_project_status.md - Mybizz project status"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Mybizz Platform - Current Project Status
 
 **Last Updated:** January 16, 2026  

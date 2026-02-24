@@ -1,3 +1,9 @@
+---
+description: "01_conceptual_design.md - Mybizz conceptual design"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Mybizz Platform - System Design
 
 **Document Version:** 9.0  

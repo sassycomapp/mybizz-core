@@ -1,3 +1,9 @@
+---
+description: "08_sitemap.md - Mybizz sitemap"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Mybizz Platform - Sitemap
 
 **Document Version:** 5.0  

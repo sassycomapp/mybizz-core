@@ -1,3 +1,9 @@
+---
+description: "05_nomenclature.md - Mybizz nomenclature"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # MyBizz Nomenclature & Naming Conventions
 
 **Version:** 2.1  

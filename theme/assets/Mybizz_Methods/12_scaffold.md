@@ -1,4 +1,10 @@
-Anvil is source of truth - Local Repo: "C:\_Data\MyBizz\mybizz-core\"	
+---
+description: "12_scaffold.md - Mybizz scaffold"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+Anvil is source of truth 
 Element Type	Element Name
     
 CLIENT CODE	
@@ -227,17 +233,82 @@ MODAL	TicketThreadModal
 RowTemplate	TicketThreadMessageRowTemplate
 MODULE	component_renderer
 MODULE	notification_helper
-    
-SUMMARY	
-Package	13
-__init__	1
-Form	103
-RowTemplate	46
-ItemTemplate	0
-Template	8
-MODAL	10
-Widget	4
-Component	15
-MODULE	9
-Layout	4
-?	0
+
+ SERVER CODE	
+	
+Package	server_analytics
+MODULE	booking_service
+MODULE	customer_service
+MODULE	report_generator
+MODULE	revenue_service
+	
+Package	server_auth
+MODULE	service
+MODULE	permissions
+MODULE	session_manager
+	
+Package	server_blog
+MODULE	category_service
+MODULE	seo_service
+MODULE	service
+	
+Package	server_bookings
+MODULE	appointment_reminders
+MODULE	availability_service
+MODULE	hospitality_pricing
+MODULE	ical_generator
+MODULE	metadata_validator
+MODULE	recurring_service
+MODULE	repository
+MODULE	service
+	
+Package	server_customers
+MODULE	history_service
+MODULE	repository
+MODULE	service
+	
+Package	server_dashboard
+MODULE	service
+	
+Package	server_emails
+MODULE	email_templates
+MODULE	system_email_service
+MODULE	transactional_email_service
+	
+Package	server_payments
+MODULE	accounting_reports
+MODULE	 invoice_pdf_generator
+MODULE	 invoice_service
+MODULE	paystack_service
+MODULE	paystack_webhooks
+MODULE	stripe_service
+MODULE	stripe_webhooks
+MODULE	subscription_service
+	
+Package	server_products
+MODULE	cart_service
+MODULE	courier_intl_service
+MODULE	courier_sa_service
+MODULE	digital_delivery_service
+MODULE	inventory_service
+MODULE	order_service
+MODULE	repository
+MODULE	service
+MODULE	shipping_service
+	
+Package	server_settings
+MODULE	service
+	
+Package	server_shared
+MODULE	audit_logger
+MODULE	backup_service
+MODULE	chatbot_service
+MODULE	config
+MODULE	encryption_service
+MODULE	kb_service
+MODULE	page_service
+MODULE	server_review_service
+MODULE	ticket_service
+MODULE	utilities
+MODULE	validators
+

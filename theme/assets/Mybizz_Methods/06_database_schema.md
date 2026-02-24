@@ -1,3 +1,10 @@
+---
+description: "06_database_schema.md - Mybizz database schema"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+
 # Mybizz Platform - Database Schema v11.0
 
 **Document Version:** 11.0  

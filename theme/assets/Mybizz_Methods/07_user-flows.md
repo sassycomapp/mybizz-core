@@ -1,3 +1,10 @@
+---
+description: "07_user_flows.md - Mybizz User flows"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+
 # Mybizz Platform - User Flows
 
 **Document Version:** 6.0  

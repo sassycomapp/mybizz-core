@@ -1,3 +1,9 @@
+---
+description: "04_architecture_specification.md - Mybizz Architecture Specification"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Mybizz Platform V1.x - Architecture Specification
 
 **Document Version:** 11.0  

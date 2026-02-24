@@ -1,3 +1,10 @@
+---
+description: "02_dev_policy.md - Mybizz Development policy"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+
 # Mybizz Development Policy
 
 **Document Version:** 6.0  
