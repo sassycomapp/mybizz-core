@@ -544,6 +544,10 @@ db_schema:
     - admin_ui: {order: 18, width: 200}
       name: updated_at
       type: datetime
+    - admin_ui: {order: 19, width: 200}
+      client_hidden: false
+      name: zoho_crm_id
+      type: string
     server: full
     title: contacts
   courier_config:
@@ -667,6 +671,10 @@ db_schema:
     - admin_ui: {order: 12, width: 200}
       name: campaign_settings
       type: simpleObject
+    - admin_ui: {order: 13, width: 200}
+      client_hidden: false
+      name: zoho_campaign_id
+      type: string
     server: full
     title: email_campaigns
   email_config:
