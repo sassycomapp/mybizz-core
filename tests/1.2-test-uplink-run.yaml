@@ -1,0 +1,30 @@
+---
+name: "Stage 1.2 — Authentication — Uplink Test Run"
+version: "1.0"
+stage: "1.2"
+phase: "TEST_UPLINK_RUN"
+generated_by: "4.1-fast"
+status: "PENDING"
+backup_confirmed: false
+sentinel_prefix: "TEST_"
+
+# =============================================================================
+# INTEGRATION TESTS — Anvil Uplink
+# Live app, real tables, real data.
+# Safety: backup confirmed, sentinel values on all test data, cleanup after each.
+# =============================================================================
+
+tests:
+  - id: "UPLINK-001"
+    function: ""
+    category: ""          # happy_path | boundary | adversarial | edge_case
+    description: ""
+    preconditions: []
+    steps: []
+    expected: ""
+    status: "PENDING"     # PENDING | PASSED | FAILED | SKIPPED
+    actual: ""
+    skip_reason: ""       # populated if SKIPPED
+    remediated: false
+    cleanup_confirmed: false
+    cleanup_steps: []     # always populated — run after test regardless of result

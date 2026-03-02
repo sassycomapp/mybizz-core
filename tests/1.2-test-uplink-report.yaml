@@ -1,0 +1,47 @@
+---
+name: "Stage 1.2 — Authentication — Uplink Test Report"
+version: "1.0"
+stage: "1.2"
+phase: "TEST_UPLINK_REPORT"
+generated_by: "4.1-fast"
+run_timestamp: ""
+verdict: ""               # PASSED | FAILED | PASSED_WITH_ACTIONS
+cleanup_confirmed: false
+
+# =============================================================================
+# CURRENT STATE — reflects state of code RIGHT NOW after testing and remediation
+# =============================================================================
+
+summary:
+  total_tests: 0
+  passed: 0
+  failed: 0
+  skipped: 0
+  auto_remediated: 0
+
+passing:
+  - id: ""
+    function: ""
+    description: ""
+
+failing:
+  - id: ""
+    function: ""
+    description: ""
+    reason: ""
+
+skipped:
+  - id: ""
+    reason: ""            # schema_missing | environment | manual_required
+
+# =============================================================================
+# DEVELOPER ACTIONS
+# Populated only if something requires human input.
+# Empty = no action required, code is integration-tested and clean.
+# =============================================================================
+
+developer_actions: []
+  # - action: ""
+  #   reason: ""
+  #   category: ""        # schema_change | config | environment | security
+  #   file: ""

@@ -1,0 +1,43 @@
+---
+name: "Stage 1.2 — Authentication — Local Test Report"
+version: "1.0"
+stage: "1.2"
+phase: "TEST_LOCAL_REPORT"
+generated_by: "4.1-fast"
+run_timestamp: ""
+verdict: ""              # PASSED | FAILED | PASSED_WITH_ACTIONS
+
+# =============================================================================
+# CURRENT STATE — this report reflects the state of the code RIGHT NOW
+# History of what was wrong is not recorded here
+# =============================================================================
+
+summary:
+  total_tests: 0
+  passed: 0
+  failed: 0
+  auto_remediated: 0
+
+# All tests currently passing — listed for confirmation only
+passing:
+  - id: ""
+    function: ""
+    description: ""
+
+# Tests still failing after remediation attempts — should be empty
+failing:
+  - id: ""
+    function: ""
+    description: ""
+    reason: ""
+
+# =============================================================================
+# DEVELOPER ACTIONS
+# Populated only if something could not be auto-remediated.
+# Empty = no action required.
+# =============================================================================
+
+developer_actions: []
+  # - action: ""
+  #   reason: ""
+  #   file: ""

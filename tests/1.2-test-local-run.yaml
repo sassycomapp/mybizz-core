@@ -1,0 +1,28 @@
+---
+name: "Stage 1.2 — Authentication — Local Test Run"
+version: "1.0"
+stage: "1.2"
+phase: "TEST_LOCAL_RUN"
+generated_by: "4.1-fast"
+status: "PENDING"
+
+# =============================================================================
+# PURE LOGIC TESTS — pytest
+# No Anvil, no network. Run: pytest 1.2-test-local-run.yaml
+# Functions extracted from service.py and form files per ref_anvil_testing.md
+# =============================================================================
+
+tests:
+  - id: "LOCAL-001"
+    function: ""
+    category: ""         # happy_path | boundary | adversarial | edge_case
+    description: ""
+    input: {}
+    expected: ""
+    status: "PENDING"    # PENDING | PASSED | FAILED
+    actual: ""
+    remediated: false
+    test_code: |
+      # Complete runnable pytest function — no stubs, no pass
+      def test_():
+          pass
