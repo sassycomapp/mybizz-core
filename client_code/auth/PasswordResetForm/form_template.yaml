@@ -1,7 +1,31 @@
 components:
-- components: []
+- components:
+  - components:
+    - components:
+      - layout_properties: {slot: card-content-container-slot}
+        name: lbl_title
+        properties: {}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+      - data_bindings:
+        - {code: 'self.item[''email'']', property: text, writeback: true}
+        layout_properties: {slot: card-content-container-slot}
+        name: txt_email
+        properties: {appearance: outlined}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+      - layout_properties: {slot: card-content-container-slot}
+        name: btn_send_reset
+        properties: {}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+      layout_properties: {slot: card-content-slot}
+      name: card_reset
+      properties: {}
+      type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+    layout_properties: {grid_position: 'SZECAX,KQCBFQ'}
+    name: card_1
+    properties: {appearance: outlined}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Card
   layout_properties: {slot: default}
-  name: content_panel
+  name: col_center
   properties: {}
   type: ColumnPanel
 container:

@@ -5,13 +5,17 @@ components:
       name: lbl_title
       properties: {}
       type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
-    - layout_properties: {grid_position: 'OIREJR,RJASNT'}
+    - data_bindings:
+      - {code: 'self.item[''email'']', property: text, writeback: true}
+      layout_properties: {grid_position: 'OIREJR,RJASNT'}
       name: txt_email
-      properties: {}
+      properties: {appearance: outlined}
       type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
-    - layout_properties: {grid_position: 'LMPNRD,NUTAPV'}
+    - data_bindings:
+      - {code: 'self.item[''password'']', property: text, writeback: true}
+      layout_properties: {grid_position: 'LMPNRD,NUTAPV'}
       name: txt_password
-      properties: {}
+      properties: {appearance: outlined, text: ''}
       type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
     - layout_properties: {grid_position: 'URUFLU,HPFNQR'}
       name: cb_remember_me
