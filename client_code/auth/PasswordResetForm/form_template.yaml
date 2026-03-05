@@ -16,6 +16,10 @@ components:
         name: btn_send_reset
         properties: {}
         type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+      - layout_properties: {slot: card-content-container-slot}
+        name: link_back_to_sign_in
+        properties: {}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Link
       layout_properties: {slot: card-content-slot}
       name: card_reset
       properties: {}
