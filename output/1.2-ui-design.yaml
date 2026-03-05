@@ -1,0 +1,575 @@
+stage: "1.2"
+task: "Task 2 — UI Design"
+output_file: "1.2-ui-design.yaml"
+feeds_into: "Task 3 — Code Implementation"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PROPERTY CLASSIFICATION VERIFICATION LOG
+# Source: anvil.works/docs/api/m3 + anvil.works/docs/ui/components/basic
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# M3 TextBox `type` (password masking):
+#   M3 API page was truncated before the TextBox section.
+#   Full confirmation unavailable. Per ambiguity rule → DESIGNER-ONLY.
+#   ⚠️ AMBIGUOUS — If Task 3 discovers `type` is programmatic, it may set
+#   it in code but must document the override in implementation notes.
+#
+# M3 TextBox `appearance`:
+#   Confirmed PROGRAMMATIC. Constructor: TextBox([appearance=], ...)
+#   Values: "filled" | "outlined". Source: m3 API constructor signatures.
+#
+# M3 Card `appearance`:
+#   Confirmed PROGRAMMATIC. Constructor: Card([appearance=], ...)
+#   Values: "elevated" | "filled" | "outlined". Source: m3 API.
+#
+# M3 Button `appearance`:
+#   Confirmed PROGRAMMATIC. Constructor: Button([appearance=], ...)
+#   Values: "filled" | "elevated" | "tonal" | "outlined" | "text".
+#   Source: m3 API.
+#
+# Checkbox Write Back toggle:
+#   Data Bindings write-back is a toggle in the Designer Properties Panel.
+#   No programmatic equivalent exists in Anvil.
+#   DESIGNER-ONLY — Human developer must enable in Designer.
+#
+# M3 Heading `style` + `scale`:
+#   Confirmed PROGRAMMATIC. m3 docs example:
+#   m3.Heading(text="...", style="headline", scale="large")
+#
+# CRITICAL — M3 vs Classic Anvil property names:
+#   Classic Anvil uses `role` (themeRole string) for styling.
+#   M3 uses `appearance` (enum) for styling.
+#   Task 3 MUST use M3 component API throughout — not classic Anvil API.
+#   Do NOT use: role="outlined", role="filled-button", role="outlined-card"
+#   DO use:     appearance="outlined", appearance="filled", appearance="outlined"
+# ─────────────────────────────────────────────────────────────────────────────
+
+forms:
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FORM 1 — LoginForm
+  # Package: client_code/auth/
+  # Layout: BlankLayout (no navigation — pre-authentication)
+  # Spec: spec_build_plan.md §1.2
+  # ═══════════════════════════════════════════════════════════════════════════
+  - name: "LoginForm"
+    path: "client_code/auth/LoginForm"
+    layout: "BlankLayout"
+    package: "client_code/auth/"
+
+    component_tree: |
+      form_root
+      └─ col_center (ColumnPanel)
+         └─ card_login (Card — outlined)
+            ├─ lbl_title (Heading — headline-large)
+            ├─ txt_email (TextBox — outlined)
+            ├─ txt_password (TextBox — outlined, type=password)
+            ├─ cb_remember_me (Checkbox)
+            ├─ btn_sign_in (Button — filled)
+            └─ link_forgot_password (Link)
+
+    components:
+      - name: "col_center"
+        type: "ColumnPanel"
+        parent: "form_root"
+      - name: "card_login"
+        type: "Card"
+        parent: "col_center"
+      - name: "lbl_title"
+        type: "Heading"
+        parent: "card_login"
+      - name: "txt_email"
+        type: "TextBox"
+        parent: "card_login"
+      - name: "txt_password"
+        type: "TextBox"
+        parent: "card_login"
+      - name: "cb_remember_me"
+        type: "Checkbox"
+        parent: "card_login"
+      - name: "btn_sign_in"
+        type: "Button"
+        parent: "card_login"
+      - name: "link_forgot_password"
+        type: "Link"
+        parent: "card_login"
+
+    designer_only_properties:
+      - component: "txt_password"
+        property: "type"
+        value: "password"
+        verified_by: "anvil-docs-mcp"
+        flag: "AMBIGUOUS — M3 API page truncated before TextBox. Defaulting to designer-only. Human developer must set type=password in Designer Properties Panel for txt_password."
+
+      - component: "cb_remember_me"
+        property: "write_back"
+        value: true
+        verified_by: "anvil-docs-mcp"
+        notes: "Data Bindings write-back toggle. Designer Properties Panel only. Bind checked to self.item['remember_me']. Enable W toggle."
+
+    programmatic_properties:
+      - component: "card_login"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 Card appearance enum. Confirmed programmatic."
+
+      - component: "lbl_title"
+        property: "style"
+        value: "headline"
+        set_when: "__init__"
+        notes: "M3 Heading style. Confirmed programmatic."
+
+      - component: "lbl_title"
+        property: "scale"
+        value: "large"
+        set_when: "__init__"
+        notes: "M3 Heading scale. headline-large per spec_build_plan.md §1.2."
+
+      - component: "lbl_title"
+        property: "text"
+        value: "Sign In"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_email"
+        property: "label"
+        value: "Email"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "placeholder"
+        value: "Enter your email"
+        set_when: "__init__"
+
+      - component: "txt_password"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_password"
+        property: "label"
+        value: "Password"
+        set_when: "__init__"
+
+      - component: "txt_password"
+        property: "placeholder"
+        value: "Enter your password"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "error"
+        value: "True on invalid; False on valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean). Not role — M3 uses error=True not role=outlined-error."
+
+      - component: "txt_password"
+        property: "error"
+        value: "True on invalid; False on valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "cb_remember_me"
+        property: "text"
+        value: "Remember me"
+        set_when: "__init__"
+
+      - component: "btn_sign_in"
+        property: "appearance"
+        value: "filled"
+        set_when: "__init__"
+        notes: "M3 Button appearance enum. Confirmed programmatic. Primary action."
+
+      - component: "btn_sign_in"
+        property: "text"
+        value: "Sign In"
+        set_when: "__init__"
+
+      - component: "link_forgot_password"
+        property: "text"
+        value: "Forgot password?"
+        set_when: "__init__"
+
+    data_binding:
+      self_item_initial_value: "{'email': '', 'password': '', 'remember_me': False}"
+      set_before_init_components: true
+      write_back_components:
+        - component: "txt_email"
+          property: "text"
+          binds_to: "self.item['email']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "txt_password"
+          property: "text"
+          binds_to: "self.item['password']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "cb_remember_me"
+          property: "checked"
+          binds_to: "self.item['remember_me']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+
+    server_calls:
+      - function: "authenticate_user"
+        trigger: "btn_sign_in click"
+        args: ["self.item['email']", "self.item['password']"]
+        on_success: "navigate_by_role() — open_form AdminLayout or CustomerLayout by user['role']"
+        on_failure: "show Notification error; set txt_email.error=True; set txt_password.error=True"
+
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FORM 2 — SignupForm
+  # Package: client_code/auth/
+  # Layout: BlankLayout (no navigation — pre-authentication)
+  # Spec: spec_build_plan.md §1.2
+  # ═══════════════════════════════════════════════════════════════════════════
+  - name: "SignupForm"
+    path: "client_code/auth/SignupForm"
+    layout: "BlankLayout"
+    package: "client_code/auth/"
+
+    component_tree: |
+      form_root
+      └─ col_center (ColumnPanel)
+         └─ card_signup (Card — outlined)
+            ├─ lbl_title (Heading — headline-large)
+            ├─ txt_email (TextBox — outlined)
+            ├─ txt_password (TextBox — outlined, type=password)
+            ├─ txt_confirm_password (TextBox — outlined, type=password)
+            ├─ txt_business_name (TextBox — outlined)
+            ├─ cb_agree_terms (Checkbox)
+            └─ btn_create_account (Button — filled)
+
+    components:
+      - name: "col_center"
+        type: "ColumnPanel"
+        parent: "form_root"
+      - name: "card_signup"
+        type: "Card"
+        parent: "col_center"
+      - name: "lbl_title"
+        type: "Heading"
+        parent: "card_signup"
+      - name: "txt_email"
+        type: "TextBox"
+        parent: "card_signup"
+      - name: "txt_password"
+        type: "TextBox"
+        parent: "card_signup"
+      - name: "txt_confirm_password"
+        type: "TextBox"
+        parent: "card_signup"
+      - name: "txt_business_name"
+        type: "TextBox"
+        parent: "card_signup"
+      - name: "cb_agree_terms"
+        type: "Checkbox"
+        parent: "card_signup"
+      - name: "btn_create_account"
+        type: "Button"
+        parent: "card_signup"
+
+    designer_only_properties:
+      - component: "txt_password"
+        property: "type"
+        value: "password"
+        verified_by: "anvil-docs-mcp"
+        flag: "AMBIGUOUS — M3 API page truncated before TextBox. Defaulting to designer-only. Human developer must set type=password in Designer Properties Panel."
+
+      - component: "txt_confirm_password"
+        property: "type"
+        value: "password"
+        verified_by: "anvil-docs-mcp"
+        flag: "AMBIGUOUS — same as txt_password above."
+
+      - component: "cb_agree_terms"
+        property: "write_back"
+        value: true
+        verified_by: "anvil-docs-mcp"
+        notes: "Data Bindings write-back toggle. Designer Properties Panel only. Bind checked to self.item['agree_terms']. Enable W toggle."
+
+    programmatic_properties:
+      - component: "card_signup"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 Card appearance enum. Confirmed programmatic."
+
+      - component: "lbl_title"
+        property: "style"
+        value: "headline"
+        set_when: "__init__"
+
+      - component: "lbl_title"
+        property: "scale"
+        value: "large"
+        set_when: "__init__"
+        notes: "headline-large per spec_build_plan.md §1.2."
+
+      - component: "lbl_title"
+        property: "text"
+        value: "Create Account"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_email"
+        property: "label"
+        value: "Email"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "placeholder"
+        value: "Enter your email"
+        set_when: "__init__"
+
+      - component: "txt_password"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_password"
+        property: "label"
+        value: "Password"
+        set_when: "__init__"
+
+      - component: "txt_password"
+        property: "placeholder"
+        value: "Create a password (min 8 chars)"
+        set_when: "__init__"
+        notes: "Hint at password policy per policy_security.md §3.1."
+
+      - component: "txt_confirm_password"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_confirm_password"
+        property: "label"
+        value: "Confirm Password"
+        set_when: "__init__"
+
+      - component: "txt_confirm_password"
+        property: "placeholder"
+        value: "Re-enter your password"
+        set_when: "__init__"
+
+      - component: "txt_business_name"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_business_name"
+        property: "label"
+        value: "Business Name"
+        set_when: "__init__"
+
+      - component: "txt_business_name"
+        property: "placeholder"
+        value: "Your business name"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "error"
+        value: "True on invalid; False on valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "txt_password"
+        property: "error"
+        value: "True on invalid; False on valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "txt_confirm_password"
+        property: "error"
+        value: "True when passwords do not match; False when they match"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "txt_business_name"
+        property: "error"
+        value: "True when empty; False when valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "cb_agree_terms"
+        property: "error"
+        value: "True when not checked at submit; False when checked"
+        set_when: "validate_form()"
+        notes: "M3 Checkbox error property (boolean)."
+
+      - component: "cb_agree_terms"
+        property: "text"
+        value: "I agree to the Terms & Conditions"
+        set_when: "__init__"
+
+      - component: "btn_create_account"
+        property: "appearance"
+        value: "filled"
+        set_when: "__init__"
+        notes: "M3 Button appearance enum. Confirmed programmatic. Primary action."
+
+      - component: "btn_create_account"
+        property: "text"
+        value: "Create Account"
+        set_when: "__init__"
+
+    data_binding:
+      self_item_initial_value: "{'email': '', 'password': '', 'confirm_password': '', 'business_name': '', 'agree_terms': False}"
+      set_before_init_components: true
+      write_back_components:
+        - component: "txt_email"
+          property: "text"
+          binds_to: "self.item['email']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "txt_password"
+          property: "text"
+          binds_to: "self.item['password']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "txt_confirm_password"
+          property: "text"
+          binds_to: "self.item['confirm_password']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "txt_business_name"
+          property: "text"
+          binds_to: "self.item['business_name']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+        - component: "cb_agree_terms"
+          property: "checked"
+          binds_to: "self.item['agree_terms']"
+          write_back: "DESIGNER-ONLY — enable W toggle in Properties Panel"
+
+    server_calls:
+      - function: "create_user"
+        trigger: "btn_create_account click"
+        args: ["self.item['email']", "self.item['password']", "self.item['business_name']"]
+        on_success: "call create_initial_config(business_name); open_form('DashboardForm') via AdminLayout"
+        on_failure: "show Notification error; set relevant field error=True"
+
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FORM 3 — PasswordResetForm
+  # Package: client_code/auth/
+  # Layout: BlankLayout (no navigation — unauthenticated context)
+  # Spec: spec_build_plan.md §1.2
+  # ═══════════════════════════════════════════════════════════════════════════
+  - name: "PasswordResetForm"
+    path: "client_code/auth/PasswordResetForm"
+    layout: "BlankLayout"
+    package: "client_code/auth/"
+
+    component_tree: |
+      form_root
+      └─ col_center (ColumnPanel)
+         └─ card_reset (Card — outlined)
+            ├─ lbl_title (Heading — headline-small)
+            ├─ txt_email (TextBox — outlined)
+            └─ btn_send_reset (Button — filled)
+
+    components:
+      - name: "col_center"
+        type: "ColumnPanel"
+        parent: "form_root"
+      - name: "card_reset"
+        type: "Card"
+        parent: "col_center"
+      - name: "lbl_title"
+        type: "Heading"
+        parent: "card_reset"
+      - name: "txt_email"
+        type: "TextBox"
+        parent: "card_reset"
+      - name: "btn_send_reset"
+        type: "Button"
+        parent: "card_reset"
+
+    # FIX 3: explicit empty list — avoids null parse errors in Task 3
+    designer_only_properties: []
+
+    programmatic_properties:
+      - component: "card_reset"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 Card appearance enum. Confirmed programmatic."
+
+      - component: "lbl_title"
+        property: "style"
+        value: "headline"
+        set_when: "__init__"
+
+      - component: "lbl_title"
+        property: "scale"
+        value: "small"
+        set_when: "__init__"
+        notes: "headline-small per spec_build_plan.md §1.2."
+
+      - component: "lbl_title"
+        property: "text"
+        value: "Reset Password"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "appearance"
+        value: "outlined"
+        set_when: "__init__"
+        notes: "M3 TextBox appearance enum. Confirmed programmatic."
+
+      - component: "txt_email"
+        property: "label"
+        value: "Email"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "placeholder"
+        value: "Enter your email address"
+        set_when: "__init__"
+
+      - component: "txt_email"
+        property: "error"
+        value: "True on invalid; False on valid"
+        set_when: "validate_form()"
+        notes: "M3 TextBox error property (boolean)."
+
+      - component: "btn_send_reset"
+        property: "appearance"
+        value: "filled"
+        set_when: "__init__"
+        notes: "M3 Button appearance enum. Confirmed programmatic. Primary action."
+
+      - component: "btn_send_reset"
+        property: "text"
+        value: "Send Reset Link"
+        set_when: "__init__"
+
+      - component: "btn_send_reset"
+        property: "enabled"
+        value: "False after first click — prevents duplicate submissions"
+        set_when: "_handle_send_reset()"
+        notes: "Set btn_send_reset.enabled=False immediately before server call."
+
+    # FIX 1: self.item added — consistent with mandatory rule across all forms
+    data_binding:
+      self_item_initial_value: "{'email': ''}"
+      set_before_init_components: true
+      write_back_components: []
+      notes: "PasswordResetForm uses self.item for consistency with mandatory pattern. txt_email.text read directly in handler — no Write Back binding required on this form."
+
+    server_calls:
+      - function: "reset_password"
+        trigger: "btn_send_reset click"
+        args: ["self.txt_email.text"]
+        on_success: "show Notification: 'If that email is registered, a reset link has been sent' — identical message always (enumeration prevention, OWASP A07:2021)"
+        on_failure: "show identical Notification — never reveal whether email exists"

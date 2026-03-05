@@ -2,62 +2,182 @@ from ._anvil_designer import SignupFormTemplate
 from anvil import *
 import anvil.server
 import anvil.users
-import logging
-
-logger = logging.getLogger(__name__)
+import re
 
 
 class SignupForm(SignupFormTemplate):
+    """Signup form for creating new owner accounts.
+
+    Layout: BlankLayout (Custom Form — no navigation, pre-authentication).
+    Key user flows: create account with email/password/business name,
+    navigate to sign-in, terms, and privacy pages.
+    Feature flag dependencies: none.
+    M3 component choices: Card (appearance=outlined), TextBox (appearance=outlined),
+    Button (appearance=filled). Validation uses M3 error=True/False boolean property.
+
+    Note: link_sign_in, link_terms, link_privacy are referenced in handlers below.
+    These components must exist in the Designer for those handlers to function.
+    ⚠️ NEEDS HUMAN REVIEW — these components are not listed in 1.2-ui-design.yaml.
+    Add them in the Designer if required by the spec, or remove the handlers.
     """
-    M3-compliant signup/registration form.
-    
-    Purpose:
-        New user account creation with business profile setup.
-    
-    Ready for:
-        - M3 component addition in Anvil Designer
-        - Event handler implementation
-        - Server-side account creation integration
-    
-    Architecture:
-        UI Form → Server Module (server_auth.service)
-    """
-    
+
     def __init__(self, **properties):
-        """Initialize signup form with M3 configuration."""
+        self.item = {
+            'email': '',
+            'password': '',
+            'confirm_password': '',
+            'business_name': '',
+            'agree_terms': False,
+        }
         self.init_components(**properties)
-        self._configure_m3_components()
-    
-    def _configure_m3_components(self):
+        self._apply_m3_properties()
+
+    # ── Programmatic M3 properties ────────────────────────────────────────────
+
+    def _apply_m3_properties(self) -> None:
+        """Set all programmatic M3 properties as specified in 1.2-ui-design.yaml."""
+        self.card_signup.appearance = 'outlined'
+
+        self.lbl_title.style = 'headline'
+        self.lbl_title.scale = 'large'
+        self.lbl_title.text = 'Create Account'
+
+        self.txt_email.appearance = 'outlined'
+        self.txt_email.label = 'Email'
+        self.txt_email.placeholder = 'Enter your email'
+
+        self.txt_password.appearance = 'outlined'
+        self.txt_password.label = 'Password'
+        self.txt_password.placeholder = 'Create a password (min 8 chars)'
+
+        self.txt_confirm_password.appearance = 'outlined'
+        self.txt_confirm_password.label = 'Confirm Password'
+        self.txt_confirm_password.placeholder = 'Re-enter your password'
+
+        self.txt_business_name.appearance = 'outlined'
+        self.txt_business_name.label = 'Business Name'
+        self.txt_business_name.placeholder = 'Your business name'
+
+        self.cb_agree_terms.text = 'I agree to the Terms & Conditions'
+
+        self.btn_create_account.appearance = 'filled'
+        self.btn_create_account.text = 'Create Account'
+
+    # ── Event handlers — zero logic ───────────────────────────────────────────
+
+    def btn_create_account_click(self, **event_args):
+        self._handle_create_account()
+
+    def link_sign_in_click(self, **event_args):
+        open_form('LoginForm')
+
+    def link_terms_click(self, **event_args):
+        open_form('TermsConditionsPage')
+
+    def link_privacy_click(self, **event_args):
+        open_form('PrivacyPolicyPage')
+
+    # ── Business logic ────────────────────────────────────────────────────────
+
+    def _handle_create_account(self) -> None:
+        """Validate all inputs, then call create_user on the server."""
+        if not self.validate_form():
+            return
+
+        password = self.item.get('password') or ''
+        is_strong, message = self._validate_password_strength(password)
+        if not is_strong:
+            self.txt_password.error = True
+            Notification(message, style="danger").show()
+            return
+        self.txt_password.error = False
+
+        confirm_password = self.item.get('confirm_password') or ''
+        if password != confirm_password:
+            self.txt_confirm_password.error = True
+            Notification("Passwords do not match.", style="danger").show()
+            return
+        self.txt_confirm_password.error = False
+
+        if not self.item.get('agree_terms'):
+            self.cb_agree_terms.error = True
+            Notification(
+                "You must agree to the Terms & Conditions.", style="danger"
+            ).show()
+            return
+        self.cb_agree_terms.error = False
+
+        email = (self.item.get('email') or '').strip()
+        business_name = (self.item.get('business_name') or '').strip()
+
+        try:
+            result = anvil.server.call('create_user', email, password, business_name)
+        except anvil.server.TimeoutError:
+            Notification(
+                "The request timed out. Please try again.", style="danger"
+            ).show()
+            return
+        except anvil.server.AnvilWrappedError as err:
+            Notification(str(err), style="danger").show()
+            return
+
+        if result.get('success'):
+            Notification("Account created. Please sign in.", style="success").show()
+            open_form('LoginForm')
+            return
+
+        Notification(
+            result.get('error', 'Account creation failed. Please try again.'),
+            style="danger",
+        ).show()
+
+    def _validate_password_strength(self, password: str) -> tuple:
+        """Check password meets minimum strength requirements.
+
+        Args:
+            password: The candidate password string.
+
+        Returns:
+            tuple: (bool, str) — (is_valid, error_message).
+                   error_message is empty string when is_valid is True.
         """
-        Configure M3 component roles and properties.
-        
-        To be implemented after components are added in Designer:
-        - Title: Heading with role='headline-large'
-        - Subtitle: Text with role='body-medium'
-        - Business name field: TextBox with role='outlined'
-        - Email field: TextBox with role='outlined', type='email'
-        - Password field: TextBox with role='outlined', hide_text=True
-        - Confirm password field: TextBox with role='outlined', hide_text=True
-        - Create account button: Button with role='filled-button'
-        - Sign in link: Button with role='text-button' or NavigationLink
-        - Error label: Text with role='body-small', foreground='theme:Error'
+        if len(password) < 8:
+            return False, "Password must be at least 8 characters."
+        if not re.search(r'[A-Z]', password):
+            return False, "Password must include an uppercase letter."
+        if not re.search(r'[a-z]', password):
+            return False, "Password must include a lowercase letter."
+        if not re.search(r'[0-9]', password):
+            return False, "Password must include a number."
+        return True, ""
+
+    def validate_form(self) -> bool:
+        """Validate business name, email, and password fields.
+
+        Returns:
+            bool: True if all required fields are present and valid.
         """
-        # TODO: Add M3 role configuration after components added in Designer
-        # Example:
-        # self.lbl_title.role = 'headline-large'
-        # self.txt_business_name.role = 'outlined'
-        # self.txt_email.role = 'outlined'
-        # self.txt_password.role = 'outlined'
-        # self.btn_create_account.role = 'filled-button'
-        pass
-    
-    # Event handlers will be added here after Designer work
-    # Pattern:
-    # def btn_create_account_click(self, **event_args):
-    #     """Handle account creation - delegate to server."""
-    #     result = anvil.server.call('server_auth.signup', user_data)
-    #     if result['success']:
-    #         open_form('dashboard.DashboardForm')
-    #     else:
-    #         self._show_error(result['error'])
+        email = (self.item.get('email') or '').strip()
+        business_name = (self.item.get('business_name') or '').strip()
+        password = self.item.get('password') or ''
+        is_valid = True
+
+        if not business_name:
+            self.txt_business_name.error = True
+            is_valid = False
+        else:
+            self.txt_business_name.error = False
+
+        if not email or '@' not in email:
+            self.txt_email.error = True
+            is_valid = False
+        else:
+            self.txt_email.error = False
+
+        if not password:
+            self.txt_password.error = True
+            is_valid = False
+        else:
+            self.txt_password.error = False
+
+        return is_valid

@@ -2,59 +2,116 @@ from ._anvil_designer import LoginFormTemplate
 from anvil import *
 import anvil.server
 import anvil.users
-import logging
 
-logger = logging.getLogger(__name__)
+from ..ui_helpers import navigate_by_role
 
 
 class LoginForm(LoginFormTemplate):
+    """Login form for email/password authentication.
+
+    Layout: BlankLayout (Custom Form — no navigation, pre-authentication).
+    Key user flows: sign in with email/password, navigate to forgot-password.
+    Feature flag dependencies: none.
+    M3 component choices: Card (appearance=outlined), TextBox (appearance=outlined),
+    Button (appearance=filled). Validation uses M3 error=True/False boolean property.
     """
-    M3-compliant login form.
-    
-    Purpose:
-        User authentication via email/password.
-    
-    Ready for:
-        - M3 component addition in Anvil Designer
-        - Event handler implementation
-        - Server-side authentication integration
-    
-    Architecture:
-        UI Form → Server Module (server_auth.service)
-    """
-    
+
     def __init__(self, **properties):
-        """Initialize login form with M3 configuration."""
+        self.item = {'email': '', 'password': '', 'remember_me': False}
+        user = anvil.users.get_user()
+        if user:
+            navigate_by_role()
+            return
         self.init_components(**properties)
-        self._configure_m3_components()
-    
-    def _configure_m3_components(self):
+        self._apply_m3_properties()
+
+    # ── Programmatic M3 properties ────────────────────────────────────────────
+
+    def _apply_m3_properties(self) -> None:
+        """Set all programmatic M3 properties as specified in 1.2-ui-design.yaml."""
+        self.card_login.appearance = 'outlined'
+
+        self.lbl_title.style = 'headline'
+        self.lbl_title.scale = 'large'
+        self.lbl_title.text = 'Sign In'
+
+        self.txt_email.appearance = 'outlined'
+        self.txt_email.label = 'Email'
+        self.txt_email.placeholder = 'Enter your email'
+
+        self.txt_password.appearance = 'outlined'
+        self.txt_password.label = 'Password'
+        self.txt_password.placeholder = 'Enter your password'
+
+        self.cb_remember_me.text = 'Remember me'
+
+        self.btn_sign_in.appearance = 'filled'
+        self.btn_sign_in.text = 'Sign In'
+
+        self.link_forgot_password.text = 'Forgot password?'
+
+    # ── Event handlers — zero logic ───────────────────────────────────────────
+
+    def btn_sign_in_click(self, **event_args):
+        self._handle_sign_in()
+
+    def link_forgot_password_click(self, **event_args):
+        open_form('PasswordResetForm')
+
+    # ── Business logic ────────────────────────────────────────────────────────
+
+    def _handle_sign_in(self) -> None:
+        """Validate inputs, call authenticate_user, and navigate on success."""
+        if not self.validate_form():
+            return
+
+        email = (self.item.get('email') or '').strip()
+        password = self.item.get('password') or ''
+
+        try:
+            result = anvil.server.call('authenticate_user', email, password)
+        except anvil.server.TimeoutError:
+            Notification(
+                "The request timed out. Please try again.", style="danger"
+            ).show()
+            return
+        except anvil.server.AnvilWrappedError as err:
+            self.txt_email.error = True
+            self.txt_password.error = True
+            Notification(str(err), style="danger").show()
+            return
+
+        if result.get('success'):
+            navigate_by_role()
+            return
+
+        self.txt_email.error = True
+        self.txt_password.error = True
+        Notification(
+            result.get('error', 'Sign in failed. Please try again.'),
+            style="danger",
+        ).show()
+
+    def validate_form(self) -> bool:
+        """Validate email and password fields.
+
+        Returns:
+            bool: True if all fields are valid, False otherwise.
         """
-        Configure M3 component roles and properties.
-        
-        To be implemented after components are added in Designer:
-        - Title: Heading with role='headline-large'
-        - Subtitle: Text with role='body-medium'
-        - Email field: TextBox with role='outlined'
-        - Password field: TextBox with role='outlined', hide_text=True
-        - Login button: Button with role='filled-button'
-        - Links: NavigationLink or Button with role='text-button'
-        - Error label: Text with role='body-small', foreground='theme:Error'
-        """
-        # TODO: Add M3 role configuration after components added in Designer
-        # Example:
-        # self.lbl_title.role = 'headline-large'
-        # self.txt_email.role = 'outlined'
-        # self.txt_password.role = 'outlined'
-        # self.btn_login.role = 'filled-button'
-        pass
-    
-    # Event handlers will be added here after Designer work
-    # Pattern:
-    # def btn_login_click(self, **event_args):
-    #     """Handle login button click - delegate to server."""
-    #     result = anvil.server.call('server_auth.login', email, password)
-    #     if result['success']:
-    #         open_form('dashboard.DashboardForm')
-    #     else:
-    #         self._show_error(result['error'])
+        email = (self.item.get('email') or '').strip()
+        password = self.item.get('password') or ''
+        is_valid = True
+
+        if not email or '@' not in email:
+            self.txt_email.error = True
+            is_valid = False
+        else:
+            self.txt_email.error = False
+
+        if not password:
+            self.txt_password.error = True
+            is_valid = False
+        else:
+            self.txt_password.error = False
+
+        return is_valid

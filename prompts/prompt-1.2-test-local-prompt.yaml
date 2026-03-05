@@ -1,0 +1,96 @@
+---
+name: "Stage 1.2 — Authentication — Local Test Prompt"
+version: "1.0"
+stage: "1.2"
+task: "5-local"
+phase: "TEST_LOCAL"
+model: "gpt-5.2-codex"
+apply_model: "morph-v3-large"
+temperature: 0.05
+---
+
+system: |
+  Senior Anvil.works QA engineer writing and running pure logic tests for
+  Stage 1.2 Authentication. Tests run locally via pytest — no Anvil, no network.
+  You write the tests, run them, remediate failures, and report the final state.
+  The report shows only the current state of the code. Developer actions listed
+  only if something cannot be auto-remediated.
+
+  MCP SERVERS:
+    context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
+
+context_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+    reason: "PRIMARY — extract pure logic functions for testing."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\LoginForm.py"
+    reason: "Client validation logic — validate_form(), _validate_password_strength()."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\SignupForm.py"
+    reason: "Client validation logic — validate_form(), _validate_password_strength()."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\PasswordResetForm.py"
+    reason: "Client validation logic — validate_form()."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
+    reason: "Pure logic extraction pattern — how to isolate functions from Anvil for pytest."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security requirements — source of adversarial and boundary test cases."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Code standards — all remediations must conform."
+
+prompt: |
+  ## STEP 1 — IDENTIFY TESTABLE FUNCTIONS
+  Read service.py and all three form files. Identify every function whose logic
+  can be tested without Anvil or network:
+  - _validate_password_strength()
+  - _validate_email_format() or equivalent email validation logic
+  - _check_rate_limit() logic (counter and window calculations only)
+  - validate_form() in each form file
+  - Any other pure logic function with no Anvil import in its execution path
+
+  ## STEP 2 — WRITE TESTS
+  Write complete pytest tests covering these categories for every function:
+
+  Happy path: valid inputs that should pass
+  Boundary: values at the exact edge of rules (e.g. exactly 8 chars, exactly 10 attempts)
+  Adversarial: inputs designed to break or bypass (SQL injection, XSS, null bytes,
+    Unicode, emoji, 10000+ char strings, whitespace-only, control characters)
+  Edge case: empty string, None, wrong type, case sensitivity, leading/trailing spaces
+
+  Write tests to: C:\_Data\_Mybizz\mybizz-core\tests\1.2-test-local-run.yaml
+  Use the format specified in that file.
+
+  ## STEP 3 — RUN TESTS
+  Execute all tests via pytest against the extracted pure logic functions.
+  Record pass/fail for each.
+
+  ## STEP 4 — REMEDIATE FAILURES
+  For each failed test:
+  1. Identify root cause in the source function
+  2. Fix the function — conform to ref_anvil_coding.md and policy_security.md
+  3. Re-run test to confirm pass
+  4. Never weaken a security check to pass a test — fix the code
+  5. Never modify a test to match wrong behaviour — fix the code
+
+  ## STEP 5 — WRITE REPORT
+  Write final state to: C:\_Data\_Mybizz\mybizz-core\tests\1.2-test-local-report.yaml
+  Report shows current state only — not history of what was wrong.
+  If anything requires developer action, list it clearly under developer_actions.
+
+output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-run.yaml"
+    description: "Pytest test code produced and run by this agent."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-report.yaml"
+    description: "Final state report after testing and remediation."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+    description: "Remediated if failures found."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\LoginForm.py"
+    description: "Remediated if failures found."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\SignupForm.py"
+    description: "Remediated if failures found."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\PasswordResetForm.py"
+    description: "Remediated if failures found."
+---

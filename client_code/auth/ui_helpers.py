@@ -1,173 +1,192 @@
-import anvil.server
 """
 Auth UI Helper Functions
 
 Pure display/formatting functions for auth-related UI operations.
-All business logic and validation moved to server_code/server_auth/.
+All business logic and validation live in server_code/server_auth/.
 
-M3-compliant utilities for displaying user information.
+M3-compliant utilities for displaying user information and handling
+role-based navigation.
 """
 
+import anvil.users
+from anvil import open_form
 from typing import Optional
 
 
-def format_user_display_name(user: Optional[dict]) -> str:
+def navigate_by_role() -> None:
+    """Route the current user to the correct dashboard by role.
+
+    Reads the authenticated user from the Anvil Users service and opens
+    the appropriate form. Falls back to LoginForm if no user is found or
+    the role is unrecognised.
     """
-    Format user's display name from user row.
-    
-    Args:
-        user: User row from users table
-        
+    user = anvil.users.get_user()
+    if not user:
+        open_form('LoginForm')
+        return
+    role = user.get('role')
+    if role in ['owner', 'manager', 'admin', 'staff']:
+        open_form('DashboardForm')
+        return
+    if role == 'customer':
+        open_form('ClientPortalForm')
+        return
+    open_form('LoginForm')
+
+
+def require_auth() -> bool:
+    """Redirect to LoginForm if the current user is not authenticated.
+
     Returns:
-        Formatted display name (e.g., "John Doe", "John", or email username)
-        
+        bool: True if a user is authenticated, False if redirected to login.
+    """
+    if not anvil.users.get_user():
+        open_form('LoginForm')
+        return False
+    return True
+
+
+def format_user_display_name(user: Optional[dict]) -> str:
+    """Format a user's display name from a user row.
+
+    Args:
+        user: User row from the users table, or None.
+
+    Returns:
+        str: Formatted display name. Falls back to email username, then 'User'.
+
     Example:
-        >>> format_user_display_name({'first_name': 'John', 'last_name': 'Doe'})
-        'John Doe'
+        >>> format_user_display_name({'first_name': 'Jane', 'last_name': 'Smith'})
+        'Jane Smith'
     """
     if not user:
         return "Guest"
-
     first_name = user.get('first_name', '')
     last_name = user.get('last_name', '')
-
     if first_name and last_name:
         return f"{first_name} {last_name}"
-    elif first_name:
+    if first_name:
         return first_name
-    elif last_name:
+    if last_name:
         return last_name
-    else:
-        # Fallback to email username
-        email = user.get('email', '')
-        return email.split('@')[0] if email else "User"
+    email = user.get('email', '')
+    return email.split('@')[0] if email else "User"
 
 
 def get_user_initials(user: Optional[dict]) -> str:
-    """
-    Get user initials for avatar display.
-    
+    """Get up to two uppercase initials for avatar display.
+
     Args:
-        user: User row
-        
+        user: User row from the users table, or None.
+
     Returns:
-        User initials (max 2 characters uppercase)
-        
+        str: One or two uppercase characters, or '?' if user is None.
+
     Example:
-        >>> get_user_initials({'first_name': 'John', 'last_name': 'Doe'})
-        'JD'
+        >>> get_user_initials({'first_name': 'Jane', 'last_name': 'Smith'})
+        'JS'
     """
     if not user:
         return "?"
-
     first_name = user.get('first_name', '')
     last_name = user.get('last_name', '')
     email = user.get('email', '')
-
     if first_name and last_name:
         return f"{first_name[0]}{last_name[0]}".upper()
-    elif first_name:
+    if first_name:
         return first_name[0:2].upper()
-    elif email:
+    if email:
         return email[0:2].upper()
-    else:
-        return "U"
+    return "U"
 
 
 def format_role_display(role: str) -> str:
-    """
-    Format user role for display with emoji.
-    
+    """Format a user role string for human-readable display.
+
     Args:
-        role: User role ('owner', 'manager', 'staff', 'customer')
-        
+        role: Role string from the users table (e.g. 'owner', 'manager').
+
     Returns:
-        Formatted role with emoji (e.g., '👑 Owner')
-        
+        str: Title-cased role label.
+
     Example:
         >>> format_role_display('owner')
-        '👑 Owner'
+        'Owner'
     """
     role_map = {
-        'owner': '👑 Owner',
-        'manager': '⭐ Manager',
-        'staff': '👤 Staff',
-        'customer': '🛍️ Customer',
-        'admin': '🔑 Admin'
+        'owner': 'Owner',
+        'manager': 'Manager',
+        'admin': 'Admin',
+        'staff': 'Staff',
+        'customer': 'Customer',
     }
-
     return role_map.get(role, role.title())
 
 
-def format_last_login(last_login_time) -> str:
-    """
-    Format last login time for display.
-    
-    Args:
-        last_login_time: Last login timestamp (datetime)
-        
-    Returns:
-        Formatted time string (e.g., '2 hours ago', 'Just now')
-        
-    Example:
-        >>> format_last_login(datetime.now() - timedelta(hours=2))
-        '2 hours ago'
-    """
-    if not last_login_time:
-        return "Never"
-
-    from datetime import datetime, timedelta
-
-    now = datetime.now()
-    diff = now - last_login_time
-
-    if diff.days > 365:
-        years = diff.days // 365
-        return f"{years} year{'s' if years > 1 else ''} ago"
-    elif diff.days > 30:
-        months = diff.days // 30
-        return f"{months} month{'s' if months > 1 else ''} ago"
-    elif diff.days > 0:
-        return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
-    elif diff.seconds > 3600:
-        hours = diff.seconds // 3600
-        return f"{hours} hour{'s' if hours > 1 else ''} ago"
-    elif diff.seconds > 60:
-        minutes = diff.seconds // 60
-        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
-    else:
-        return "Just now"
-
-
 def format_account_status(status: str) -> str:
-    """
-    Format account status for display with indicator.
-    
+    """Format an account status string for human-readable display.
+
     Args:
-        status: Account status ('active', 'inactive', 'suspended', 'pending')
-        
+        status: Status string from the users table
+                (e.g. 'active', 'suspended').
+
     Returns:
-        Formatted status with indicator emoji
-        
+        str: Title-cased status label.
+
     Example:
         >>> format_account_status('active')
-        '✅ Active'
+        'Active'
     """
     status_map = {
-        'active': '✅ Active',
-        'inactive': '⏸ Inactive',
-        'suspended': '🚫 Suspended',
-        'pending': '⏳ Pending Verification'
+        'active': 'Active',
+        'inactive': 'Inactive',
+        'suspended': 'Suspended',
+        'pending': 'Pending Verification',
+        'deleted': 'Deleted',
     }
-
     return status_map.get(status, status.title())
 
 
-# Export all helper functions
+def format_last_login(last_login_time) -> str:
+    """Format a last-login datetime as a human-readable relative string.
+
+    Args:
+        last_login_time: datetime of last login, or None.
+
+    Returns:
+        str: Relative time string (e.g. '2 hours ago', 'Just now', 'Never').
+
+    Example:
+        >>> format_last_login(None)
+        'Never'
+    """
+    if not last_login_time:
+        return "Never"
+    from datetime import datetime
+    diff = datetime.now() - last_login_time
+    if diff.days > 365:
+        years = diff.days // 365
+        return f"{years} year{'s' if years > 1 else ''} ago"
+    if diff.days > 30:
+        months = diff.days // 30
+        return f"{months} month{'s' if months > 1 else ''} ago"
+    if diff.days > 0:
+        return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
+    if diff.seconds > 3600:
+        hours = diff.seconds // 3600
+        return f"{hours} hour{'s' if hours > 1 else ''} ago"
+    if diff.seconds > 60:
+        minutes = diff.seconds // 60
+        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+    return "Just now"
+
+
 __all__ = [
+    'navigate_by_role',
+    'require_auth',
     'format_user_display_name',
     'get_user_initials',
     'format_role_display',
+    'format_account_status',
     'format_last_login',
-    'format_account_status'
 ]

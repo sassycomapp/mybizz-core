@@ -1,0 +1,108 @@
+---
+name: "Task 1 — Stage 1.2 Authentication — UI Scope"
+version: "1.0"
+stage: "1.2"
+task: "1"
+phase: "UI_SCOPE"
+model: "claude-sonnet-4.6"
+apply_model: "morph-v3-large"
+temperature: 0.1
+---
+
+system: |
+  Senior Anvil.works developer performing a UI scope research task.
+  Read the specified sections of each rules file. Extract only what is needed.
+  Produce a structured YAML scope document. No code. No design decisions.
+  Scope only — design belongs to Task 2.
+
+  MCP SERVERS — connect before reading any rules file:
+    context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
+
+  STAGE CONTEXT:
+    Platform: Mybizz V1.x master_template_dev
+    Stage:    1.2 — Authentication System
+
+context_files:
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
+    reason: "§1.2 only — forms required, server function signatures, completion criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_scaffold.md"
+    reason: "Package auth and package layouts only — exact file locations for all auth forms."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
+    reason: "§1.1 layout selection, §1.4 navigation helpers, §2.1–2.5 M3 component standards."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
+    reason: "§1.1 form type summary, §2.4 authentication form layout pattern only."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
+    reason: "§5 authentication form component selection only."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_navigation.md"
+    reason: "Decision matrix only — which navigation system applies to auth forms."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_database.md"
+    reason: "§3 Table 2 only — users table columns available for Stage 1.2."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature.md"
+    reason: "Forms and server modules naming sections only."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature_components.md"
+    reason: "Full file — all component prefixes required for Section 2 output."
+
+prompt: |
+  Connect to context7 MCP before reading any file.
+  Use context7 to verify M3 component availability for auth forms.
+  Use context7 to confirm Anvil package API where spec_build_plan.md references
+  server functions.
+
+  Read ONLY the sections listed in context_files. Do not read beyond them.
+  Then produce the scope document below.
+
+  ## OUTPUT — write to:
+  C:\_Data\_Mybizz\mybizz-core\output\1.2-auth-ui-scope.md
+
+  ## YAML STRUCTURE — produce exactly these four keys:
+```yaml
+  stage: "1.2"
+  title: "Authentication System — UI Scope"
+
+  forms:
+    - name: ""
+      package: ""
+      form_type: ""
+      layout: ""
+      purpose: ""
+
+  components:
+    - form: ""
+      tree: |
+        # ASCII component tree
+      inventory:
+        - name: ""
+          type: ""
+          m3_role: ""
+          priority: ""
+
+  navigation:
+    layout_per_form: []
+    post_auth_routing: []
+    access_method: ""
+    not_used: []
+
+  data:
+    tables:
+      - table: ""
+        form: ""
+        operation: ""
+        notes: ""
+    users_columns_in_scope: []
+    pending_fields_excluded: []
+```
+
+  ## RULES
+  - Do not invent components not confirmed by context7 or ref_anvil_components.md §5
+  - Do not include design decisions — component sizes, colours, spacing belong in Task 2
+  - Do not include server function implementations — list names only under navigation notes
+  - Flag any M3 component where context7 returns ambiguous availability
+  - If a component cannot be confirmed as available, exclude it and add a note
+  - Output must not exceed the four YAML keys specified. Do not add sections, checklists,
+    testing notes, implementation sequences, or any content not explicitly listed in the
+    YAML STRUCTURE above.
+
+output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\output\\1.2-auth-ui-scope.md"
+    description: "Structured UI scope consumed by Task 2 agent."
+---

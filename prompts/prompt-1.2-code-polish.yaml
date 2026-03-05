@@ -1,0 +1,201 @@
+---
+name: "Task 4 — Stage 1.2 Authentication — Code Polish"
+version: "1.1"
+stage: "1.2"
+task: "4"
+phase: "CODE_POLISH"
+model: "gpt-5.2-codex"
+apply_model: "morph-v3-large"
+temperature: 0.1
+---
+
+system: |
+  Senior Anvil.works Python developer performing the final code polish pass.
+  Output is 100% shippable — no known violations, no TODOs, ready for testing.
+  Fix every violation found. Rewrite only what is broken.
+
+  MCP SERVERS — connect before any other action:
+    context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
+
+  Use context7 as primary authority for all Anvil API questions.
+
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+    Anvil form modules are NOT named after the form (e.g. LoginForm.py does not exist).
+    Every Anvil form folder contains exactly two files:
+      form_template.yaml  — designer file, do NOT modify
+      __init__.py         — the Python class file, this is the file to read and write
+    The three auth form files to polish are:
+      client_code\auth\LoginForm\__init__.py
+      client_code\auth\SignupForm\__init__.py
+      client_code\auth\PasswordResetForm\__init__.py
+    NEVER create or reference LoginForm.py, SignupForm.py, or PasswordResetForm.py.
+
+  AMBIGUITY RULE — applies throughout this task:
+    If context7 confirms a classification → apply it.
+    If context7 returns ambiguous result → Designer-only, flag ⚠️ AMBIGUOUS.
+    If context7 cannot confirm → Designer-only, flag ⚠️ NEEDS HUMAN REVIEW and stop
+    applying that fix. Do not assume. Do not guess.
+
+  SCHEMA AUTHORITY:
+    C:\_Data\_Mybizz\mybizz-core\anvil.yaml = AUTHORITATIVE schema.
+    spec_database_schema.md = reference only. If they conflict, anvil.yaml wins.
+
+context_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\prompts\\prompt-1.2-code-draft-1.yaml"
+    reason: "Read first — understand what Task 3a was instructed to produce (ui_helpers, LoginForm, SignupForm)."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\prompts\\prompt-1.2-code-draft-2.yaml"
+    reason: "Read second — understand what Task 3b was instructed to produce (PasswordResetForm, service.py)."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\output\\1.2-ui-design.yaml"
+    reason: "Component name authority. Cross-check every component name in code against this file."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"
+    reason: "Authoritative schema — verify table columns, package import paths."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\ui_helpers.py"
+    reason: "Task 3 output — polish in place."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
+    reason: "Task 3 output — LoginForm class. Polish in place."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
+    reason: "Task 3 output — SignupForm class. Polish in place."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
+    reason: "Task 3 output — PasswordResetForm class. Polish in place."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+    reason: "Task 3 output — polish in place."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Gold standard patterns. Logging levels. Exception rules. Docstring format."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "§1.3 response envelope. §2 Gold Standard Server Module. §3 Gold Standard Client Module."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
+    reason: "§6 M3 compliance checklist."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_development.md"
+    reason: "Code quality standards, error handling, AI model strategy."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "§3.1 password policy. §4.1 rate limiting. No client Data Tables access."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
+    reason: "§3 data binding — self.item before init_components(), Write Back."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
+    reason: "§4 validation pattern — outlined-error + placeholder."
+
+prompt: |
+  ## STEP 1 — ORIENT
+  Read prompt-1.2-code-draft-1.yaml and prompt-1.2-code-draft-2.yaml to understand
+  what Tasks 3a and 3b were instructed to produce.
+  Read 1.2-ui-design.yaml to extract: designer_only_properties and programmatic_properties
+  for all three forms. These two lists govern checks 1 and 2 below.
+  Read anvil.yaml to confirm table columns and package paths.
+
+  ## STEP 2 — CONNECT MCPs
+  Connect context7 before running any check.
+  Use context7 to verify every Anvil API call encountered during review.
+  Apply the AMBIGUITY RULE from the system block for any unresolvable question.
+
+  ## POLISH CHECKLIST — run against all five files
+
+  ### 1. Designer Properties
+  For every component in every form file:
+  - Property in designer_only_properties (1.2-ui-design.yaml) → must NOT be in Python. Remove.
+  - Property in programmatic_properties → must be in Python. Add if missing.
+
+  ### 2. Component Name Integrity
+  Cross-check every self.component_name reference in all three form files against
+  1.2-ui-design.yaml components list. Any name not in that list is an error — fix or flag.
+
+  ### 3. Anvil API Correctness (context7)
+  Verify and fix if wrong:
+  - anvil.users.login_with_email() — signature, return type, null-check before field access
+  - anvil.users.signup_with_email() — signature
+  - anvil.users.send_password_reset_email() — signature
+  - anvil.users.get_user_by_email() — signature, return type
+  - anvil.users.get_user() — return type null-checked before every field access
+  - AuthenticationFailed — exact class name confirmed
+  - UserExists — exact class name confirmed
+  - app_tables.tbl_rate_limits — accessor pattern correct per anvil.yaml
+  - app_tables.tbl_audit_log — accessor pattern correct per anvil.yaml
+  - anvil.server.request.origin — attribute confirmed
+
+  ### 4. Response Envelope (ref_anvil_coding_patterns.md §1.3)
+  Every @anvil.server.callable: {'success':True,'data':x} or {'success':False,'error':str(e)}.
+  No bare returns. No extra top-level keys. Client code checks result['success'] first.
+
+  ### 5. Logging (ref_anvil_coding.md)
+  - No print() anywhere in service.py
+  - logger=logging.getLogger(__name__) at module top
+  - INFO at function entry. DEBUG for steps. WARNING recoverable. ERROR unexpected. CRITICAL unrecoverable.
+
+  ### 6. Exception Handling (ref_anvil_coding.md)
+  - No bare except: — named exceptions only, specific before general
+  - No except block that passes silently without logging
+  - Traceback preserved: bare raise or raise X from e
+
+  ### 7. Gold Standard Conformance (ref_anvil_coding_patterns.md §2, §3)
+  service.py vs §2: fail-fast validation, logger.info at entry, logger.debug intermediate,
+  logger.error(exc_info=True) on unexpected, specific exceptions before general.
+  Form files vs §3: server calls in try/except, TimeoutError caught, AnvilWrappedError caught.
+
+  ### 8. M3 Compliance (ref_anvil_components.md §6)
+  - No legacy Label — Text or Heading only
+  - No Anvil Extras components
+  - No hardcoded colours — theme: prefix only
+  - NavigationLinks: navigate_to only, no click handlers
+  - Auth forms: BlankLayout (Custom Form) only
+
+  ### 9. Data Binding (spec_ui_standards.md §3)
+  - self.item set BEFORE self.init_components(**properties) in every form
+  - No manual change handlers where Write Back handles it
+  - refresh_data_bindings() only where self.item modified in place
+
+  ### 10. Form Validation (spec_ui_standards_forms.md §4)
+  - Invalid: role='outlined-error' + error to placeholder
+  - Valid reset: role='outlined'
+  - validate_form() returns bool, called before every server call
+
+  ### 11. Security (policy_security.md)
+  - Rate limit checked before login attempt in authenticate_user
+  - reset_password: identical response on success and failure
+  - create_user: duplicate check before signup call
+  - No Data Tables access in any client file
+  - instance_id never accepted as client parameter
+
+  ### 12. Code Quality (policy_development.md)
+  - Every non-trivial function: docstring with Args, Returns, Raises
+  - Type hints on all public server functions
+  - Event handlers contain zero logic
+  - open_form() in __init__ always followed by return
+  - Relative imports within auth package
+
+  ### 13. Schema Integrity (anvil.yaml)
+  - Every column accessed on users table exists in anvil.yaml
+  - Every column accessed on tbl_rate_limits exists in anvil.yaml
+  - tbl_audit_log access wrapped in silent try/except (table may not exist yet)
+
+  ### 14. Completeness
+  - No TODOs, no placeholder stubs
+  - All five files self-contained and runnable
+  - create_initial_config imported at call site using path from anvil.yaml
+
+  ## OUTPUT
+  Apply fixes directly to the five files.
+  For each file: CHECKED: {filename} — {n} fixes applied | no issues found
+  Flag any ⚠️ AMBIGUOUS or ⚠️ NEEDS HUMAN REVIEW items separately.
+  End with: # TASK 4 COMPLETE — code is shippable
+
+output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\ui_helpers.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+---

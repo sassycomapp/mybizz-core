@@ -1,60 +1,98 @@
-from ._anvil_designer import LoginFormTemplate
+from ._anvil_designer import PasswordResetFormTemplate
 from anvil import *
 import anvil.server
-import anvil.users
-import logging
-
-logger = logging.getLogger(__name__)
 
 
-class LoginForm(LoginFormTemplate):
-  """
-    M3-compliant login form.
-    
-    Purpose:
-        User authentication via email/password.
-    
-    Ready for:
-        - M3 component addition in Anvil Designer
-        - Event handler implementation
-        - Server-side authentication integration
-    
-    Architecture:
-        UI Form → Server Module (server_auth.service)
+class PasswordResetForm(PasswordResetFormTemplate):
+    """Password reset form for email-based reset requests.
+
+    Layout: BlankLayout (Custom Form — no navigation, unauthenticated context).
+    Key user flows: request a password reset link by email, return to sign-in.
+    Feature flag dependencies: none.
+    M3 component choices: Card (appearance=outlined), TextBox (appearance=outlined),
+    Button (appearance=filled). Validation uses M3 error=True/False boolean property.
+
+    Security: always shows an identical success message regardless of whether
+    the email is registered (OWASP A07:2021 — prevents user enumeration).
+
+    Note: link_back_to_sign_in is referenced in a handler below but is not listed
+    in 1.2-ui-design.yaml components.
+    ⚠️ NEEDS HUMAN REVIEW — add this component in the Designer if required,
+    or remove the handler if the link is not present.
     """
 
-  def __init__(self, **properties):
-    """Initialize login form with M3 configuration."""
-    self.init_components(**properties)
-    self._configure_m3_components()
+    def __init__(self, **properties):
+        self.item = {'email': ''}
+        self.init_components(**properties)
+        self._apply_m3_properties()
 
-  def _configure_m3_components(self):
-    """
-        Configure M3 component roles and properties.
-        
-        To be implemented after components are added in Designer:
-        - Title: Heading with role='headline-large'
-        - Subtitle: Text with role='body-medium'
-        - Email field: TextBox with role='outlined'
-        - Password field: TextBox with role='outlined', hide_text=True
-        - Login button: Button with role='filled-button'
-        - Links: NavigationLink or Button with role='text-button'
-        - Error label: Text with role='body-small', foreground='theme:Error'
+    # ── Programmatic M3 properties ────────────────────────────────────────────
+
+    def _apply_m3_properties(self) -> None:
+        """Set all programmatic M3 properties as specified in 1.2-ui-design.yaml."""
+        self.card_reset.appearance = 'outlined'
+
+        self.lbl_title.style = 'headline'
+        self.lbl_title.scale = 'small'
+        self.lbl_title.text = 'Reset Password'
+
+        self.txt_email.appearance = 'outlined'
+        self.txt_email.label = 'Email'
+        self.txt_email.placeholder = 'Enter your email address'
+        self.txt_email.error = False
+
+        self.btn_send_reset.appearance = 'filled'
+        self.btn_send_reset.text = 'Send Reset Link'
+
+    # ── Event handlers — zero logic ───────────────────────────────────────────
+
+    def btn_send_reset_click(self, **event_args):
+        self._handle_send_reset()
+
+    def link_back_to_sign_in_click(self, **event_args):
+        open_form('LoginForm')
+
+    # ── Business logic ────────────────────────────────────────────────────────
+
+    def _handle_send_reset(self) -> None:
+        """Validate email, call reset_password, always show identical message.
+
+        The identical message on success and failure prevents user enumeration
+        (OWASP A07:2021). The button is disabled immediately to prevent
+        duplicate submissions.
         """
-    # TODO: Add M3 role configuration after components added in Designer
-    # Example:
-    # self.lbl_title.role = 'headline-large'
-    # self.txt_email.role = 'outlined'
-    # self.txt_password.role = 'outlined'
-    # self.btn_login.role = 'filled-button'
-    pass
+        if not self.validate_form():
+            return
 
-    # Event handlers will be added here after Designer work
-    # Pattern:
-    # def btn_login_click(self, **event_args):
-    #     """Handle login button click - delegate to server."""
-    #     result = anvil.server.call('server_auth.login', email, password)
-    #     if result['success']:
-    #         open_form('dashboard.DashboardForm')
-    #     else:
-    #         self._show_error(result['error'])
+        self.btn_send_reset.enabled = False
+        email = self.txt_email.text or self.item.get('email', '')
+
+        try:
+            anvil.server.call('reset_password', email)
+        except anvil.server.TimeoutError:
+            pass
+        except anvil.server.AnvilWrappedError:
+            pass
+        except Exception:
+            pass
+
+        Notification(
+            "If that email is registered, a reset link has been sent.",
+            style="info",
+        ).show()
+
+    def validate_form(self) -> bool:
+        """Validate that the email field contains a plausible address.
+
+        Returns:
+            bool: True if the email is non-empty and contains '@'.
+        """
+        email = (self.txt_email.text or '').strip()
+        is_valid = bool(email) and '@' in email
+        if is_valid:
+            self.txt_email.error = False
+            self.txt_email.placeholder = 'Enter your email address'
+        else:
+            self.txt_email.error = True
+            self.txt_email.placeholder = 'Enter a valid email address'
+        return is_valid

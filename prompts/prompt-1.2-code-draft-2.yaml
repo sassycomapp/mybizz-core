@@ -1,0 +1,194 @@
+---
+name: "Task 3b — Stage 1.2 Authentication — Code Draft Part 2 (PasswordResetForm, service.py)"
+version: "1.1"
+stage: "1.2"
+task: "3b"
+phase: "CODE_DRAFT"
+model: "gpt-5.2-codex"
+apply_model: "morph-v3-large"
+temperature: 0.1
+---
+
+system: |
+  Senior Anvil.works Python developer writing the first code draft for Stage 1.2.
+  Read existing file contents before writing. Preserve all existing imports,
+  class headers, and any meaningful scaffold. Extend — do not overwrite.
+  Generate both output files completely without interruption.
+  No TODOs, no placeholders. Task 4 handles polish.
+
+  MCP SERVERS — connect before reading any file:
+    context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
+
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+    Anvil form modules are NOT named after the form (e.g. PasswordResetForm.py does not exist).
+    Every Anvil form folder contains exactly two files:
+      form_template.yaml  — designer file, do NOT modify
+      __init__.py         — the Python class file, this is the file to read and write
+    Example: PasswordResetForm class lives at client_code\auth\PasswordResetForm\__init__.py
+    NEVER create or reference PasswordResetForm.py — this file does not exist.
+
+  STAGE CONTEXT:
+    Platform: Mybizz V1.x master_template_dev
+    Stage:    1.2 — Authentication System
+    M3 Theme: 4UK6WHQ6UX7AKELK (locked)
+    Tables:   users (extended), tbl_rate_limits, tbl_audit_log — no new tables
+
+context_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\output\\1.2-ui-design.yaml"
+    reason: "PRIMARY INPUT. Exact component names. designer_only_properties = never set
+             in Python. programmatic_properties = must set in Python. data_binding keys for self.item."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"
+    reason: "AUTHORITATIVE SCHEMA. Derive correct server package import paths from this
+             file to resolve any circular import risk. Use actual package names — do not assume."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_scaffold.md"
+    reason: "Exact file locations. Server auth module = service.py (not auth_service.py)."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
+    reason: "§1.2 server function signatures: authenticate_user, create_user,
+             reset_password, check_permission."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_database.md"
+    reason: "§3 table 2 — exact users table columns. Use only columns listed here."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_database_schema.md"
+    reason: "tbl_rate_limits columns: identifier, count, reset_time, last_request.
+             Treat as reference — anvil.yaml is authoritative if they conflict."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "print() FORBIDDEN server-side. Named exceptions. Docstrings. Type hints.
+             Handlers call methods only."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "§1.3 response envelope mandatory. §2 Gold Standard Server Module =
+             template for service.py."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
+    reason: "§3 self.item before init_components(). Write Back ON per 1.2-ui-design.yaml."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
+    reason: "§4 validation: outlined-error + placeholder. §2.4 auth layout."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "§3.1 password policy. §4.1 rate limiting via tbl_rate_limits.
+             instance_id server-side only."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
+    reason: "§3.1 audit events."
+
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_misc.md"
+    reason: "§1 startup: auth check before init_components(). open_form() → return immediately."
+
+prompt: |
+  ## BEFORE WRITING ANY CODE
+
+  1. Connect to context7.
+
+  2. Verify these Anvil API signatures via context7 — use confirmed signatures only:
+     - anvil.users.send_password_reset_email(email)
+     - anvil.users.get_user_by_email(email)
+     - anvil.users.signup_with_email(email, password)
+     - anvil.users.AuthenticationFailed — confirm exact exception class name
+     - anvil.users.UserExists — confirm exact exception class name
+
+  3. Read anvil.yaml to derive the correct import path for server_settings service.
+     The create_initial_config call in create_user must use the exact package path
+     from anvil.yaml — do not assume. Import at call site (inside function body)
+     to avoid module-level circular imports.
+
+  4. Read each target file before writing it. The PasswordResetForm target file is
+     __init__.py inside the form folder — NOT a standalone PasswordResetForm.py.
+     Identify existing imports, class headers, __init__ signatures.
+     Preserve and extend — do not replace.
+
+  ## MANDATORY — ALL FILES
+  - Envelope: {'success':True,'data':x} / {'success':False,'error':str(e)} — no exceptions
+  - Server: logger=logging.getLogger(__name__) — no print() anywhere
+  - Never bare except — named exceptions only, specific before general
+  - Event handlers call methods — zero logic inside handlers
+  - self.item set BEFORE self.init_components(**properties)
+  - open_form() in __init__ → return immediately after, always
+  - No Data Tables access from client code
+  - Auth forms: BlankLayout (Custom Form) — no NavigationDrawerLayout
+  - Component names: use exactly the names from 1.2-ui-design.yaml — no invention
+  - Designer-only properties: do NOT set these in Python (from 1.2-ui-design.yaml)
+  - Programmatic properties: MUST set these in Python (from 1.2-ui-design.yaml)
+  - Before writing each file, read its current contents. If the file contains only
+    imports or is empty, extend it. If any existing method or function conflicts
+    with the implementation required by this prompt, overwrite the conflicting block
+    — do not attempt to merge. At Stage 1.2 all target files should contain scaffold
+    only; any substantive conflicting code is an error state and should be replaced.
+
+  ## FILE 3 — PasswordResetForm __init__.py
+  Path: C:\_Data\_Mybizz\mybizz-core\client_code\auth\PasswordResetForm\__init__.py
+  NOTE: This is the Anvil form module for PasswordResetForm. The file is __init__.py,
+  not PasswordResetForm.py. Read this file before writing. Preserve existing imports and class header.
+
+  __init__: self.item = {'email': ''} BEFORE self.init_components(**properties)
+
+  btn_send_reset_click → self._handle_send_reset()
+  _handle_send_reset():
+  1. validate_form() — stop if False
+  2. self.btn_send_reset.enabled=False
+  3. reset_password(email)
+  4. Always show identical message — prevents user enumeration (OWASP A07:2021)
+
+  link_back_to_sign_in_click → open_form('LoginForm')
+  validate_form(): email not empty + has '@'. Return bool.
+
+  ## FILE 4 — service.py
+  Path: C:\_Data\_Mybizz\mybizz-core\server_code\server_auth\service.py
+  Read existing file first. Preserve existing imports and any existing functions.
+
+  Module top: anvil.server, anvil.users, anvil.tables, app_tables,
+  datetime/timedelta, logging, re. logger=logging.getLogger(__name__)
+
+  Follow §2 Gold Standard Server Module from ref_anvil_coding_patterns.md exactly.
+
+  authenticate_user(email:str, password:str) -> dict
+  Validate inputs (fail fast) → _check_rate_limit(email) → login_with_email (confirmed sig)
+  Success: user['last_login']=now, _reset_rate_limit, _log_auth_event('login_success')
+  Return {'success':True,'data':{'role':user['role'],'email':user['email']}}
+  Catch AuthenticationFailed (confirmed class name): _increment_rate_limit,
+  _log_auth_event('login_failure'). Return {'success':False,'error':'Invalid email or password'}
+
+  create_user(email:str, password:str, business_name:str) -> dict
+  Validate: email regex, password strength, business_name not empty
+  get_user_by_email(email) → if exists: return error
+  signup_with_email (confirmed sig)
+  Set user row: role='owner', account_status='active', permissions={}, created_at=now
+  Import create_initial_config at call site using path derived from anvil.yaml
+  _log_auth_event('account_created'). Return {'success':True,'data':{'email':email}}
+  Catch UserExists (confirmed class name) with specific message.
+
+  reset_password(email:str) -> dict
+  Validate format — return success even if invalid (enumeration prevention)
+  send_password_reset_email (confirmed sig)
+  _log_auth_event('password_reset_requested')
+  Always return success envelope with identical message. Wrap all in try/except.
+
+  check_permission(permission_name:str) -> dict
+  get_user() → None: not-authenticated error
+  owner → True. customer → False. Others: permissions.get(permission_name,False)
+  Return {'success':True,'data':{'has_permission':bool}}
+
+  get_current_user_info() -> dict
+  get_user() → None: not-authenticated error
+  Return {'success':True,'data':{email,role,permissions or {},account_status}}
+
+  Internal helpers (no @anvil.server.callable):
+  _log_auth_event: add_row tbl_audit_log. Silent try/except — table may not exist yet.
+  _check_rate_limit: 10 attempts per minute per identifier. Fail open on exception.
+  _increment_rate_limit: upsert tbl_rate_limits, count+1, 1-min window.
+  _reset_rate_limit: set count=0.
+  _validate_password_strength: 8 chars, re[A-Z], re[a-z], re[0-9]. Return (bool,msg).
+
+  ## GENERATION ORDER
+  File 3 → File 4. Continuous. No stopping.
+  End with: # TASK 3b COMPLETE — 2 files generated. Code draft is complete.
+
+output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+---
