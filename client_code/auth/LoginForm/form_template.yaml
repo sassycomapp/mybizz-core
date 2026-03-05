@@ -17,6 +17,10 @@ components:
       name: txt_password
       properties: {appearance: outlined, text: ''}
       type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+    - layout_properties: {grid_position: 'LMPNRD,QZMXQR'}
+      name: btn_reveal_password
+      properties: {}
+      type: form:dep_ftrc8xuvrf6lsd:_Components.IconButton
     - layout_properties: {grid_position: 'URUFLU,HPFNQR'}
       name: cb_remember_me
       properties: {}
@@ -31,7 +35,7 @@ components:
       type: form:dep_ftrc8xuvrf6lsd:_Components.Link
     layout_properties: {grid_position: 'CNYBVF,QFQCIW'}
     name: card_login
-    properties: {role: outlined-card}
+    properties: {col_widths: '{"NUTAPV":55,"QZMXQR":5}', role: outlined-card}
     type: ColumnPanel
   layout_properties: {slot: default}
   name: col_center
