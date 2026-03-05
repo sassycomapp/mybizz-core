@@ -1,6 +1,6 @@
 ---
 name: "Stage 1.2 — Authentication — Local Test Prompt"
-version: "1.0"
+version: "1.1"
 stage: "1.2"
 task: "5-local"
 phase: "TEST_LOCAL"
@@ -19,17 +19,22 @@ system: |
   MCP SERVERS:
     context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
 
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+    Anvil form modules are NOT named after the form.
+    Every form folder contains __init__.py — this is the file to read.
+    NEVER reference LoginForm.py, SignupForm.py, or PasswordResetForm.py — these do not exist.
+
 context_files:
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
     reason: "PRIMARY — extract pure logic functions for testing."
 
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\LoginForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
+    reason: "Client validation logic — validate_form()."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
     reason: "Client validation logic — validate_form(), _validate_password_strength()."
 
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\SignupForm.py"
-    reason: "Client validation logic — validate_form(), _validate_password_strength()."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\PasswordResetForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
     reason: "Client validation logic — validate_form()."
 
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
@@ -43,8 +48,8 @@ context_files:
 
 prompt: |
   ## STEP 1 — IDENTIFY TESTABLE FUNCTIONS
-  Read service.py and all three form files. Identify every function whose logic
-  can be tested without Anvil or network:
+  Read service.py and all three form __init__.py files. Identify every function
+  whose logic can be tested without Anvil or network:
   - _validate_password_strength()
   - _validate_email_format() or equivalent email validation logic
   - _check_rate_limit() logic (counter and window calculations only)
@@ -60,12 +65,12 @@ prompt: |
     Unicode, emoji, 10000+ char strings, whitespace-only, control characters)
   Edge case: empty string, None, wrong type, case sensitivity, leading/trailing spaces
 
-  Write tests to: C:\_Data\_Mybizz\mybizz-core\tests\1.2-test-local-run.yaml
-  Use the format specified in that file.
+  Write runnable pytest file to: C:\_Data\_Mybizz\mybizz-core\tests\test_1.2_auth.py
+  Write test record to: C:\_Data\_Mybizz\mybizz-core\tests\1.2-test-local-run.yaml
 
   ## STEP 3 — RUN TESTS
-  Execute all tests via pytest against the extracted pure logic functions.
-  Record pass/fail for each.
+  Execute all tests via pytest against test_1.2_auth.py.
+  Record pass/fail for each test in 1.2-test-local-run.yaml.
 
   ## STEP 4 — REMEDIATE FAILURES
   For each failed test:
@@ -81,16 +86,18 @@ prompt: |
   If anything requires developer action, list it clearly under developer_actions.
 
 output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\test_1.2_auth.py"
+    description: "Runnable pytest file — written and executed by this agent."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-run.yaml"
-    description: "Pytest test code produced and run by this agent."
+    description: "Test record — populated after tests are run."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-report.yaml"
     description: "Final state report after testing and remediation."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
     description: "Remediated if failures found."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\LoginForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
     description: "Remediated if failures found."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\SignupForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
     description: "Remediated if failures found."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\PasswordResetForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
     description: "Remediated if failures found."
 ---
