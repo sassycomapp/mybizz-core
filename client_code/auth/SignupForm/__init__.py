@@ -14,11 +14,6 @@ class SignupForm(SignupFormTemplate):
     Feature flag dependencies: none.
     M3 component choices: Card (appearance=outlined), TextBox (appearance=outlined),
     Button (appearance=filled). Validation uses M3 error=True/False boolean property.
-
-    Note: link_sign_in, link_terms, link_privacy are referenced in handlers below.
-    These components must exist in the Designer for those handlers to function.
-    ⚠️ NEEDS HUMAN REVIEW — these components are not listed in 1.2-ui-design.yaml.
-    Add them in the Designer if required by the spec, or remove the handlers.
     """
 
     def __init__(self, **properties):
@@ -29,6 +24,8 @@ class SignupForm(SignupFormTemplate):
             'business_name': '',
             'agree_terms': False,
         }
+        self.txt_password.hide_text = True
+        self.txt_confirm_password.hide_text = True
         self.init_components(**properties)
         self._apply_m3_properties()
 
@@ -63,6 +60,9 @@ class SignupForm(SignupFormTemplate):
         self.btn_create_account.appearance = 'filled'
         self.btn_create_account.text = 'Create Account'
 
+        self.btn_reveal_password.icon = 'visibility_off'
+        self.btn_reveal_confirm_password.icon = 'visibility_off'
+
     # ── Event handlers — zero logic ───────────────────────────────────────────
 
     def btn_create_account_click(self, **event_args):
@@ -77,7 +77,27 @@ class SignupForm(SignupFormTemplate):
     def link_privacy_click(self, **event_args):
         open_form('PrivacyPolicyPage')
 
+    def btn_reveal_password_click(self, **event_args):
+        self._toggle_password_visibility()
+
+    def btn_reveal_confirm_password_click(self, **event_args):
+        self._toggle_confirm_password_visibility()
+
     # ── Business logic ────────────────────────────────────────────────────────
+
+    def _toggle_password_visibility(self) -> None:
+        """Toggle password field between masked and visible."""
+        self.txt_password.hide_text = not self.txt_password.hide_text
+        self.btn_reveal_password.icon = (
+            'visibility_off' if self.txt_password.hide_text else 'visibility'
+        )
+
+    def _toggle_confirm_password_visibility(self) -> None:
+        """Toggle confirm password field between masked and visible."""
+        self.txt_confirm_password.hide_text = not self.txt_confirm_password.hide_text
+        self.btn_reveal_confirm_password.icon = (
+            'visibility_off' if self.txt_confirm_password.hide_text else 'visibility'
+        )
 
     def _handle_create_account(self) -> None:
         """Validate all inputs, then call create_user on the server."""

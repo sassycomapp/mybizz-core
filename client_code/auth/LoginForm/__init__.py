@@ -18,6 +18,7 @@ class LoginForm(LoginFormTemplate):
 
     def __init__(self, **properties):
         self.item = {'email': '', 'password': '', 'remember_me': False}
+        self.txt_password.hide_text = True
         user = anvil.users.get_user()
         if user:
             navigate_by_role()
@@ -50,6 +51,8 @@ class LoginForm(LoginFormTemplate):
 
         self.link_forgot_password.text = 'Forgot password?'
 
+        self.btn_reveal_password.icon = 'visibility_off'
+
     # ── Event handlers — zero logic ───────────────────────────────────────────
 
     def btn_sign_in_click(self, **event_args):
@@ -58,7 +61,17 @@ class LoginForm(LoginFormTemplate):
     def link_forgot_password_click(self, **event_args):
         open_form('PasswordResetForm')
 
+    def btn_reveal_password_click(self, **event_args):
+        self._toggle_password_visibility()
+
     # ── Business logic ────────────────────────────────────────────────────────
+
+    def _toggle_password_visibility(self) -> None:
+        """Toggle password field between masked and visible."""
+        self.txt_password.hide_text = not self.txt_password.hide_text
+        self.btn_reveal_password.icon = (
+            'visibility_off' if self.txt_password.hide_text else 'visibility'
+        )
 
     def _handle_sign_in(self) -> None:
         """Validate inputs, call authenticate_user, and navigate on success."""
