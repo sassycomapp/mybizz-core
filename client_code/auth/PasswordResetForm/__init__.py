@@ -15,10 +15,6 @@ class PasswordResetForm(PasswordResetFormTemplate):
     Security: always shows an identical success message regardless of whether
     the email is registered (OWASP A07:2021 — prevents user enumeration).
 
-    Note: link_back_to_sign_in is referenced in a handler below but is not listed
-    in 1.2-ui-design.yaml components.
-    ⚠️ NEEDS HUMAN REVIEW — add this component in the Designer if required,
-    or remove the handler if the link is not present.
     """
 
     def __init__(self, **properties):
