@@ -1,6 +1,6 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Prompt"
-version: "1.0"
+version: "1.1"
 stage: "1.2"
 task: "5-uplink"
 phase: "TEST_UPLINK"
@@ -19,17 +19,22 @@ system: |
   MCP SERVERS:
     context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
 
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+    Anvil form modules are NOT named after the form.
+    Every form folder contains __init__.py — this is the file to read.
+    NEVER reference LoginForm.py, SignupForm.py, or PasswordResetForm.py — these do not exist.
+
 context_files:
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
     reason: "PRIMARY test target — all @anvil.server.callable functions."
 
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\LoginForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
     reason: "Integration target — form behaviour against live Anvil Users service."
 
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\SignupForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
     reason: "Integration target."
 
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\PasswordResetForm.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
     reason: "Integration target."
 
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"

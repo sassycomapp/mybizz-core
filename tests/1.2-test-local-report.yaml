@@ -1,11 +1,11 @@
 ---
 name: "Stage 1.2 — Authentication — Local Test Report"
-version: "1.0"
+version: "1.1"
 stage: "1.2"
 phase: "TEST_LOCAL_REPORT"
-generated_by: "4.1-fast"
-run_timestamp: ""
-verdict: ""              # PASSED | FAILED | PASSED_WITH_ACTIONS
+generated_by: "gpt-5.2-codex"
+run_timestamp: "2026-03-05T17:00:32.3844491+02:00"
+verdict: "PASSED"              # PASSED | FAILED | PASSED_WITH_ACTIONS
 
 # =============================================================================
 # CURRENT STATE — this report reflects the state of the code RIGHT NOW
@@ -13,23 +13,85 @@ verdict: ""              # PASSED | FAILED | PASSED_WITH_ACTIONS
 # =============================================================================
 
 summary:
-  total_tests: 0
-  passed: 0
+  total_tests: 23
+  passed: 23
   failed: 0
-  auto_remediated: 0
+  auto_remediated: 1
 
 # All tests currently passing — listed for confirmation only
 passing:
-  - id: ""
-    function: ""
-    description: ""
+  - id: "LOCAL-001"
+    function: "normalize_email"
+    description: "None normalizes to empty string"
+  - id: "LOCAL-002"
+    function: "normalize_email"
+    description: "Trim and lowercase email"
+  - id: "LOCAL-003"
+    function: "is_valid_email"
+    description: "Accept valid emails"
+  - id: "LOCAL-004"
+    function: "is_valid_email"
+    description: "Reject invalid formats and null byte"
+  - id: "LOCAL-005"
+    function: "validate_password_strength"
+    description: "Exact 8 chars with upper/lower/number"
+  - id: "LOCAL-006"
+    function: "validate_password_strength"
+    description: "Too short (7 chars)"
+  - id: "LOCAL-007"
+    function: "validate_password_strength"
+    description: "Missing uppercase"
+  - id: "LOCAL-008"
+    function: "validate_password_strength"
+    description: "Missing lowercase"
+  - id: "LOCAL-009"
+    function: "validate_password_strength"
+    description: "Missing number"
+  - id: "LOCAL-010"
+    function: "evaluate_rate_limit"
+    description: "No record allows"
+  - id: "LOCAL-011"
+    function: "evaluate_rate_limit"
+    description: "Count at limit-1 allows"
+  - id: "LOCAL-012"
+    function: "evaluate_rate_limit"
+    description: "Count at limit denies"
+  - id: "LOCAL-013"
+    function: "evaluate_rate_limit"
+    description: "Expired window resets"
+  - id: "LOCAL-014"
+    function: "evaluate_rate_limit"
+    description: "No reset_time still enforces limit"
+  - id: "LOCAL-015"
+    function: "is_basic_email"
+    description: "Basic email accepted"
+  - id: "LOCAL-016"
+    function: "is_basic_email"
+    description: "Empty and missing @ rejected"
+  - id: "LOCAL-017"
+    function: "is_basic_email"
+    description: "Newline and null-byte payloads"
+  - id: "LOCAL-018"
+    function: "is_non_empty"
+    description: "Whitespace-only rejected"
+  - id: "LOCAL-019"
+    function: "validate_password_strength (client)"
+    description: "Valid password"
+  - id: "LOCAL-020"
+    function: "validate_password_strength (client)"
+    description: "Missing uppercase"
+  - id: "LOCAL-021"
+    function: "validate_password_strength (client)"
+    description: "Missing lowercase"
+  - id: "LOCAL-022"
+    function: "validate_password_strength (client)"
+    description: "Missing number"
+  - id: "LOCAL-023"
+    function: "validate_password_strength (client)"
+    description: "Too short (7 chars)"
 
 # Tests still failing after remediation attempts — should be empty
-failing:
-  - id: ""
-    function: ""
-    description: ""
-    reason: ""
+failing: []
 
 # =============================================================================
 # DEVELOPER ACTIONS
@@ -38,6 +100,3 @@ failing:
 # =============================================================================
 
 developer_actions: []
-  # - action: ""
-  #   reason: ""
-  #   file: ""

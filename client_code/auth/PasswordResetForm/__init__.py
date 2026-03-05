@@ -2,6 +2,8 @@ from ._anvil_designer import PasswordResetFormTemplate
 from anvil import *
 import anvil.server
 
+from ..validation import is_basic_email
+
 
 class PasswordResetForm(PasswordResetFormTemplate):
     """Password reset form for email-based reset requests.
@@ -84,7 +86,7 @@ class PasswordResetForm(PasswordResetFormTemplate):
             bool: True if the email is non-empty and contains '@'.
         """
         email = (self.txt_email.text or '').strip()
-        is_valid = bool(email) and '@' in email
+        is_valid = is_basic_email(email)
         if is_valid:
             self.txt_email.error = False
             self.txt_email.placeholder = 'Enter your email address'

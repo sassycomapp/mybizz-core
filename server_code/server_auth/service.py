@@ -18,47 +18,14 @@ from anvil.tables import app_tables
 import anvil.server
 import logging
 from datetime import datetime, timedelta
-import re
-from typing import Optional, Tuple
+from .validation import (
+    normalize_email,
+    is_valid_email,
+    validate_password_strength,
+    evaluate_rate_limit,
+)
 
 logger = logging.getLogger(__name__)
-
-
-# ── Pure helpers ──────────────────────────────────────────────────────────────
-
-def _normalize_email(email: Optional[str]) -> str:
-    """Strip whitespace and lowercase an email string."""
-    return (email or "").strip().lower()
-
-
-def _is_valid_email(email: str) -> bool:
-    """Return True if email matches a basic RFC-5321 pattern."""
-    if not email:
-        return False
-    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    return bool(re.match(pattern, email))
-
-
-def _validate_password_strength(password: Optional[str]) -> Tuple[bool, str]:
-    """Check password meets minimum strength requirements.
-
-    Args:
-        password: Candidate password string.
-
-    Returns:
-        Tuple[bool, str]: (is_valid, error_message).
-                          error_message is empty when is_valid is True.
-    """
-    password = password or ""
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters"
-    if not re.search(r"[A-Z]", password):
-        return False, "Password must contain an uppercase letter"
-    if not re.search(r"[a-z]", password):
-        return False, "Password must contain a lowercase letter"
-    if not re.search(r"[0-9]", password):
-        return False, "Password must contain a number"
-    return True, ""
 
 
 # ── Callable server functions ─────────────────────────────────────────────────
@@ -79,8 +46,8 @@ def authenticate_user(email: str, password: str) -> dict:
         dict: {'success': True, 'data': {'role': str, 'email': str}}
               {'success': False, 'error': str}
     """
-    logger.info("authenticate_user called", extra={"email": _normalize_email(email)})
-    identifier = _normalize_email(email)
+    logger.info("authenticate_user called", extra={"email": normalize_email(email)})
+    identifier = normalize_email(email)
     try:
         if not identifier or not password:
             return {'success': False, 'error': 'Email and password are required'}
@@ -158,15 +125,15 @@ def create_user(email: str, password: str, business_name: str) -> dict:
     ⚠️ NEEDS HUMAN REVIEW — confirm anvil.users.get_user_by_email() is
     available in this Anvil runtime version before relying on it.
     """
-    logger.info("create_user called", extra={"email": _normalize_email(email)})
-    identifier = _normalize_email(email)
+    logger.info("create_user called", extra={"email": normalize_email(email)})
+    identifier = normalize_email(email)
     try:
         if not business_name or not business_name.strip():
             return {'success': False, 'error': 'Business name is required'}
-        if not _is_valid_email(identifier):
+        if not is_valid_email(identifier):
             return {'success': False, 'error': 'Invalid email format'}
 
-        is_valid, message = _validate_password_strength(password)
+        is_valid, message = validate_password_strength(password)
         if not is_valid:
             return {'success': False, 'error': message}
 
@@ -227,10 +194,10 @@ def reset_password(email: str) -> dict:
         dict: {'success': True, 'data': {'message': str}} — always.
     """
     logger.info("reset_password called")
-    identifier = _normalize_email(email)
+    identifier = normalize_email(email)
     message = "If that email is registered, a reset link has been sent."
     try:
-        if _is_valid_email(identifier):
+        if is_valid_email(identifier):
             anvil.users.send_password_reset_email(identifier)
         _log_auth_event('password_reset_requested', user=None)
         logger.info("reset_password completed")
@@ -373,18 +340,14 @@ def _check_rate_limit(
 
         record = rate_table.get(identifier=identifier)
         now = datetime.now()
-        if not record:
-            return True
-
-        reset_time = record.get('reset_time')
-        if reset_time and now > reset_time:
-            record['count'] = 0
-            record['reset_time'] = now + timedelta(minutes=window_minutes)
+        status = evaluate_rate_limit(record, now, limit, window_minutes)
+        if status['reset'] and record:
+            record['count'] = status['count']
+            record['reset_time'] = status['reset_time']
             record['last_request'] = now
             return True
 
-        count = record.get('count') or 0
-        return count < limit
+        return status['allowed']
     except Exception:
         logger.warning(
             "_check_rate_limit: check failed — failing open",

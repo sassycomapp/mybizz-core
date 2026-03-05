@@ -2,7 +2,8 @@ from ._anvil_designer import SignupFormTemplate
 from anvil import *
 import anvil.server
 import anvil.users
-import re
+
+from ..validation import is_basic_email, is_non_empty, validate_password_strength
 
 
 class SignupForm(SignupFormTemplate):
@@ -161,15 +162,7 @@ class SignupForm(SignupFormTemplate):
             tuple: (bool, str) — (is_valid, error_message).
                    error_message is empty string when is_valid is True.
         """
-        if len(password) < 8:
-            return False, "Password must be at least 8 characters."
-        if not re.search(r'[A-Z]', password):
-            return False, "Password must include an uppercase letter."
-        if not re.search(r'[a-z]', password):
-            return False, "Password must include a lowercase letter."
-        if not re.search(r'[0-9]', password):
-            return False, "Password must include a number."
-        return True, ""
+        return validate_password_strength(password)
 
     def validate_form(self) -> bool:
         """Validate business name, email, and password fields.
@@ -182,19 +175,19 @@ class SignupForm(SignupFormTemplate):
         password = self.item.get('password') or ''
         is_valid = True
 
-        if not business_name:
+        if not is_non_empty(business_name):
             self.txt_business_name.error = True
             is_valid = False
         else:
             self.txt_business_name.error = False
 
-        if not email or '@' not in email:
+        if not is_basic_email(email):
             self.txt_email.error = True
             is_valid = False
         else:
             self.txt_email.error = False
 
-        if not password:
+        if not is_non_empty(password):
             self.txt_password.error = True
             is_valid = False
         else:

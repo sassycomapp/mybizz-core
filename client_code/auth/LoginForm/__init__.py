@@ -4,6 +4,7 @@ import anvil.server
 import anvil.users
 
 from ..ui_helpers import navigate_by_role
+from ..validation import is_basic_email, is_non_empty
 
 
 class LoginForm(LoginFormTemplate):
@@ -115,13 +116,13 @@ class LoginForm(LoginFormTemplate):
         password = self.item.get('password') or ''
         is_valid = True
 
-        if not email or '@' not in email:
+        if not is_basic_email(email):
             self.txt_email.error = True
             is_valid = False
         else:
             self.txt_email.error = False
 
-        if not password:
+        if not is_non_empty(password):
             self.txt_password.error = True
             is_valid = False
         else:

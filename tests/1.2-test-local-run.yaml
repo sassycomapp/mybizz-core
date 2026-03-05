@@ -1,28 +1,223 @@
 ---
 name: "Stage 1.2 — Authentication — Local Test Run"
-version: "1.0"
+version: "1.1"
 stage: "1.2"
 phase: "TEST_LOCAL_RUN"
-generated_by: "4.1-fast"
-status: "PENDING"
+generated_by: "gpt-5.2-codex"
+status: "PASSED"
+run_command: "pytest -v --import-mode=importlib tests/test_1.2_auth.py"
 
 # =============================================================================
 # PURE LOGIC TESTS — pytest
-# No Anvil, no network. Run: pytest 1.2-test-local-run.yaml
+# No Anvil, no network. Run: pytest -v --import-mode=importlib tests/test_1.2_auth.py
 # Functions extracted from service.py and form files per ref_anvil_testing.md
 # =============================================================================
 
 tests:
   - id: "LOCAL-001"
-    function: ""
-    category: ""         # happy_path | boundary | adversarial | edge_case
-    description: ""
-    input: {}
-    expected: ""
-    status: "PENDING"    # PENDING | PASSED | FAILED
-    actual: ""
+    function: "normalize_email"
+    category: "edge_case"
+    description: "None normalizes to empty string"
+    input: {"email": null}
+    expected: "''"
+    status: "PASSED"
+    actual: "''"
     remediated: false
-    test_code: |
-      # Complete runnable pytest function — no stubs, no pass
-      def test_():
-          pass
+  - id: "LOCAL-002"
+    function: "normalize_email"
+    category: "happy_path"
+    description: "Trim and lowercase email"
+    input: {"email": "  Test@Example.COM "}
+    expected: "test@example.com"
+    status: "PASSED"
+    actual: "test@example.com"
+    remediated: false
+  - id: "LOCAL-003"
+    function: "is_valid_email"
+    category: "happy_path"
+    description: "Accept valid emails"
+    input: {"email": "user@example.com"}
+    expected: "True"
+    status: "PASSED"
+    actual: "True"
+    remediated: false
+  - id: "LOCAL-004"
+    function: "is_valid_email"
+    category: "adversarial"
+    description: "Reject invalid formats and null byte"
+    input: {"email": "t\\x00st@example.com"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-005"
+    function: "validate_password_strength"
+    category: "boundary"
+    description: "Exact 8 chars with upper/lower/number"
+    input: {"password": "Aa1aaaaa"}
+    expected: "True"
+    status: "PASSED"
+    actual: "True"
+    remediated: false
+  - id: "LOCAL-006"
+    function: "validate_password_strength"
+    category: "boundary"
+    description: "Too short (7 chars)"
+    input: {"password": "Aa1aaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-007"
+    function: "validate_password_strength"
+    category: "edge_case"
+    description: "Missing uppercase"
+    input: {"password": "aa1aaaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-008"
+    function: "validate_password_strength"
+    category: "edge_case"
+    description: "Missing lowercase"
+    input: {"password": "AA1AAAAA"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-009"
+    function: "validate_password_strength"
+    category: "edge_case"
+    description: "Missing number"
+    input: {"password": "Aaaaaaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-010"
+    function: "evaluate_rate_limit"
+    category: "happy_path"
+    description: "No record allows"
+    input: {"record": null}
+    expected: "allowed=True"
+    status: "PASSED"
+    actual: "allowed=True"
+    remediated: false
+  - id: "LOCAL-011"
+    function: "evaluate_rate_limit"
+    category: "boundary"
+    description: "Count at limit-1 allows"
+    input: {"count": 9, "limit": 10}
+    expected: "allowed=True"
+    status: "PASSED"
+    actual: "allowed=True"
+    remediated: false
+  - id: "LOCAL-012"
+    function: "evaluate_rate_limit"
+    category: "boundary"
+    description: "Count at limit denies"
+    input: {"count": 10, "limit": 10}
+    expected: "allowed=False"
+    status: "PASSED"
+    actual: "allowed=False"
+    remediated: false
+  - id: "LOCAL-013"
+    function: "evaluate_rate_limit"
+    category: "edge_case"
+    description: "Expired window resets"
+    input: {"reset_time": "past"}
+    expected: "reset=True"
+    status: "PASSED"
+    actual: "reset=True"
+    remediated: false
+  - id: "LOCAL-014"
+    function: "evaluate_rate_limit"
+    category: "edge_case"
+    description: "No reset_time still enforces limit"
+    input: {"reset_time": null, "count": 10}
+    expected: "allowed=False"
+    status: "PASSED"
+    actual: "allowed=False"
+    remediated: false
+  - id: "LOCAL-015"
+    function: "is_basic_email"
+    category: "happy_path"
+    description: "Basic email accepted"
+    input: {"email": "user@example.com"}
+    expected: "True"
+    status: "PASSED"
+    actual: "True"
+    remediated: false
+  - id: "LOCAL-016"
+    function: "is_basic_email"
+    category: "edge_case"
+    description: "Empty and missing @ rejected"
+    input: {"email": "no-at"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-017"
+    function: "is_basic_email"
+    category: "adversarial"
+    description: "Newline and null-byte payloads"
+    input: {"email": "user@example.com\\n"}
+    expected: "True"
+    status: "PASSED"
+    actual: "True"
+    remediated: false
+  - id: "LOCAL-018"
+    function: "is_non_empty"
+    category: "edge_case"
+    description: "Whitespace-only rejected"
+    input: {"value": "   "}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-019"
+    function: "validate_password_strength (client)"
+    category: "happy_path"
+    description: "Valid password"
+    input: {"password": "Aa1aaaaa"}
+    expected: "True"
+    status: "PASSED"
+    actual: "True"
+    remediated: false
+  - id: "LOCAL-020"
+    function: "validate_password_strength (client)"
+    category: "edge_case"
+    description: "Missing uppercase"
+    input: {"password": "aa1aaaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-021"
+    function: "validate_password_strength (client)"
+    category: "edge_case"
+    description: "Missing lowercase"
+    input: {"password": "AA1AAAAA"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-022"
+    function: "validate_password_strength (client)"
+    category: "edge_case"
+    description: "Missing number"
+    input: {"password": "Aaaaaaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
+  - id: "LOCAL-023"
+    function: "validate_password_strength (client)"
+    category: "boundary"
+    description: "Too short (7 chars)"
+    input: {"password": "Aa1aaaa"}
+    expected: "False"
+    status: "PASSED"
+    actual: "False"
+    remediated: false
