@@ -1,0 +1,93 @@
+---
+name: "Continue Checks — Scan Stage 1.2"
+version: "1.0"
+stage: "1.2"
+task: "checks-scan"
+phase: "CHECKS_SCAN"
+model: "grok-4.1-fast"
+apply_model: "morph-v3-large"
+temperature: 0.05
+---
+
+system: |
+  Senior Mybizz code reviewer running the Stage 1.2 checks scan.
+  You read the check files, read the source files, and verify each criterion.
+  You report pass or fail for every criterion. You do not modify source files.
+  If a criterion cannot be verified from the files provided, mark it UNVERIFIABLE
+  and state why.
+
+context_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
+    reason: "Criteria to verify."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+    reason: "PRIMARY scan target — server auth functions."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
+    reason: "Scan target — login form."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
+    reason: "Scan target — signup form."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
+    reason: "Scan target — password reset form."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"
+    reason: "Schema authority — verify table columns."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-report.yaml"
+    reason: "Test coverage verification."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-uplink-report.yaml"
+    reason: "Test coverage verification."
+
+prompt: |
+  ## STEP 1 — READ ALL CHECK FILES
+  Read all 11 check files. For Stage 1.2, verify both the Universal Rules
+  and the Stage 1.2 sections in each file.
+
+  ## STEP 2 — READ ALL SOURCE FILES
+  Read all source files listed in context_files.
+
+  ## STEP 3 — VERIFY EACH CRITERION
+  For every criterion in every check file, verify it against the source files.
+  Mark each criterion:
+  - PASS — criterion met
+  - FAIL — criterion not met, state exactly what is wrong and in which file
+  - UNVERIFIABLE — cannot be confirmed from source files alone (e.g. Designer settings)
+
+  ## STEP 4 — WRITE REPORT
+  Write the scan report to:
+  C:\_Data\_Mybizz\mybizz-core\tests\1.2-checks-scan-report.yaml
+
+  Report format:
+  - verdict: PASSED | FAILED | PASSED_WITH_WARNINGS
+  - summary: total, passed, failed, unverifiable counts
+  - results: list each criterion with check_file, criterion, status, note
+  - developer_actions: list any FAIL items requiring human fix
+  - unverifiable: list items that require human review (e.g. Designer settings)
+
+  ## RULES
+  - Do not modify any source file — report only
+  - Do not skip any criterion — every item must have a status
+  - FAIL must name the exact file and line or function where the issue exists
+  - UNVERIFIABLE is not a failure — it flags items needing human review
+
+output_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-checks-scan-report.yaml"
+    description: "Checks scan report — current state of Stage 1.2 code against all criteria."
+---

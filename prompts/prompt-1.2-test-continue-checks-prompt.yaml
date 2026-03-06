@@ -3,7 +3,7 @@ name: "Continue Checks — Generate & Maintain"
 version: "1.0"
 task: "checks-maintenance"
 phase: "CHECKS_MAINTENANCE"
-model: "gpt-5.2-codex"
+model: "grok-4.1-fast"
 apply_model: "morph-v3-large"
 temperature: 0.05
 ---

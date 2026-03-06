@@ -1,10 +1,10 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Run"
-version: "1.4"
+version: "1.5"
 stage: "1.2"
 phase: "TEST_UPLINK_RUN"
 generated_by: "gpt-5.2-codex"
-run_timestamp: "2026-03-06T11:32:00Z"
+run_timestamp: "2026-03-06T12:35:00Z"
 status: "COMPLETED"
 backup_confirmed: true
 sentinel_prefix: "TEST_"
@@ -29,7 +29,7 @@ schema_verification:
 
 notes:
   - "Rate limit tests pass (count reached 10; 11th blocked)."
-  - "create_user still fails on live app; likely missing create_initial_config implementation in deployed server_settings/service.py."
+  - "Re-ran UPLINK-CREATE-001 after deployment; now passes."
 
 
 tests:
@@ -147,8 +147,8 @@ tests:
       - "Call create_user(TEST_create_ok_<ts>@example.com, StrongPass1, 'Test Biz')"
       - "Fetch user row and verify role/fields"
     expected: "success=true, role=owner, account_status=active"
-    status: "FAILED"
-    actual: "Account creation failed. Please try again."
+    status: "PASSED"
+    actual: "success=true, role=owner, account_status=active"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
