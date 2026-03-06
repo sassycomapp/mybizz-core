@@ -1,10 +1,10 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Report"
-version: "1.1"
+version: "1.2"
 stage: "1.2"
 phase: "TEST_UPLINK_REPORT"
 generated_by: "gpt-5.2-codex"
-run_timestamp: "2026-03-06T10:40:00Z"
+run_timestamp: "2026-03-06T11:08:00Z"
 verdict: "FAILED"               # PASSED | FAILED | PASSED_WITH_ACTIONS
 cleanup_confirmed: true
 
@@ -14,13 +14,14 @@ cleanup_confirmed: true
 
 summary:
   total_tests: 15
-  passed: 7
-  failed: 8
+  passed: 8
+  failed: 7
   skipped: 0
-  auto_remediated: 1
+  auto_remediated: 0
 
 passing:
   - id: "UPLINK-AUTH-003"
+  - id: "UPLINK-AUTH-004"
   - id: "UPLINK-AUTH-006"
   - id: "UPLINK-CREATE-003"
   - id: "UPLINK-CREATE-004"
@@ -30,31 +31,25 @@ passing:
 
 failing:
   - id: "UPLINK-AUTH-001"
-    reason: "No such column 'signed_up'"
+    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-AUTH-002"
-    reason: "No such column 'signed_up'"
-  - id: "UPLINK-AUTH-004"
-    reason: "Rate limit count too low: 1"
+    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-AUTH-005"
-    reason: "No such column 'signed_up'"
+    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-CREATE-001"
     reason: "Account creation failed. Please try again."
   - id: "UPLINK-CREATE-002"
-    reason: "No such column 'signed_up'"
+    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-RESET-001"
-    reason: "No such column 'signed_up'"
+    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-RESET-004"
-    reason: "No such column 'signed_up'"
+    reason: "No such column 'email_confirmation_key'"
 
 # =============================================================================
 # REMEDIATION NOTES
 # =============================================================================
 
-remediations:
-  - change: "Updated rate-limit time handling to use UTC-aware datetime in server_auth/service.py"
-    status: "APPLIED_IN_REPO"
-    file: "server_code/server_auth/service.py"
-    note: "Live app still needs this change deployed before rate-limit tests will pass."
+remediations: []
 
 # =============================================================================
 # DEVELOPER ACTIONS
@@ -63,11 +58,7 @@ remediations:
 # =============================================================================
 
 developer_actions:
-  - action: "Add 'signed_up' column to Users table in Anvil (required by anvil.users.signup_with_email)."
-    reason: "signup_with_email throws 'No such column signed_up', blocking auth/create/reset tests that require user creation."
+  - action: "Add 'email_confirmation_key' column to Users table in Anvil (required by anvil.users.signup_with_email)."
+    reason: "signup_with_email throws 'No such column email_confirmation_key', blocking auth/create/reset tests that require user creation."
     category: "schema_change"
     file: "anvil.yaml / Anvil Users table"
-  - action: "Deploy updated server_auth/service.py to the live Anvil app and re-run UPLINK-AUTH-004/005."
-    reason: "Rate-limit counter remains at 1 in live app; repo fix uses UTC-aware timestamps."
-    category: "deployment"
-    file: "server_code/server_auth/service.py"

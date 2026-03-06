@@ -1,10 +1,10 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Run"
-version: "1.1"
+version: "1.2"
 stage: "1.2"
 phase: "TEST_UPLINK_RUN"
 generated_by: "gpt-5.2-codex"
-run_timestamp: "2026-03-06T10:35:00Z"
+run_timestamp: "2026-03-06T11:05:00Z"
 status: "COMPLETED"
 backup_confirmed: true
 sentinel_prefix: "TEST_"
@@ -28,8 +28,8 @@ schema_verification:
     note: "Not required for Stage 1.2; check skipped."
 
 notes:
-  - "Rate limit records were created, but count did not increment beyond 1 in live app."
-  - "Users service signup_with_email fails due to missing 'signed_up' column in live users table."
+  - "Rate limit test now passes (count reached 10; 11th blocked)."
+  - "User creation via signup_with_email still fails due to missing 'email_confirmation_key' column in live users table."
 
 
 tests:
@@ -44,7 +44,7 @@ tests:
       - "Call authenticate_user(TEST_auth_valid_<ts>@example.com, StrongPass1)"
     expected: "success=true, data.role present, data.email matches"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -62,7 +62,7 @@ tests:
       - "Call authenticate_user(TEST_auth_wrongpw_<ts>@example.com, WrongPass1)"
     expected: "success=false, error='Invalid email or password'"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -95,8 +95,8 @@ tests:
     steps:
       - "Call authenticate_user(TEST_auth_rl_<ts>@example.com, WrongPass1) x11"
     expected: "11th attempt returns rate limit error"
-    status: "FAILED"
-    actual: "Rate limit count too low: 1"
+    status: "PASSED"
+    actual: "success=false, error='Too many login attempts. Please try again in a minute.'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -115,7 +115,7 @@ tests:
       - "Confirm rate limit count reset"
     expected: "Successful login resets rate limit counter"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -165,7 +165,7 @@ tests:
       - "Call create_user(TEST_create_dup_<ts>@example.com, StrongPass1, 'Test Biz')"
     expected: "success=false, error='An account with this email already exists'"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -227,7 +227,7 @@ tests:
       - "Call reset_password(TEST_reset_ok_<ts>@example.com)"
     expected: "success=true, message='If that email is registered, a reset link has been sent.'"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
@@ -275,7 +275,7 @@ tests:
       - "Measure response time for unregistered email"
     expected: "No significant timing difference (>250ms)"
     status: "FAILED"
-    actual: "No such column 'signed_up'"
+    actual: "No such column 'email_confirmation_key'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps:
