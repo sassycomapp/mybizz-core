@@ -1914,6 +1914,10 @@ db_schema:
       client_hidden: false
       name: signed_up
       type: datetime
+    - admin_ui: {width: 200}
+      client_hidden: false
+      name: email_confirmation_key
+      type: string
     server: full
     title: Users
   vertical_config:
