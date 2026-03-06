@@ -1910,6 +1910,10 @@ db_schema:
     - admin_ui: {width: 200}
       name: created_at
       type: datetime
+    - admin_ui: {order: 11, width: 200}
+      client_hidden: false
+      name: signed_up
+      type: datetime
     server: full
     title: Users
   vertical_config:
