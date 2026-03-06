@@ -1,10 +1,11 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Run"
-version: "1.0"
+version: "1.1"
 stage: "1.2"
 phase: "TEST_UPLINK_RUN"
-generated_by: "4.1-fast"
-status: "BLOCKED"
+generated_by: "gpt-5.2-codex"
+run_timestamp: "2026-03-06T10:35:00Z"
+status: "COMPLETED"
 backup_confirmed: true
 sentinel_prefix: "TEST_"
 
@@ -14,6 +15,23 @@ sentinel_prefix: "TEST_"
 # Safety: backup confirmed, sentinel values on all test data, cleanup after each.
 # =============================================================================
 
+schema_verification:
+  users_table:
+    exists: true
+    required_columns_present: true
+    columns_checked: [role, account_status, permissions, last_login, created_at]
+  rate_limits_table:
+    exists: true
+    table_name: "rate_limits"
+  audit_log_table:
+    exists: false
+    note: "Not required for Stage 1.2; check skipped."
+
+notes:
+  - "Rate limit records were created, but count did not increment beyond 1 in live app."
+  - "Users service signup_with_email fails due to missing 'signed_up' column in live users table."
+
+
 tests:
   - id: "UPLINK-AUTH-001"
     function: "authenticate_user"
@@ -21,17 +39,17 @@ tests:
     description: "Valid credentials return success and role"
     preconditions:
       - "Backup confirmed"
-      - "Test user exists: TEST_auth_valid_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Call authenticate_user(TEST_auth_valid_<ts>@example.com, StrongPass1)"
     expected: "success=true, data.role present, data.email matches"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_auth_valid_<ts>@example.com from users table"
+      - "Delete rate_limits row for test identifier"
 
   - id: "UPLINK-AUTH-002"
     function: "authenticate_user"
@@ -39,17 +57,17 @@ tests:
     description: "Wrong password returns generic failure"
     preconditions:
       - "Backup confirmed"
-      - "Test user exists: TEST_auth_wrongpw_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Call authenticate_user(TEST_auth_wrongpw_<ts>@example.com, WrongPass1)"
     expected: "success=false, error='Invalid email or password'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_auth_wrongpw_<ts>@example.com from users table"
+      - "Delete rate_limits row for test identifier"
 
   - id: "UPLINK-AUTH-003"
     function: "authenticate_user"
@@ -60,12 +78,12 @@ tests:
     steps:
       - "Call authenticate_user(TEST_auth_missing_<ts>@example.com, WrongPass1)"
     expected: "success=false, error='Invalid email or password'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=false, error='Invalid email or password'"
     remediated: false
     cleanup_confirmed: true
-    cleanup_steps: []
+    cleanup_steps:
+      - "Delete rate_limits row for test identifier"
 
   - id: "UPLINK-AUTH-004"
     function: "authenticate_user"
@@ -73,17 +91,16 @@ tests:
     description: "Rate limit blocks 11th failed attempt"
     preconditions:
       - "Backup confirmed"
-      - "tbl_rate_limits table exists"
+      - "rate_limits table exists"
     steps:
       - "Call authenticate_user(TEST_auth_rl_<ts>@example.com, WrongPass1) x11"
     expected: "11th attempt returns rate limit error"
-    status: "SKIPPED"
-    actual: "Blocked: tbl_rate_limits table missing in anvil.yaml"
-    skip_reason: "schema_missing"
+    status: "FAILED"
+    actual: "Rate limit count too low: 1"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
-      - "Delete tbl_rate_limits row for TEST_auth_rl_<ts>@example.com"
+      - "Delete rate_limits row for test identifier"
 
   - id: "UPLINK-AUTH-005"
     function: "authenticate_user"
@@ -91,21 +108,19 @@ tests:
     description: "Rate limit reset after success"
     preconditions:
       - "Backup confirmed"
-      - "tbl_rate_limits table exists"
-      - "Test user exists: TEST_auth_rlreset_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Fail login 3 times"
       - "Login with correct password"
       - "Confirm rate limit count reset"
     expected: "Successful login resets rate limit counter"
-    status: "SKIPPED"
-    actual: "Blocked: tbl_rate_limits table missing in anvil.yaml"
-    skip_reason: "schema_missing"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_auth_rlreset_<ts>@example.com from users table"
-      - "Delete tbl_rate_limits row for TEST_auth_rlreset_<ts>@example.com"
+      - "Delete rate_limits row for test identifier"
 
   - id: "UPLINK-AUTH-006"
     function: "authenticate_user"
@@ -116,9 +131,8 @@ tests:
     steps:
       - "Call authenticate_user('', '')"
     expected: "success=false, error='Email and password are required'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=false, error='Email and password are required'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -133,11 +147,10 @@ tests:
       - "Call create_user(TEST_create_ok_<ts>@example.com, StrongPass1, 'Test Biz')"
       - "Fetch user row and verify role/fields"
     expected: "success=true, role=owner, account_status=active"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "Account creation failed. Please try again."
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_create_ok_<ts>@example.com from users table"
 
@@ -147,15 +160,14 @@ tests:
     description: "Duplicate email rejected"
     preconditions:
       - "Backup confirmed"
-      - "Test user exists: TEST_create_dup_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Call create_user(TEST_create_dup_<ts>@example.com, StrongPass1, 'Test Biz')"
     expected: "success=false, error='An account with this email already exists'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_create_dup_<ts>@example.com from users table"
 
@@ -168,9 +180,8 @@ tests:
     steps:
       - "Call create_user(TEST_create_weak_<ts>@example.com, 'weak', 'Test Biz')"
     expected: "success=false, error mentions password strength"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=false, error='Password must be at least 8 characters'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -184,9 +195,8 @@ tests:
     steps:
       - "Call create_user(TEST_create_noname_<ts>@example.com, StrongPass1, '')"
     expected: "success=false, error='Business name is required'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=false, error='Business name is required'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -200,9 +210,8 @@ tests:
     steps:
       - "Call create_user(""TEST_create_inj_<ts>@example.com' OR '1'='1"", StrongPass1, 'Test Biz')"
     expected: "success=false, error='Invalid email format'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=false, error='Invalid email format'"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -213,15 +222,14 @@ tests:
     description: "Registered email returns success message"
     preconditions:
       - "Backup confirmed"
-      - "Test user exists: TEST_reset_ok_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Call reset_password(TEST_reset_ok_<ts>@example.com)"
     expected: "success=true, message='If that email is registered, a reset link has been sent.'"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_reset_ok_<ts>@example.com from users table"
 
@@ -234,9 +242,8 @@ tests:
     steps:
       - "Call reset_password(TEST_reset_missing_<ts>@example.com)"
     expected: "success=true, identical message as registered"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=true, identical message as registered"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -250,9 +257,8 @@ tests:
     steps:
       - "Call reset_password('not-an-email')"
     expected: "success=true, identical message as registered"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "PASSED"
+    actual: "success=true, identical message as registered"
     remediated: false
     cleanup_confirmed: true
     cleanup_steps: []
@@ -263,15 +269,14 @@ tests:
     description: "Timing: registered vs unregistered response time similar"
     preconditions:
       - "Backup confirmed"
-      - "Test user exists: TEST_reset_timing_<ts>@example.com"
+      - "Test user created via signup_with_email"
     steps:
       - "Measure response time for registered email"
       - "Measure response time for unregistered email"
     expected: "No significant timing difference (>250ms)"
-    status: "SKIPPED"
-    actual: "Blocked: Uplink test scripts missing in repo (scripts/ not found)"
-    skip_reason: "environment"
+    status: "FAILED"
+    actual: "No such column 'signed_up'"
     remediated: false
-    cleanup_confirmed: false
+    cleanup_confirmed: true
     cleanup_steps:
       - "Delete TEST_reset_timing_<ts>@example.com from users table"

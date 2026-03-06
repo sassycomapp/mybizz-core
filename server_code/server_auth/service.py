@@ -17,7 +17,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .validation import (
     normalize_email,
     is_valid_email,
@@ -26,6 +26,11 @@ from .validation import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _utc_now() -> datetime:
+    """Return timezone-aware UTC datetime for rate-limit calculations."""
+    return datetime.now(timezone.utc)
 
 
 # ── Callable server functions ─────────────────────────────────────────────────
@@ -339,7 +344,7 @@ def _check_rate_limit(
             return True
 
         record = rate_table.get(identifier=identifier)
-        now = datetime.now()
+        now = _utc_now()
         status = evaluate_rate_limit(record, now, limit, window_minutes)
         if status['reset'] and record:
             record['count'] = status['count']
@@ -373,7 +378,7 @@ def _increment_rate_limit(
         if rate_table is None:
             return
 
-        now = datetime.now()
+        now = _utc_now()
         record = rate_table.get(identifier=identifier)
         if not record:
             rate_table.add_row(
@@ -413,7 +418,7 @@ def _reset_rate_limit(
         if rate_table is None:
             return
 
-        now = datetime.now()
+        now = _utc_now()
         record = rate_table.get(identifier=identifier)
         if record:
             record['count'] = 0
