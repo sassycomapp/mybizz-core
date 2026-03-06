@@ -165,7 +165,7 @@ def create_user(email: str, password: str, business_name: str) -> dict:
 
         # Import at call site to avoid module-level circular imports.
         from ..server_settings import service as settings_service
-        settings_service.create_initial_config(business_name.strip())
+        settings_service.create_initial_config(business_name.strip(), user=user)
 
         _log_auth_event('account_created', user=user)
         logger.info("create_user succeeded", extra={"email": identifier})

@@ -1,10 +1,10 @@
 ---
 name: "Stage 1.2 — Authentication — Uplink Test Report"
-version: "1.2"
+version: "1.4"
 stage: "1.2"
 phase: "TEST_UPLINK_REPORT"
 generated_by: "gpt-5.2-codex"
-run_timestamp: "2026-03-06T11:08:00Z"
+run_timestamp: "2026-03-06T11:35:00Z"
 verdict: "FAILED"               # PASSED | FAILED | PASSED_WITH_ACTIONS
 cleanup_confirmed: true
 
@@ -14,36 +14,30 @@ cleanup_confirmed: true
 
 summary:
   total_tests: 15
-  passed: 8
-  failed: 7
+  passed: 14
+  failed: 1
   skipped: 0
   auto_remediated: 0
 
 passing:
+  - id: "UPLINK-AUTH-001"
+  - id: "UPLINK-AUTH-002"
   - id: "UPLINK-AUTH-003"
   - id: "UPLINK-AUTH-004"
+  - id: "UPLINK-AUTH-005"
   - id: "UPLINK-AUTH-006"
+  - id: "UPLINK-CREATE-002"
   - id: "UPLINK-CREATE-003"
   - id: "UPLINK-CREATE-004"
   - id: "UPLINK-CREATE-005"
+  - id: "UPLINK-RESET-001"
   - id: "UPLINK-RESET-002"
   - id: "UPLINK-RESET-003"
+  - id: "UPLINK-RESET-004"
 
 failing:
-  - id: "UPLINK-AUTH-001"
-    reason: "No such column 'email_confirmation_key'"
-  - id: "UPLINK-AUTH-002"
-    reason: "No such column 'email_confirmation_key'"
-  - id: "UPLINK-AUTH-005"
-    reason: "No such column 'email_confirmation_key'"
   - id: "UPLINK-CREATE-001"
     reason: "Account creation failed. Please try again."
-  - id: "UPLINK-CREATE-002"
-    reason: "No such column 'email_confirmation_key'"
-  - id: "UPLINK-RESET-001"
-    reason: "No such column 'email_confirmation_key'"
-  - id: "UPLINK-RESET-004"
-    reason: "No such column 'email_confirmation_key'"
 
 # =============================================================================
 # REMEDIATION NOTES
@@ -58,7 +52,7 @@ remediations: []
 # =============================================================================
 
 developer_actions:
-  - action: "Add 'email_confirmation_key' column to Users table in Anvil (required by anvil.users.signup_with_email)."
-    reason: "signup_with_email throws 'No such column email_confirmation_key', blocking auth/create/reset tests that require user creation."
-    category: "schema_change"
-    file: "anvil.yaml / Anvil Users table"
+  - action: "Deploy updated server_settings/service.py (create_initial_config) and updated server_auth/service.py to the live app, then re-run UPLINK-CREATE-001."
+    reason: "create_user still returns a generic failure on live app; repo now includes create_initial_config and signature update."
+    category: "deployment"
+    file: "server_code/server_settings/service.py, server_code/server_auth/service.py"
