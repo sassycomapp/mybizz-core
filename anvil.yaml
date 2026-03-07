@@ -692,10 +692,6 @@ db_schema:
       type: datetime
     - admin_ui: {width: 200}
       client_hidden: null
-      name: total_orders
-      type: number
-    - admin_ui: {width: 200}
-      client_hidden: null
       name: contact_id
       target: contacts
       type: link_single
