@@ -1,97 +1,81 @@
 # Session 3 — Phase 1 Refactoring
 
 **Date:** 2026-03-07
+**Status:** COMPLETE
 
 ---
 
 ## 1. Objective
 
-Execute Phase 1 Refactoring as defined in Session 2. Produce a clean, correctly scoped codebase and schema before any new development begins. Four tasks in sequence.
+Execute Phase 1 Refactoring — produce a clean, correctly scoped codebase and schema before any new development begins.
 
 ---
 
-## 2. Pre-Work
+## 2. Tasks Completed
 
-- [ ] Backup Anvil app to hard drive
-- [ ] Backup repo to hard drive
-- [ ] Confirm active branch is master: `git status`
-- [ ] Verify ANVIL_UPLINK_KEY is set: `echo $env:ANVIL_UPLINK_KEY`
-- [ ] Run smoke test: `python scripts/test_uplink.py`
+### Task 1 — Schema Cleanup ✅
 
----
+- 13 tables deleted: `cart`, `cart_items`, `courier_config`, `guestbook_entries`, `membership_tiers`, `order_items`, `orders`, `product_categories`, `product_variants`, `products`, `shipments`, `subscriptions`, `vertical_config`
+- `bookings` trimmed: `check_in_time`, `check_out_time`, `num_guests` removed
+- `invoice` trimmed: `subscription_id`, `order_id` removed
+- `services` extended: `pricing_model` (string), `images` (simpleObject), `video_url` (string) added
+- Schema verified against anvil.yaml — all changes confirmed correct
 
-## 3. Task 1 — Schema Cleanup
+### Task 2 — Rules Files Updated ✅
 
-**Status:** ⚪ Not started
+Files replaced in `C:\Users\dev-p\.continue\rules\`:
+- `platform_overview.md` — rewritten for Consulting & Services scope
+- `platform_status.md` — rewritten for Consulting & Services scope
+- `platform_docmap.md` — updated, four-vertical references removed
 
-Executed per `schema-change-instructions.md` in `docs/`.
+File replaced in `C:\Users\dev-p\.continue\`:
+- `config.yaml` — rules paths corrected from relative to absolute
 
-Summary of changes:
-- 13 tables deleted (e-commerce, hospitality, memberships, shipping)
-- `bookings` trimmed — 3 hospitality columns removed
-- `invoice` trimmed — 2 columns removed
-- `services` extended — `pricing_model`, `images`, `video_url` added
+### Task 3 — Code Scaffold Cleanup ✅
 
-**Outcome:** *(to be recorded on completion)*
+Deleted:
+- `client_code/bookings/CheckInOutForm/`
+- `client_code/bookings/GuestbookForm/`
+- `client_code/bookings/RoomEditorModal/`
+- `client_code/bookings/RoomManagementForm/`
+- `client_code/bookings/RoomStatusBoardForm/`
+- `server_code/server_products/` — entire package
+- `server_code/server_bookings/hospitality_pricing.py`
 
----
+### Task 4 — Verify & Test ✅
 
-## 4. Task 2 — Rules Files Update
-
-**Status:** ⚪ Not started
-
-Files to replace in `C:\Users\dev-p\.continue\rules\`:
-
-| File | Action |
-|---|---|
-| `platform_overview.md` | Replace with new Consulting & Services version |
-| `platform_status.md` | Replace with updated version |
-
-All other rules files remain unchanged.
-
-**Outcome:** *(to be recorded on completion)*
+- Smoke test: PASSED — server runtime live and callable
+- Local pytest: 23/23 passing
+- Uplink integration tests: 15/15 passing (Stage 1.2 report confirmed)
 
 ---
 
-## 5. Task 3 — Code Scaffold Cleanup
+## 3. Issues Resolved This Session
 
-**Status:** ⚪ Not started
+### Auth test directory not found
+`tests/1.2-auth/` did not exist. The test file is at `tests/test_1.2_auth.py`. Correct run command confirmed as:
+```
+pytest -v --import-mode=importlib tests/test_1.2_auth.py
+```
 
-Packages to remove from the codebase:
-
-**Client packages:**
-- `products/` — entire package (ProductListForm, ProductEditorForm, ShoppingCartForm, CheckoutForm)
-
-**Server packages:**
-- `server_products/` — entire package (product_service.py, order_service.py, inventory_service.py)
-- Shipping-related modules within `server_payments/` — any Bob Go or Easyship integration code
-
-**Rule:** Delete cleanly. Do not comment out. Do not disable. Removed means removed.
-
-Everything else stays exactly as it is. No renaming.
-
-**Outcome:** *(to be recorded on completion)*
+### Uplink tests failing — Email Link
+Six uplink integration tests were failing with "This app does not have a URL, so we can't send a confirmation email." Root cause: Email Link sign-in method was enabled in the Anvil Users service settings. This caused Anvil to attempt sending a confirmation email on every user creation, which requires a published URL even when email confirmation is disabled. Fix: unchecked Email Link in Anvil Users service settings. All 15 uplink tests confirmed passing after fix.
 
 ---
 
-## 6. Task 4 — Verify & Test
+## 4. Backup
 
-**Status:** ⚪ Not started
-
-- [ ] Uplink smoke test passing: `python scripts/test_uplink.py`
-- [ ] Auth tests passing: `pytest tests/1.2-auth/ -v` — all 23 local tests green
-- [ ] Uplink integration tests passing: 15/15
-- [ ] App loads at mybizz.live — no errors
-- [ ] Backup repo after all tests green
-
-**Outcome:** *(to be recorded on completion)*
+Full backup saved at:
+`C:\_Data\Daily off site Backup\Mybizz consulting (session 3 done)`
 
 ---
 
-## 7. Session Outcome
+## 5. Additional Observations
 
-*(to be completed at end of session)*
+- `booking_metadata_schemas` table exists in schema — not previously documented. Useful for configurable intake forms per service. To be documented in rules in a future session.
+- `customers.total_orders` column is an e-commerce remnant — harmless but semantically incorrect. Note for future tidy-up.
+- `payment_config` stores raw API keys in Data Tables — to be resolved in Stage 1.5 when The Vault is built.
 
 ---
 
-*Session 3 open. Proceeds to Stage 1.3 on completion.*
+*Session 3 closed. Phase 1 Refactoring complete. Session 4 opens at Stage 1.3 — Dashboard & Navigation.*

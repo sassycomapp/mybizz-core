@@ -73,9 +73,9 @@ Add these new columns:
 
 | Column name | Type | Notes |
 |---|---|---|
-| `pricing_model` | Text (string) | Values: `duration` or `unit`. Required. |
-| `images` | Simple Object | List of media references for service images. |
-| `video_url` | Text (string) | URL to hosted video (YouTube, Vimeo, etc.). Optional. |
+- [x ]| `pricing_model` | Text (string) | Values: `duration` or `unit`. Required. |
+- [x ]| `images` | Simple Object | List of media references for service images. |
+- [x ]| `video_url` | Text (string) | URL to hosted video (YouTube, Vimeo, etc.). Optional. |
 
 **After adding:** the `services` table should have these columns in total:
 `service_id`, `name`, `description`, `duration_minutes`, `price`, `category`, `provider_id`, `is_active`, `created_at`, `meeting_type`, `pricing_model`, `images`, `video_url`
@@ -134,12 +134,12 @@ These tables require no changes. Confirm each is still present and intact after 
 
 ## SECTION 5 — POST-CHANGE VERIFICATION
 
-- [ ] All 13 deleted tables are gone from the Data Tables list
-- [ ] `bookings` no longer has `check_in_time`, `check_out_time`, `num_guests`
-- [ ] `invoice` no longer has `subscription_id`, `order_id`
-- [ ] `services` now has `pricing_model`, `images`, `video_url`
-- [ ] All retained tables from Section 4 are present and intact
-- [ ] Run Uplink smoke test: `python scripts/test_uplink.py`
+- [x ] All 13 deleted tables are gone from the Data Tables list
+- [x ] `bookings` no longer has `check_in_time`, `check_out_time`, `num_guests`
+- [x] `invoice` no longer has `subscription_id`, `order_id`
+- [x ] `services` now has `pricing_model`, `images`, `video_url`
+- [x ] All retained tables from Section 4 are present and intact
+- [X ] Run Uplink smoke test: `python scripts/test_uplink.py`
 - [ ] Run auth tests: `pytest tests/1.2-auth/ -v` — all 23 should still pass
 - [ ] Backup repo after successful verification
 
