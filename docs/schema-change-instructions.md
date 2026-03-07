@@ -10,10 +10,12 @@
 
 ## PRE-WORK
 
-- [ ] Backup Anvil app to hard drive
-- [ ] Backup repo to hard drive
-- [ ] Confirm active branch is master: `git status`
-- [ ] Open Anvil editor at mybizz.live
+- [x ] Backup Anvil app to hard drive
+- [x ] Backup repo to hard drive
+- [x ] Backup .continue (global) to hard drive
+- [x ] Confirm active branch is master: `git status`
+- [x ] Open Anvil editor at mybizz.live
+- [x ] Backup Anvil app clone to Anvil
 
 ---
 
@@ -22,19 +24,19 @@
 Delete each of the following tables from the Anvil Data Tables editor.
 Check each off as done. Order does not matter for deletions.
 
-- [ ] `cart`
-- [ ] `cart_items`
-- [ ] `courier_config`
-- [ ] `guestbook_entries`
-- [ ] `membership_tiers`
-- [ ] `order_items`
-- [ ] `orders`
-- [ ] `product_categories`
-- [ ] `product_variants`
-- [ ] `products`
-- [ ] `shipments`
-- [ ] `subscriptions`
-- [ ] `vertical_config`
+- [x ] `cart`
+- [x ] `cart_items`
+- [x ] `courier_config`
+- [x ] `guestbook_entries`
+- [x ] `membership_tiers`
+- [x ] `order_items`
+- [x ] `orders`
+- [x ] `product_categories`
+- [x ] `product_variants`
+- [x ] `products`
+- [x ] `shipments`
+- [x ] `subscriptions`
+- [x ] `vertical_config`
 
 **13 tables total.**
 
@@ -46,9 +48,9 @@ Check each off as done. Order does not matter for deletions.
 
 Remove these columns:
 
-- [ ] `check_in_time` (hospitality-specific)
-- [ ] `check_out_time` (hospitality-specific)
-- [ ] `num_guests` (hospitality-specific)
+- [x ] `check_in_time` (hospitality-specific)
+- [x ] `check_out_time` (hospitality-specific)
+- [x ] `num_guests` (hospitality-specific)
 
 Keep all other columns — they are all relevant to Consulting & Services.
 
@@ -56,8 +58,8 @@ Keep all other columns — they are all relevant to Consulting & Services.
 
 Remove these columns:
 
-- [ ] `subscription_id` (memberships-specific)
-- [ ] `order_id` (e-commerce-specific)
+- [x ] `subscription_id` (memberships-specific)
+- [x ] `order_id` (e-commerce-specific)
 
 Keep all other columns.
 
