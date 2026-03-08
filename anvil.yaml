@@ -378,10 +378,6 @@ db_schema:
       type: string
     - admin_ui: {width: 200}
       client_hidden: null
-      name: address
-      type: string
-    - admin_ui: {width: 200}
-      client_hidden: null
       name: website_url
       type: string
     - admin_ui: {width: 200}
@@ -408,6 +404,30 @@ db_schema:
       client_hidden: null
       name: updated_at
       type: datetime
+    - admin_ui: {order: 13, width: 200}
+      client_hidden: false
+      name: tagline
+      type: string
+    - admin_ui: {order: 14, width: 200}
+      client_hidden: false
+      name: address_line_1
+      type: string
+    - admin_ui: {order: 15, width: 200}
+      client_hidden: false
+      name: address_line_2
+      type: string
+    - admin_ui: {order: 16, width: 200}
+      client_hidden: false
+      name: city
+      type: string
+    - admin_ui: {order: 17, width: 200}
+      client_hidden: false
+      name: country
+      type: string
+    - admin_ui: {order: 18, width: 200}
+      client_hidden: false
+      name: postal_code
+      type: string
     server: full
     title: business_profile
   client_notes:
@@ -1290,10 +1310,6 @@ db_schema:
       type: string
     - admin_ui: {width: 200}
       client_hidden: null
-      name: stripe_connected
-      type: datetime
-    - admin_ui: {width: 200}
-      client_hidden: null
       name: paystack_public_key
       type: string
     - admin_ui: {width: 200}
@@ -1323,6 +1339,22 @@ db_schema:
     - admin_ui: {width: 200}
       client_hidden: null
       name: configured_at
+      type: datetime
+    - admin_ui: {order: 12, width: 200}
+      client_hidden: false
+      name: stripe_connected
+      type: bool
+    - admin_ui: {order: 13, width: 200}
+      client_hidden: false
+      name: stripe_connected_at
+      type: datetime
+    - admin_ui: {order: 14, width: 200}
+      client_hidden: false
+      name: paystack_connected_at
+      type: datetime
+    - admin_ui: {order: 15, width: 200}
+      client_hidden: false
+      name: paypal_connected_at
       type: datetime
     server: full
     title: payment_config
