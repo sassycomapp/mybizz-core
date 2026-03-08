@@ -1,7 +1,58 @@
 components:
-- components: []
+- components:
+  - layout_properties: {grid_position: 'JOOJUO,HJBCVK'}
+    name: lbl_title
+    properties: {scale: large, text: Settings}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+  - components:
+    - layout_properties: {}
+      name: btn_tab_business
+      properties: {text: Busniess Profile}
+      type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+    layout_properties: {grid_position: 'TMCRTA,GBTLUK'}
+    name: lp_tab_bar
+    properties: {}
+    type: LinearPanel
+  - layout_properties: {grid_position: 'TMCRTA,XNCZGV'}
+    name: btn_tab_email
+    properties: {appearance: outlined, text: Email Setup}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+  - layout_properties: {grid_position: 'TMCRTA,MPJLUJ'}
+    name: btn_tab_payments
+    properties: {appearance: outlined, text: Payment Gateway}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+  - layout_properties: {grid_position: 'TMCRTA,OWDFEX'}
+    name: btn_tab_theme
+    properties: {appearance: outlined, text: Theme& Branding}
+    type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+  - components:
+    - components:
+      - layout_properties: {slot: card-content-slot}
+        name: card_content_container_1
+        properties: {}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+      layout_properties: {grid_position: 'FBAXZN,LTROCC'}
+      name: card_business
+      properties: {}
+      type: form:dep_ftrc8xuvrf6lsd:_Components.Card
+    layout_properties: {grid_position: 'NEXINN,MONMYT'}
+    name: col_business
+    properties: {}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'OUJCBK,GCEXDO'}
+    name: col_email
+    properties: {visible: false}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'MVZLPE,DUWJIB'}
+    name: col_payments
+    properties: {visible: false}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'KNRJTP,AOSOGV'}
+    name: col_theme
+    properties: {visible: false}
+    type: ColumnPanel
   layout_properties: {slot: default}
-  name: content_panel
+  name: col_content
   properties: {}
   type: ColumnPanel
 container:
