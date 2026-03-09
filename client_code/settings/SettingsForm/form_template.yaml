@@ -5,8 +5,9 @@ components:
     properties: {scale: large, text: Settings}
     type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
   - components:
-    - name: btn_tab_business
-      properties: {text: Busniess Profile}
+    - layout_properties: {}
+      name: btn_tab_business
+      properties: {text: Business Profile}
       type: form:dep_ftrc8xuvrf6lsd:_Components.Button
     - name: btn_tab_email
       properties: {appearance: outlined, text: Email Setup}
@@ -14,8 +15,9 @@ components:
     - name: btn_tab_payments
       properties: {appearance: outlined, text: Payment Gateway}
       type: form:dep_ftrc8xuvrf6lsd:_Components.Button
-    - name: btn_tab_theme
-      properties: {appearance: outlined, text: Theme& Branding}
+    - layout_properties: {}
+      name: btn_tab_theme
+      properties: {appearance: outlined, text: Theme & Branding}
       type: form:dep_ftrc8xuvrf6lsd:_Components.Button
     layout_properties: {grid_position: 'TMCRTA,GBTLUK'}
     name: lp_tab_bar
@@ -28,8 +30,7 @@ components:
           name: lbl_section_biz
           properties: {scale: small, text: Business Details}
           type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
-        - data_bindings:
-          - {code: 'self.item['''']', property: text, writeback: false}
+        - data_bindings: []
           layout_properties: {slot: card-content-container-slot}
           name: txt_business_name
           properties: {appearance: filled, placeholder: ''}
@@ -103,13 +104,13 @@ components:
           properties: {}
           type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
         - layout_properties: {slot: card-content-container-slot}
-          name: lbl_logo_hint
-          properties: {}
-          type: form:dep_ftrc8xuvrf6lsd:_Components.Text
-        - layout_properties: {slot: card-content-container-slot}
           name: lbl_section_logo
           properties: {scale: small, text: Logo}
           type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_logo_hint
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Text
         - layout_properties: {slot: card-content-container-slot}
           name: img_logo_preview
           properties: {visible: false}
@@ -122,6 +123,15 @@ components:
         name: card_content_container_1
         properties: {}
         type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+      - components:
+        - layout_properties: {}
+          name: btn_save_business
+          properties: {text: Save}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+        layout_properties: {slot: card-content-slot}
+        name: lp_actions_business
+        properties: {}
+        type: LinearPanel
       layout_properties: {grid_position: 'EGOYMX,DZTCGJ'}
       name: card_business
       properties: {}
@@ -156,7 +166,7 @@ components:
         - data_bindings: []
           layout_properties: {slot: card-content-container-slot}
           name: txt_smtp_password
-          properties: {hide_text: true, text: From Address}
+          properties: {hide_text: true, text: ''}
           type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
         - layout_properties: {slot: card-content-container-slot}
           name: lbl_section_from
@@ -184,7 +194,7 @@ components:
             properties: {appearance: outlined, text: Test Connection}
             type: form:dep_ftrc8xuvrf6lsd:_Components.Button
           layout_properties: {slot: card-content-container-slot}
-          name: linear_panel_1
+          name: lp_actions_email
           properties: {}
           type: LinearPanel
         layout_properties: {slot: card-content-slot}
@@ -307,56 +317,62 @@ components:
     type: ColumnPanel
   - components:
     - components:
-      - layout_properties: {slot: card-content-container-slot}
-        name: lbl_section_colours
-        properties: {scale: small, text: Colours}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
-      - layout_properties: {slot: card-content-container-slot}
-        name: lbl_colour_hint
-        properties: {}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.Text
-      - layout_properties: {slot: card-content-container-slot}
-        name: txt_primary_color
-        properties: {placeholder: '#1A73E8'}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
-      - layout_properties: {slot: card-content-container-slot}
-        name: txt_accent_color
-        properties: {placeholder: '#EA4335'}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
-      - layout_properties: {slot: card-content-container-slot}
-        name: lbl_section_font
-        properties: {scale: small, text: Typography}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
-      - layout_properties: {slot: card-content-container-slot}
-        name: dd_font_family
-        properties: {}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.DropdownMenu
-      - layout_properties: {slot: card-content-container-slot}
-        name: lbl_section_layout
-        properties: {scale: small, text: Layout}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
-      - layout_properties: {slot: card-content-container-slot}
-        name: lbl_theme_deferred
-        properties: {}
-        type: form:dep_ftrc8xuvrf6lsd:_Components.Text
-      - layout_properties: {slot: card-content-container-slot}
-        name: dd_header_style
-        properties:
-          items: ['Roboto, Open Sans, Lato, Montserrat, Poppins, Inter']
-        type: form:dep_ftrc8xuvrf6lsd:_Components.DropdownMenu
       - components:
-        - layout_properties: {}
-          name: btn_save_theme
-          properties: {text: Save}
-          type: form:dep_ftrc8xuvrf6lsd:_Components.Button
-        layout_properties: {slot: card-content-container-slot}
-        name: lp_actions_theme
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_colours
+          properties: {scale: small, text: Colours}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_colour_hint
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Text
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_primary_color
+          properties: {placeholder: '#1A73E8'}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_accent_color
+          properties: {placeholder: '#EA4335'}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_font
+          properties: {scale: small, text: Typography}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: dd_font_family
+          properties:
+            items: []
+          type: form:dep_ftrc8xuvrf6lsd:_Components.DropdownMenu
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_layout
+          properties: {scale: small, text: Layout}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_theme_deferred
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Text
+        - layout_properties: {slot: card-content-container-slot}
+          name: dd_header_style
+          properties:
+            items: []
+          type: form:dep_ftrc8xuvrf6lsd:_Components.DropdownMenu
+        - components:
+          - layout_properties: {}
+            name: btn_save_theme
+            properties: {text: Save}
+            type: form:dep_ftrc8xuvrf6lsd:_Components.Button
+          layout_properties: {slot: card-content-container-slot}
+          name: lp_actions_theme
+          properties: {}
+          type: LinearPanel
+        layout_properties: {slot: card-content-slot}
+        name: card_content_container_3
         properties: {}
-        type: LinearPanel
-      layout_properties: {grid_position: 'HRIKWW,GZSSUR'}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+      layout_properties: {grid_position: 'RROZVX,CNRIVQ'}
       name: card_theme
       properties: {}
-      type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+      type: form:dep_ftrc8xuvrf6lsd:_Components.Card
     layout_properties: {grid_position: 'KNRJTP,AOSOGV'}
     name: col_theme
     properties: {visible: false}
