@@ -14,3 +14,8 @@ class SettingsForm(SettingsFormTemplate):
   """Main settings form with tabbed interface"""
 
   def __init__(self, **properties):
+
+  @handle("txt_paypal_sk", "pressed_enter")
+  def text_box_1_pressed_enter(self, **event_args):
+    """This method is called when the user presses enter in this component."""
+    pass
