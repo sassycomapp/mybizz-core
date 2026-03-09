@@ -32,6 +32,90 @@ components:
           name: lbl_section_biz
           properties: {scale: small, text: Business Details}
           type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_business_name
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_tagline
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_description
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextArea
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_contact
+          properties: {scale: small, text: Contact Details}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_contact_email
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_contact_phone
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_address
+          properties: {scale: small, text: Address}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_address_line_1
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_address_line_2
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_city
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_country
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_postal_code
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_web
+          properties: {scale: small, text: Online Presence}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_website_url
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_facebook
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_instagram
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_social_x
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: txt_linkedin
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_logo
+          properties: {scale: small, text: Logo}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: img_logo_preview
+          properties: {}
+          type: Image
+        - layout_properties: {slot: card-content-container-slot}
+          name: fu_logo
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.FileLoader
         layout_properties: {slot: card-content-slot}
         name: card_content_container_1
         properties: {}
@@ -44,7 +128,42 @@ components:
     name: col_business
     properties: {}
     type: ColumnPanel
-  - layout_properties: {grid_position: 'OUJCBK,GCEXDO'}
+  - components:
+    - components:
+      - components:
+        - layout_properties: {slot: card-content-container-slot}
+          name: heading_1
+          properties: {scale: small, text: Zoho Mail SMTP}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_provider
+          properties: {text: 'Email provider: Zoho Mail'}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Text
+        - layout_properties: {slot: card-content-container-slot}
+          name: text_box_1
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: text_box_2
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: text_box_3
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        - layout_properties: {slot: card-content-container-slot}
+          name: text_box_4
+          properties: {}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.TextInput.TextBox
+        layout_properties: {slot: card-content-slot}
+        name: card_content_container_2
+        properties: {}
+        type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
+      layout_properties: {grid_position: 'LJUELP,NBKEOD'}
+      name: card_email
+      properties: {}
+      type: form:dep_ftrc8xuvrf6lsd:_Components.Card
+    layout_properties: {grid_position: 'OUJCBK,GCEXDO'}
     name: col_email
     properties: {visible: false}
     type: ColumnPanel
