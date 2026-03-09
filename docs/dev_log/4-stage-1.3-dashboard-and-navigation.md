@@ -84,4 +84,19 @@ Server dashboard functions check for table existence before querying. This means
 
 ---
 
-*Session 4 closed. Stage 1.3 complete. Session 5 opens at Stage 1.4 — Settings & Configuration.*
+## 8. Known Issues — Carry Forward
+
+**`server_dashboard/service.py` — instance_id column mismatch**
+The `_safe_revenue`, `_safe_bookings`, and `_safe_time_entries` helper functions query using `instance_id=user` as a filter. The `invoice`, `bookings`, and `time_entries` tables do not have an `instance_id` column — they use `customer_id` or `staff_id`. These queries will silently return zero even when data exists. This is not a blocker at Stage 1.3 — all metrics are documented stubs. Fix required when live data is wired in Phase 3/4/5.
+
+---
+
+## Verification Sign-Off
+
+**Verified:** 2026-03-08
+**Verified by:** Claude (Session 6)
+**Status:** CLOSED
+
+All 7 files verified against document claims. AdminLayout, CustomerLayout, DashboardForm, navigation_helpers, server_dashboard/service, HomePage, and ref_anvil_navigation.md all confirmed correct and consistent with §3–§5. Key decisions verified in both code and rules file. Pytest 23/23 confirmed. One carry-forward issue recorded in §8 — not a blocker at this stage.
+
+*Session 4 closed and verified.*

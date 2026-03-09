@@ -3,9 +3,6 @@ from anvil import *
 import m3.components as m3
 from routing import router
 import anvil.server
-import anvil.google.auth, anvil.google.drive
-from anvil.google.drive import app_files
-
 import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
@@ -70,10 +67,10 @@ class ClientPortalForm(ClientPortalFormTemplate):
     self.btn_book_new.role = "primary-color"
 
     # Set repeating panel templates
-    self.rp_upcoming.item_template = 'customers.UpcomingAppointmentTemplate'
-    self.rp_past.item_template = 'customers.PastAppointmentTemplate'
-    self.rp_invoices.item_template = 'customers.InvoiceTemplate'
-    self.rp_documents.item_template = 'customers.DocumentTemplate'
+    self.rp_upcoming.item_template = 'customers.UpcomingAppointmentRowTemplate'
+    self.rp_past.item_template = 'customers.PastAppointmentRowTemplate'
+    self.rp_invoices.item_template = 'customers.InvoiceRowTemplate'
+    self.rp_documents.item_template = 'customers.DocumentRowTemplate'
 
     # Load data
     self.load_portal_data()
@@ -104,21 +101,11 @@ class ClientPortalForm(ClientPortalFormTemplate):
     except Exception as e:
       alert(f"Error loading portal data: {str(e)}")
 
-  def button_book_new_click(self, **event_args):
+  def btn_book_new_click(self, **event_args):
     """Book new appointment"""
-    open_form('bookings.PublicBookingWidget')
+    open_form('public_pages.BookingPage')
 
-  def button_logout_click(self, **event_args):
+  def btn_logout_click(self, **event_args):
     """Logout"""
     anvil.users.logout()
-    open_form('HomePage')
-
-  @handle("btn_book_new", "click")
-  def btn_book_new_click(self, **event_args):
-    """This method is called when the button is clicked"""
-    pass
-
-  @handle("btn_logout", "click")
-  def btn_logout_click(self, **event_args):
-    """This method is called when the button is clicked"""
-    pass
+    open_form('public_pages.HomePage')

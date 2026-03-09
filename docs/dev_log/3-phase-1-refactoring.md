@@ -58,8 +58,10 @@ Deleted:
 pytest -v --import-mode=importlib tests/test_1.2_auth.py
 ```
 
-### Uplink tests failing — Email Link
-Six uplink integration tests were failing with "This app does not have a URL, so we can't send a confirmation email." Root cause: Email Link sign-in method was enabled in the Anvil Users service settings. This caused Anvil to attempt sending a confirmation email on every user creation, which requires a published URL even when email confirmation is disabled. Fix: unchecked Email Link in Anvil Users service settings. All 15 uplink tests confirmed passing after fix.
+### Uplink tests failing — Email Link inadvertently enabled
+Six uplink integration tests were failing during user creation. Root cause: the Email Link sign-in method (`use_token`) had been inadvertently enabled in the Anvil Users service settings. Per Anvil documentation, Email Link is disabled by default and is a separate sign-in method that sends a magic link to the user's email on login. It is not part of the Mybizz auth design, which uses Email + Password exclusively via custom forms (`LoginForm`, `SignupForm`, `PasswordResetForm`).
+
+When Email Link is enabled, Anvil attempts to send a magic link email on certain user events, which caused the test failures. Fix: disabled Email Link in Anvil Users service settings (`use_token: false`). This is the correct and deliberate configuration for this system — not a workaround. Confirmed in `anvil.yaml`: `use_email: true, use_token: false`. All 15 uplink tests confirmed passing after fix.
 
 ---
 
@@ -73,9 +75,17 @@ Full backup saved at:
 ## 5. Additional Observations
 
 - `booking_metadata_schemas` table exists in schema — not previously documented. Useful for configurable intake forms per service. To be documented in rules in a future session.
-- `customers.total_orders` column is an e-commerce remnant — harmless but semantically incorrect. Note for future tidy-up.
+- `customers.total_orders` column noted as an e-commerce remnant — confirmed absent from current anvil.yaml. Already removed.
 - `payment_config` stores raw API keys in Data Tables — to be resolved in Stage 1.5 when The Vault is built.
 
 ---
 
-*Session 3 closed. Phase 1 Refactoring complete. Session 4 opens at Stage 1.3 — Dashboard & Navigation.*
+## Verification Sign-Off
+
+**Verified:** 2026-03-08
+**Verified by:** Claude (Session 6)
+**Status:** CLOSED
+
+All four tasks verified against anvil.yaml, client_code/bookings scaffold, server_code scaffold, and pytest output (23/23 passing). All deletions confirmed absent. All schema changes confirmed present. Issue resolution §3 corrected and verified against Anvil documentation and current anvil.yaml. `use_token: false` confirmed. Phase 1 Refactoring complete and accurate.
+
+*Session 3 closed and verified.*
