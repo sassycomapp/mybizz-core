@@ -27,7 +27,12 @@ components:
     type: form:dep_ftrc8xuvrf6lsd:_Components.Button
   - components:
     - components:
-      - layout_properties: {slot: card-content-slot}
+      - components:
+        - layout_properties: {slot: card-content-container-slot}
+          name: lbl_section_biz
+          properties: {scale: small, text: Business Details}
+          type: form:dep_ftrc8xuvrf6lsd:_Components.Heading
+        layout_properties: {slot: card-content-slot}
         name: card_content_container_1
         properties: {}
         type: form:dep_ftrc8xuvrf6lsd:_Components.Card.CardContentContainer
