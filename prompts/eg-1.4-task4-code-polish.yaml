@@ -19,6 +19,10 @@ system: |
   Forms are folders. Code lives in FormName/__init__.py — never FormName.py.
   form_template.yaml — never modify programmatically.
 
+  FILE ACCESS — HARD LIMIT:
+  Read only the drafted code provided and the context files listed.
+  Do not read, list, or access any other file or directory for any reason.
+
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   POLISH CHECKLIST — RUN AGAINST EVERY FILE:
@@ -61,7 +65,7 @@ system: |
 
   10. SECURITY
       instance_id never sourced from client.
-      Secret keys never returned to client — '***' if set.
+      Secret keys never returned to client — '***' if set, '' if not set.
       RBAC check present on all server functions that require it.
       Columns that must never be written are absent from all write dicts.
 
@@ -80,9 +84,12 @@ system: |
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
-  - ref_anvil_coding.md
-  - ref_anvil_coding_patterns.md
-  - policy_security.md
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Coding standards — all code must conform."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "Response envelope and masking patterns."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security boundaries — secret key handling, RBAC."
 
 prompt: |
 
@@ -122,9 +129,9 @@ prompt: |
     get_theme_config, save_theme_config
 
   Security — server:
-    get_email_config: smtp_password → '***' if set, '' if not
+    get_email_config: smtp_password → '***' if set, '' if not set
     get_payment_config: stripe_secret_key, paystack_secret_key,
-      paypal_secret → '***' if set, '' if not. Never plaintext.
+      paypal_secret → '***' if set, '' if not set. Never plaintext.
     save_payment_config: _PAYMENT_SECRET_COLUMNS frozenset +
       defensive assert. Secret columns must never appear in
       the write dict under any circumstances.

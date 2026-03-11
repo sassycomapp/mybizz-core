@@ -21,6 +21,10 @@ system: |
   form_template.yaml is the Designer file — never modify it programmatically.
   Read every existing target file before writing anything.
 
+  FILE ACCESS — HARD LIMIT:
+  Read only the existing target files and the context files listed.
+  Do not read, list, or access any other file or directory for any reason.
+
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   CODING STANDARDS — NON-NEGOTIABLE:
@@ -70,9 +74,12 @@ system: |
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
-  - ref_anvil_coding.md
-  - ref_anvil_coding_patterns.md
-  - policy_security.md
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Coding standards — all code must conform."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "Response envelope and masking patterns."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security boundaries — secret key handling, RBAC."
 
 prompt: |
 

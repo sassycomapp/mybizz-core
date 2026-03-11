@@ -21,12 +21,14 @@ system: |
 
   APPEND RULES — NON-NEGOTIABLE:
   Never modify existing sections — append only.
+  Never rewrite, restructure, or replace any existing content.
+  If you find yourself producing a complete file rather than an appended
+  section: stop. Produce only the new section to append.
   Never repeat universal rules already in file headers.
   Criteria must be specific and actionable — not "check security".
   Each criterion must name the exact file, function, or component to check.
-  If a stage introduces nothing new for a check file, append a minimal
-  section: "## Stage X.Y — Name — No new criteria for this check."
-  Stage section heading must match the stage number exactly.
+  If a stage introduces nothing new for a check file, append:
+  "## Stage X.Y — Name — No new criteria for this check."
 
   SECTION FORMAT — every appended section must use this format exactly:
 
@@ -34,66 +36,70 @@ system: |
 
   Look for these issues and fix them:
 
-  - [specific, actionable criterion]
-  - [specific, actionable criterion]
+  - [specific, actionable criterion naming exact file/function]
+  - [specific, actionable criterion naming exact file/function]
 
   Pass if [clear pass condition].
 
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
+  # ── POLICY AND RULES SOURCES — static, cache-eligible ──────────────────
+  # These files are the criteria sources. Do not trim. Do not add to.
   - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
-    reason: "Stage definitions — derive correct section heading and criteria scope."
+    reason: "Stage definitions — what forms, functions, tables this stage introduces."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
-    reason: "Security rules — source for security.md check criteria."
+    reason: "Source for security.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
-    reason: "Compliance rules — source for compliance.md check criteria."
+    reason: "Source for compliance.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_development.md"
-    reason: "Development standards — source for code-quality.md and test-coverage.md."
+    reason: "Source for code-quality.md and test-coverage.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature.md"
-    reason: "Naming rules — source for naming-conventions.md criteria."
+    reason: "Source for naming-conventions.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature_components.md"
-    reason: "Component prefix rules — source for naming-conventions.md criteria."
+    reason: "Component prefix rules — source for naming-conventions.md."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
-    reason: "Coding rules — source for error-handling.md and code-quality.md."
+    reason: "Source for error-handling.md and code-quality.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
-    reason: "Response envelope and patterns — source for response-envelope.md."
+    reason: "Source for response-envelope.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
-    reason: "M3 component rules — source for m3-compliance.md."
+    reason: "Source for m3-compliance.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_data_tables.md"
-    reason: "Data table rules — source for data-integrity.md."
+    reason: "Source for data-integrity.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_navigation.md"
-    reason: "Navigation rules — source for navigation.md."
+    reason: "Source for navigation.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
-    reason: "Data binding rules — source for data-binding.md."
+    reason: "Source for data-binding.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
-    reason: "Form validation rules — source for data-binding.md."
+    reason: "Source for data-binding.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
-    reason: "Testing standards — source for test-coverage.md."
+    reason: "Source for test-coverage.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
-    reason: "Integration test patterns — source for test-coverage.md."
+    reason: "Source for test-coverage.md criteria."
+  # ── CHECK FILES — dynamic, always full price ────────────────────────────
+  # All 11 must be read before appending to avoid duplicating criteria.
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
-    reason: "Existing check — read before appending new stage section."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
-    reason: "Existing check — read before appending."
+    reason: "Read before append — avoid duplicating existing criteria."
 
 prompt: |
 
@@ -105,24 +111,21 @@ prompt: |
 
   ## STEP 2 — READ THE STAGE SPEC
   Read spec_build_plan.md for Stage 1.2.
-  Extract:
-  - What forms are created or modified
-  - What server functions are created
-  - What tables are created or modified
-  - What navigation is added
-  - What integrations or security boundaries are introduced
+  Extract only: forms created or modified, server functions created,
+  tables created or modified, navigation added, security boundaries
+  introduced. Nothing else.
 
   ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
   For each of the 11 check files ask:
   "What does Stage 1.2 introduce that this check needs to verify?"
-  Only add criteria that are new to Stage 1.2.
-  Do not repeat universal rules already in the file header.
-  Do not repeat criteria already present in earlier stage sections.
+  Add only criteria that are new to Stage 1.2.
+  Do not repeat universal rules from file headers.
+  Do not repeat criteria from earlier stage sections.
 
   ## STEP 4 — APPEND SECTIONS
   Append one new section to each of the 11 check files.
-  Use the section format defined in the system block exactly.
-  If nothing new to add: append the minimal no-criteria section.
+  Use the section format from the system block exactly.
+  If nothing new: append the minimal no-criteria section.
 
   ## OUTPUT FILES
   C:\_Data\_Mybizz\mybizz-core\.continue\checks\security.md

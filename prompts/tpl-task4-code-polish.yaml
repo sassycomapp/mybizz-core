@@ -6,42 +6,37 @@
 # Task 4 — Code Polish. One prompt per stage. Polishes every
 # file produced by the Task 3 draft in one pass.
 #
-# CRITICAL RELATIONSHIP WITH TASK 3:
-# The drafted code is pasted directly into this prompt as
-# {{drafted_code}}. It is the largest item in the context.
-# Keep everything else as lean as possible — the stage spec
-# here is a condensed reference only, not a full restatement.
-# The checklist is fixed — do not add to it or remove from it.
+# CACHING STRATEGY:
+# Run Task 4 in the same session as Task 3. The system block
+# and POLISH CHECKLIST were cached during Task 3 — that cache
+# applies here, saving roughly 90% on the static block cost.
+# Starting a new session for Task 4 loses that cache entirely.
+# The drafted code ({{drafted_code}}) is always dynamic and
+# always costs full price — it cannot be cached. This is the
+# single largest token cost in the entire workflow.
 #
-# HOW TO FILL THIS IN:
+# TOKEN BOUNDARIES — READ BEFORE FILLING:
 #
-# {{stage_id}}         e.g. "1.5"
-# {{stage_name}}       e.g. "Vault"
+# {{drafted_code}}  — always full price, cannot be reduced
+#   Paste the complete Task 3 output exactly as produced.
+#   Do not truncate. If the draft exceeds approximately 600
+#   lines, split client and server into two polish calls and
+#   note this as a context-window workaround, not a design
+#   decision.
 #
-# {{context_files}}
-#   Same as Task 3 for this stage — no additions.
-#   Do NOT add anvil.yaml — schema was verified in Task 3.
+# {{stage_spec_condensed}}  — target: under 30 lines
+#   This is a checklist aid only — not a full spec restatement.
+#   Include: component names, function names, security rules
+#   (masked fields, columns never written), column names per
+#   table. Nothing else. No descriptions, no rationale.
 #
-# {{stage_spec_condensed}}
-#   A condensed reference spec for the polish agent:
-#   — Component names for each form (no descriptions needed)
-#   — Function names for each server module
-#   — Security rules that must be verified (masked fields,
-#     columns that must never be written, etc.)
-#   — Column names for each table touched
-#   This is a checklist aid, not a full spec. Keep it short.
-#
-# {{drafted_code}}
-#   The complete output from the Task 3 draft call.
-#   All files, exactly as produced. Do not truncate.
+# {{context_files}}  — identical to Task 3, no additions
+#   Same lean set as Task 3. Do not add anvil.yaml.
+#   Do not add session documents or task plans.
+#   Every file added costs full price on this call.
 #
 # {{target_files}}
 #   Full paths — identical to the Task 3 call.
-#
-# CACHING NOTE:
-#   System block and POLISH CHECKLIST are static — cached
-#   after the first call. The drafted code is always dynamic
-#   and always costs full price. Keep everything else tight.
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -66,6 +61,10 @@ system: |
   ANVIL FORM FILE STRUCTURE — CRITICAL:
   Forms are folders. Code lives in FormName/__init__.py — never FormName.py.
   form_template.yaml — never modify programmatically.
+
+  FILE ACCESS — HARD LIMIT:
+  Read only the drafted code provided and the context files listed.
+  Do not read, list, or access any other file or directory for any reason.
 
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
@@ -109,7 +108,7 @@ system: |
 
   10. SECURITY
       instance_id never sourced from client.
-      Secret keys never returned to client — '***' if set.
+      Secret keys never returned to client — '***' if set, '' if not set.
       RBAC check present on all server functions that require it.
       Columns that must never be written are absent from all write dicts.
 

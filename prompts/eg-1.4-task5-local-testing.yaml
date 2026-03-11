@@ -19,9 +19,15 @@ system: |
   ANVIL FORM FILE STRUCTURE — CRITICAL:
   Anvil form modules are NOT named after the form.
   Every form folder contains __init__.py — this is the file to read.
-  NEVER reference SettingsForm.py — it does not exist.
+  NEVER reference FormName.py — it does not exist.
 
-# ── STATIC BLOCK — CACHED AFTER FIRST RUN ───────────────────────────────────
+  FILE ACCESS — HARD LIMIT:
+  Read only the files listed in SOURCE FILES and context_files below.
+  Do not read, list, or access any other file or directory for any reason.
+  Do not read anvil.yaml. Do not read check files. Do not read session
+  documents or handover files.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   TESTING STANDARDS — NON-NEGOTIABLE:
 
@@ -58,7 +64,7 @@ system: |
   failing list, developer_actions list.
   developer_actions is empty if all tests pass after remediation.
 
-# ── END STATIC BLOCK ────────────────────────────────────────────────────────
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
@@ -81,6 +87,9 @@ prompt: |
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_settings\\service.py"
     reason: "Masking logic — get_email_config(), get_payment_config(),
              save_payment_config() secret column exclusion."
+
+  Read only the files listed above. Do not read, list, or access any
+  other file or directory in the repository or file system.
 
   ## TEST CATEGORIES REQUIRED
 
@@ -130,12 +139,15 @@ prompt: |
   ## STEP 2 — WRITE TESTS
   Write complete pytest tests covering all eight categories above.
   Cover all four test categories for every testable function.
-  Write the complete test file to:  C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py
-  Write the initial run record (status blank) to: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
+  Write the complete test file to:
+    C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py
+  Write the initial run record (status blank) to:
+    C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
 
   ## STEP 3 — RUN TESTS
   Execute: pytest -v --import-mode=importlib tests/test_1.4_settings.py
-  Record pass/fail for each test in: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
+  Record pass/fail for each test in:
+    C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
 
   ## STEP 4 — REMEDIATE FAILURES
   For each failed test:
@@ -146,7 +158,8 @@ prompt: |
     5. Never modify a test to match wrong behaviour
 
   ## STEP 5 — WRITE REPORT
-  Write final state to: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml
+  Write final state to:
+    C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml
   Current state only — not history.
   developer_actions lists only items requiring human intervention.
   If all tests pass after remediation, developer_actions is empty.

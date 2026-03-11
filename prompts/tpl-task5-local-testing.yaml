@@ -16,57 +16,53 @@
 # cannot be tested without Anvil or a network connection,
 # it belongs in Task 6 (Uplink Testing), not here.
 #
-# HOW TO FILL THIS IN:
+# CACHING STRATEGY:
+# The system block and TESTING STANDARDS are static — cached
+# after the first call in a session. Run this in its own
+# session — do not combine with Task 6. Each task is heavy
+# enough to fill the context window on its own.
 #
-# {{stage_id}}         e.g. "1.4"
-# {{stage_name}}       e.g. "Settings & Configuration"
+# TOKEN BOUNDARIES — READ BEFORE FILLING:
 #
-# {{source_files}}
-#   All source files containing testable pure logic for this
-#   stage. Include full paths and a one-line reason for each.
-#   Example:
-#     - path: "C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py"
-#       reason: "Validation logic — _validate_business(), _validate_email()"
-#     - path: "C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py"
-#       reason: "Masking logic — get_email_config(), get_payment_config(), save_payment_config()"
+# {{source_files}}  — server module and client form only
+#   Include: only the files containing testable pure logic.
+#   Never include anvil.yaml — schema is not needed for
+#   pure logic testing.
+#   Never include session documents, handover files, or
+#   task plans. These are for the developer conversation only.
+#   Every file listed is read in full — keep the list lean.
 #
-# {{test_categories}}
-#   Every specific test category required for this stage.
-#   Be explicit — do not leave coverage decisions to the agent.
-#   Name the function, describe what must be true, list the
+# {{test_categories}}  — explicit, not left to the agent
+#   Name every function, describe what must be true, list
 #   boundary and adversarial cases explicitly.
-#   Example:
-#     1. _validate_business() — business_name required
-#        False when empty, whitespace-only. True when populated.
-#     2. _validate_email() — smtp_port must be numeric
-#        False for 'abc', '0.5', ''. True for '587', '65535'.
-#     3. get_email_config() — smtp_password never plaintext
-#        '***' when set. '' when empty or None. Never raw value.
+#   Do not write "test thoroughly" — spell it out.
+#   The agent will test exactly what is listed and no more.
 #
-# {{test_file_path}}
-#   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py"
+# {{context_files}}  — standard set, do not change
+#   - ref_anvil_coding.md          — remediations must conform
+#   - ref_anvil_coding_patterns.md — masking and envelope patterns
+#   - ref_anvil_testing.md         — pure logic extraction pattern
+#   - policy_security.md           — adversarial and boundary cases
+#   Do not add files beyond this set without a specific reason.
+#   Every file added costs full price every call.
 #
-# {{run_record_path}}
-#   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml"
-#
-# {{report_path}}
-#   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml"
-#
-# {{context_files}}
-#   Standard set — do not change unless genuinely required:
-#     - ref_anvil_coding.md          — remediations must conform
-#     - ref_anvil_coding_patterns.md — masking and envelope patterns
-#     - ref_anvil_testing.md         — pure logic extraction pattern
-#     - policy_security.md           — adversarial and boundary cases
+# FILE ACCESS RULE:
+#   The agent reads only the files listed in SOURCE FILES and
+#   context_files. It reads no other file, folder, or directory.
+#   Do not add anvil.yaml. Do not add check files. Do not add
+#   anything beyond what is needed to write and run the tests.
 #
 # REMEDIATION RULE:
 #   Never weaken a security check to pass a test — fix the code.
 #   Never modify a test to match wrong behaviour — fix the code.
 #
-# CACHING NOTE:
-#   System block and TESTING STANDARDS are static — cached
-#   after the first run. All stage-specific content lives in
-#   the prompt block.
+# HOW TO FILL THIS IN:
+#
+# {{stage_id}}         e.g. "1.4"
+# {{stage_name}}       e.g. "Settings & Configuration"
+# {{test_file_path}}   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py"
+# {{run_record_path}}  e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml"
+# {{report_path}}      e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml"
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -94,7 +90,13 @@ system: |
   Every form folder contains __init__.py — this is the file to read.
   NEVER reference FormName.py — it does not exist.
 
-# ── STATIC BLOCK — CACHED AFTER FIRST RUN ───────────────────────────────────
+  FILE ACCESS — HARD LIMIT:
+  Read only the files listed in SOURCE FILES and context_files below.
+  Do not read, list, or access any other file or directory for any reason.
+  Do not read anvil.yaml. Do not read check files. Do not read session
+  documents or handover files.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   TESTING STANDARDS — NON-NEGOTIABLE:
 
@@ -131,7 +133,7 @@ system: |
   failing list, developer_actions list.
   developer_actions is empty if all tests pass after remediation.
 
-# ── END STATIC BLOCK ────────────────────────────────────────────────────────
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
 {{context_files}}
@@ -140,6 +142,9 @@ prompt: |
 
   ## SOURCE FILES
   {{source_files}}
+
+  Read only the files listed above. Do not read, list, or access any
+  other file or directory in the repository or file system.
 
   ## TEST CATEGORIES REQUIRED
   {{test_categories}}

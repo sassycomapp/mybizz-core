@@ -7,39 +7,54 @@
 # file the stage produces — client form(s) and server module
 # together in one pass.
 #
-# Do not split into separate calls. If the context window is
-# tight, trim the stage spec to only what is strictly needed
-# for correct code — do not split the work.
+# NEVER split into separate calls unless the context window
+# forces it. If forced: note it as a workaround, not a design
+# decision. Prefer trimming the stage spec first.
 #
-# HOW TO FILL THIS IN:
+# CACHING STRATEGY:
+# The system block and CODING STANDARDS are static — cached
+# after the first call in a session. They must remain identical
+# between calls within the same session to preserve the cache.
+# Everything in the prompt block is dynamic — always full
+# price. Minimise the prompt block aggressively.
+# Run Task 3 and Task 4 in the same session — the static block
+# cache from Task 3 applies to the Task 4 call.
 #
-# {{stage_id}}         e.g. "1.5"
-# {{stage_name}}       e.g. "Vault"
+# TOKEN BOUNDARIES — READ BEFORE FILLING:
 #
-# {{context_files}}
-#   List only the rules files genuinely needed for this stage.
+# {{schema_excerpt}}  — target: under 30 lines
+#   Include: only the exact tables and columns this stage
+#   reads or writes.
+#   Exclude: tables not touched, column types, indexes,
+#   metadata, any other anvil.yaml content.
+#   Never pass the full anvil.yaml.
+#
+# {{stage_spec}}  — as short as possible while complete
+#   Include: component names (no descriptions), function
+#   signatures, security boundaries, single-row table
+#   patterns, columns that must never be written, Designer
+#   properties that must be set in code (with reason why).
+#   Exclude: business rationale, UI aesthetics, descriptions
+#   of what components look like, anything the agent does not
+#   need to produce correct code.
+#
+# {{specific_instructions}}
+#   Include: Designer workarounds, preserved functions that
+#   must not be touched, ordering constraints, security
+#   boundaries specific to this stage.
+#   If nothing applies: DELETE THIS SECTION ENTIRELY,
+#   including the heading. Do not leave it blank.
+#
+# {{context_files}}  — lean set only
 #   For any stage with a server module:
 #     - ref_anvil_coding.md
 #     - ref_anvil_coding_patterns.md
 #     - policy_security.md
-#   Add for client forms if startup/routing is involved:
+#   Add only if startup or routing is involved:
 #     - ref_anvil_misc.md
-#   Do NOT include anvil.yaml — use {{schema_excerpt}} instead.
-#
-# {{schema_excerpt}}
-#   Paste only the table definitions this stage reads or writes.
-#   Not the whole anvil.yaml. Only the exact tables touched.
-#
-# {{stage_spec}}
-#   Everything needed to produce correct code:
-#   CLIENT FORM(S): component names, tab/panel structure,
-#     event handlers, load/save behaviour, validation rules,
-#     any Designer properties that must be set in code.
-#   SERVER MODULE(S): all function signatures, security rules,
-#     single-row table patterns, columns that must never be
-#     written, preserved functions that must not be touched.
-#   Be complete. The agent reads existing files but cannot
-#   infer intent — spell out what is required.
+#   Never add anvil.yaml — use schema_excerpt instead.
+#   Never add session documents, handover files, task plans.
+#   Every file added here costs full price every call.
 #
 # {{target_files}}
 #   Full path for every file this stage produces.
@@ -47,16 +62,10 @@
 #     client: C:\_Data\_Mybizz\mybizz-core\client_code\vault\VaultForm\__init__.py
 #     server: C:\_Data\_Mybizz\mybizz-core\server_code\server_vault\service.py
 #
-# {{specific_instructions}}
-#   Designer workarounds, preserved functions, ordering
-#   constraints, security boundaries specific to this stage.
-#   Omit this section entirely if nothing applies.
-#
-# CACHING NOTE:
-#   System block and CODING STANDARDS are static — cached
-#   after the first call in a session. All stage-specific
-#   content lives in the prompt block. Never move dynamic
-#   content into the system block.
+# FILE ACCESS RULE:
+#   The agent reads only the existing target files and the
+#   context files listed. It reads no other file, folder,
+#   or directory. Do not add files speculatively.
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -83,6 +92,10 @@ system: |
   Forms are folders. Code lives in FormName/__init__.py — never FormName.py.
   form_template.yaml is the Designer file — never modify it programmatically.
   Read every existing target file before writing anything.
+
+  FILE ACCESS — HARD LIMIT:
+  Read only the existing target files and the context files listed.
+  Do not read, list, or access any other file or directory for any reason.
 
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 

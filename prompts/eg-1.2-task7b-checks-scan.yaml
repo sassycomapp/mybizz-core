@@ -14,16 +14,26 @@ system: |
   criterion for the target stage. You report pass, fail, or unverifiable
   for every criterion. You do not modify any source file.
 
+  FILE ACCESS — HARD LIMIT:
+  Read only the 11 check files listed in context_files and the source
+  files listed in SOURCE FILES in the prompt below.
+  Do not read, list, browse, or access any other file, folder, or
+  directory in the repository or file system for any reason.
+  Do not read policy files. Do not read rules files. Do not read spec
+  files. The criteria are already in the check files.
+
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   SCAN RULES — NON-NEGOTIABLE:
   Verify both Universal Rules (file headers) and the stage section
   for the target stage in each check file.
   Do not skip any criterion — every item must have a status.
-  PASS        — criterion met
-  FAIL        — criterion not met; name the exact file and function
-  UNVERIFIABLE — cannot be confirmed from source files alone
-                 (e.g. Designer settings, runtime behaviour)
+
+  PASS          — criterion met
+  FAIL          — criterion not met; name exact file and line or function
+  UNVERIFIABLE  — cannot be confirmed from source files alone
+                  (e.g. Designer settings, runtime behaviour)
+
   UNVERIFIABLE is not a failure — it flags items needing human review.
   FAIL must name the exact file and line or function where the issue exists.
   Do not modify any source file — report only.
@@ -39,6 +49,8 @@ system: |
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
+  # ── CHECK FILES — dynamic, always full price ────────────────────────────
+  # All 11 must be read. Criteria live here — not in policy or rules files.
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
     reason: "Criteria to verify."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
@@ -82,8 +94,11 @@ prompt: |
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-uplink-report.yaml"
     reason: "Test coverage verification."
 
+  Read only the files listed above and the 11 check files in context_files.
+  Do not read, list, or access any other file or directory.
+
   ## STEP 1 — READ ALL CHECK FILES
-  Read all 11 check files. For Stage 1.2, verify both the Universal Rules
+  Read all 11 check files. For Stage 1.2, note both the Universal Rules
   in each file header and the Stage 1.2 section.
 
   ## STEP 2 — READ ALL SOURCE FILES

@@ -9,68 +9,54 @@
 # each file. Never modifies existing sections — append only.
 #
 # WHEN TO RUN:
-# After Task 6 (Uplink Testing) is complete and the stage is
-# considered done. Run before closing the stage.
+# After Task 6 (Uplink Testing) is complete. Run before
+# closing the stage. Run in its own session.
 #
-# HOW THE CHECK FILES WORK:
-# 11 check files live in .continue/checks/. Each covers one
-# concern (security, data-integrity, response-envelope, etc.)
-# Each file grows stage by stage. Universal rules live in the
-# file header and are never repeated in stage sections.
-# Stage sections are append-only — never modify what is there.
+# CACHING STRATEGY:
+# The system block is static — cached after the first call.
+# The 15 policy and rules source files are also static between
+# stages — they do not change during normal development. They
+# are eligible for caching within a session.
+# The 11 check files are dynamic — they grow with every stage
+# and cannot be cached. They are always full price.
+# This task is inherently expensive. Do not add any file
+# beyond the standard set. Every extra file multiplies cost
+# with no quality benefit if not directly referenced.
+#
+# TOKEN BOUNDARIES — READ BEFORE FILLING:
+#
+# Policy/rules source files — these are the criteria sources.
+# They are static and benefit from caching within a session.
+# Do not remove any — each maps to one or more check files.
+# Do not add any — undisciplined additions are pure waste.
+#
+# Check files — always dynamic, always full price.
+# All 11 must be read before appending so the agent knows
+# what is already covered and does not duplicate criteria.
+# This read cost is unavoidable.
+#
+# {{stage_id}} / {{stage_name}}
+# These are the only dynamic elements in the prompt block
+# beyond what is in context_files. Keep the prompt block
+# as short as possible — the work is driven by the files,
+# not by elaborate instructions.
+#
+# APPEND-ONLY RULE — CRITICAL:
+# The agent appends one new section to each of the 11 files.
+# It never rewrites, restructures, or replaces existing content.
+# If the agent produces a complete file rather than an appended
+# section: do not save the output. Correct the instruction
+# in the prompt and re-run. The agent has no memory of the
+# previous attempt and will follow the corrected instruction.
 #
 # HOW TO FILL THIS IN:
 #
 # {{stage_id}}         e.g. "1.4"
 # {{stage_name}}       e.g. "Settings & Configuration"
 #
-# {{context_files}}
-#   Always include the full standard set below. Do not trim.
-#   Policy and rules files are the source of criteria —
-#   removing any one of them produces incomplete checks.
-#   Standard set:
-#     Rules sources (derive criteria from these):
-#       - spec_build_plan.md           — stage definitions
-#       - policy_security.md           — source for security.md
-#       - policy_security_compliance.md — source for compliance.md
-#       - policy_development.md        — source for code-quality.md, test-coverage.md
-#       - policy_nomenclature.md       — source for naming-conventions.md
-#       - policy_nomenclature_components.md — component prefix rules
-#       - ref_anvil_coding.md          — source for error-handling.md, code-quality.md
-#       - ref_anvil_coding_patterns.md — source for response-envelope.md
-#       - ref_anvil_components.md      — source for m3-compliance.md
-#       - ref_anvil_data_tables.md     — source for data-integrity.md
-#       - ref_anvil_navigation.md      — source for navigation.md
-#       - spec_ui_standards.md         — source for data-binding.md
-#       - spec_ui_standards_forms.md   — source for data-binding.md
-#       - ref_anvil_testing.md         — source for test-coverage.md
-#       - ref_anvil_testing_integration.md — source for test-coverage.md
-#     Existing check files (read before appending):
-#       - .continue/checks/security.md
-#       - .continue/checks/data-integrity.md
-#       - .continue/checks/response-envelope.md
-#       - .continue/checks/error-handling.md
-#       - .continue/checks/code-quality.md
-#       - .continue/checks/m3-compliance.md
-#       - .continue/checks/navigation.md
-#       - .continue/checks/data-binding.md
-#       - .continue/checks/naming-conventions.md
-#       - .continue/checks/compliance.md
-#       - .continue/checks/test-coverage.md
-#
-# SECTION FORMAT — NON-NEGOTIABLE:
-#   ## Stage {phase}.{stage} — {Stage Name}
-#
-#   Look for these issues and fix them:
-#
-#   - [specific, actionable criterion]
-#   - [specific, actionable criterion]
-#
-#   Pass if [clear pass condition].
-#
-# CACHING NOTE:
-#   The system block is static — cached after the first call.
-#   Stage-specific content lives in the prompt block only.
+# That is all. The context_files list is hardcoded — do not
+# modify it. The output file paths are hardcoded — do not
+# modify them.
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -98,12 +84,14 @@ system: |
 
   APPEND RULES — NON-NEGOTIABLE:
   Never modify existing sections — append only.
+  Never rewrite, restructure, or replace any existing content.
+  If you find yourself producing a complete file rather than an appended
+  section: stop. Produce only the new section to append.
   Never repeat universal rules already in file headers.
   Criteria must be specific and actionable — not "check security".
   Each criterion must name the exact file, function, or component to check.
-  If a stage introduces nothing new for a check file, append a minimal
-  section: "## Stage X.Y — Name — No new criteria for this check."
-  Stage section heading must match the stage number exactly.
+  If a stage introduces nothing new for a check file, append:
+  "## Stage X.Y — Name — No new criteria for this check."
 
   SECTION FORMAT — every appended section must use this format exactly:
 
@@ -111,15 +99,70 @@ system: |
 
   Look for these issues and fix them:
 
-  - [specific, actionable criterion]
-  - [specific, actionable criterion]
+  - [specific, actionable criterion naming exact file/function]
+  - [specific, actionable criterion naming exact file/function]
 
   Pass if [clear pass condition].
 
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
-{{context_files}}
+  # ── POLICY AND RULES SOURCES — static, cache-eligible ──────────────────
+  # These files are the criteria sources. Do not trim. Do not add to.
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
+    reason: "Stage definitions — what forms, functions, tables this stage introduces."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Source for security.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
+    reason: "Source for compliance.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_development.md"
+    reason: "Source for code-quality.md and test-coverage.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature.md"
+    reason: "Source for naming-conventions.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature_components.md"
+    reason: "Component prefix rules — source for naming-conventions.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Source for error-handling.md and code-quality.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "Source for response-envelope.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
+    reason: "Source for m3-compliance.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_data_tables.md"
+    reason: "Source for data-integrity.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_navigation.md"
+    reason: "Source for navigation.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
+    reason: "Source for data-binding.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
+    reason: "Source for data-binding.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
+    reason: "Source for test-coverage.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
+    reason: "Source for test-coverage.md criteria."
+  # ── CHECK FILES — dynamic, always full price ────────────────────────────
+  # All 11 must be read before appending to avoid duplicating criteria.
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
+    reason: "Read before append — avoid duplicating existing criteria."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
+    reason: "Read before append — avoid duplicating existing criteria."
 
 prompt: |
 
@@ -131,24 +174,21 @@ prompt: |
 
   ## STEP 2 — READ THE STAGE SPEC
   Read spec_build_plan.md for Stage {{stage_id}}.
-  Extract:
-  - What forms are created or modified
-  - What server functions are created
-  - What tables are created or modified
-  - What navigation is added
-  - What integrations or security boundaries are introduced
+  Extract only: forms created or modified, server functions created,
+  tables created or modified, navigation added, security boundaries
+  introduced. Nothing else.
 
   ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
   For each of the 11 check files ask:
   "What does Stage {{stage_id}} introduce that this check needs to verify?"
-  Only add criteria that are new to this stage.
-  Do not repeat universal rules already in the file header.
-  Do not repeat criteria already present in earlier stage sections.
+  Add only criteria that are new to this stage.
+  Do not repeat universal rules from file headers.
+  Do not repeat criteria from earlier stage sections.
 
   ## STEP 4 — APPEND SECTIONS
   Append one new section to each of the 11 check files.
-  Use the section format defined in the system block exactly.
-  If nothing new to add: append the minimal no-criteria section.
+  Use the section format from the system block exactly.
+  If nothing new: append the minimal no-criteria section.
 
   ## OUTPUT FILES
   C:\_Data\_Mybizz\mybizz-core\.continue\checks\security.md

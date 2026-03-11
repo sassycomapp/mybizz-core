@@ -23,6 +23,8 @@ system: |
   Read only the files listed in SOURCE FILES in the prompt below.
   Do not read, list, browse, or access any other file, folder,
   or directory in the repository or file system for any reason.
+  When reading anvil.yaml: locate only the tables listed in the
+  schema excerpt. Do not read or process any other section.
 
   SCOPE — LIVE INTEGRATION ONLY:
   Test only @anvil.server.callable functions. Do not duplicate
@@ -88,8 +90,8 @@ prompt: |
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
     reason: "PRIMARY — all @anvil.server.callable functions under test."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"
-    reason: "Schema verification only — agent reads only the tables
-             listed in the schema excerpt below."
+    reason: "Schema verification only — open file, locate only the tables
+             listed in the schema excerpt below, read nothing else."
 
   Read only the files listed above. Do not read, list, or access any
   other file or directory in the repository or file system.
@@ -100,7 +102,7 @@ prompt: |
   After every test: delete any TEST_ rows created. Restore any modified rows.
 
   ## STEP 2 — VERIFY SCHEMA
-  Read anvil.yaml. Verify only these tables and columns exist.
+  Open anvil.yaml. Locate and read only the tables listed below.
   Do not read or report on any other part of anvil.yaml.
   For any missing table or column: write developer_action, mark all
   dependent tests as SKIPPED.
@@ -138,6 +140,8 @@ prompt: |
 
   ## STEP 3 — WRITE TESTS
   Write complete Uplink integration tests covering all scenarios above.
+  Every test must capture pre-test state and restore it after,
+  regardless of pass or fail.
   TEST_ rows created during tests must be deleted after each test.
   Write the complete test file to:
     C:\_Data\_Mybizz\mybizz-core\tests\test_1.2_auth_uplink.py

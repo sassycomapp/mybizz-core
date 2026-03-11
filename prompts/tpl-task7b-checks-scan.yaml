@@ -3,51 +3,53 @@
 # ============================================================
 #
 # WHAT THIS TEMPLATE IS FOR:
-# Task 7b — Checks Scan. Run against a specific stage's source
-# files. Reads all 11 check files, verifies every criterion
-# for the target stage against the source files, and produces
-# a scan report. Does not modify any source file.
+# Task 7b — Checks Scan. Run after Task 7a has appended the
+# stage section to all 11 check files. Reads all check files,
+# verifies every criterion for the target stage against the
+# source files, and produces a scan report. Does not modify
+# any source file.
 #
-# WHEN TO RUN:
-# After Task 7a (Checks Build) has appended the stage section
-# to all check files. The scan verifies the code against those
-# criteria before the stage is formally closed.
+# CACHING STRATEGY:
+# The system block is static — cached after the first call.
+# The 11 check files are dynamic — they changed in Task 7a
+# and cannot be cached. They are always full price.
+# The source files (client form, server module) are dynamic —
+# always full price.
+# Run this in its own session immediately after Task 7a.
+# Do not combine with Task 7a — each is heavy enough alone.
 #
-# HOW TO FILL THIS IN:
+# TOKEN BOUNDARIES — READ BEFORE FILLING:
 #
-# {{stage_id}}         e.g. "1.4"
-# {{stage_name}}       e.g. "Settings & Configuration"
-#
-# {{source_files}}
-#   All source files for this stage — every file the agent
-#   must read to verify criteria. Include full paths and a
-#   one-line reason for each.
-#   Always include anvil.yaml for schema verification.
-#   Always include both test report files if they exist.
-#   Example:
-#     - path: "C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py"
-#       reason: "PRIMARY scan target — client form."
-#     - path: "C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py"
-#       reason: "PRIMARY scan target — server module."
-#     - path: "C:\_Data\_Mybizz\mybizz-core\anvil.yaml"
-#       reason: "Schema authority — verify table columns."
-#     - path: "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml"
-#       reason: "Test coverage verification."
-#     - path: "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-uplink-report.yaml"
-#       reason: "Test coverage verification."
+# {{source_files}}  — primary scan targets only
+#   Include: client form __init__.py, server module service.py,
+#   anvil.yaml (for schema verification), and both test report
+#   files if they exist.
+#   Exclude: session documents, handover files, task plans,
+#   spec files, rules files, anything the agent does not need
+#   to verify criteria against source code.
+#   Every file listed is read in full — keep the list lean.
+#   Five files is the typical maximum for this task.
 #
 # {{report_path}}
 #   Full path to the scan report yaml.
 #   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-checks-scan-report.yaml"
 #
-# VERDICT OPTIONS:
-#   PASSED             — all criteria pass or are unverifiable
-#   FAILED             — one or more criteria fail
-#   PASSED_WITH_WARNINGS — passes but unverifiable items need human review
+# FILE ACCESS RULE:
+#   The agent reads only the 11 check files and the files
+#   listed in SOURCE FILES. It reads no other file, folder,
+#   or directory. Do not add policy files, rules files, or
+#   spec files — the criteria are already in the check files.
 #
-# CACHING NOTE:
-#   System block is static — cached after the first call.
-#   Stage-specific content lives in the prompt block only.
+# VERDICT OPTIONS:
+#   PASSED               — all criteria pass or are unverifiable
+#   FAILED               — one or more criteria fail
+#   PASSED_WITH_WARNINGS — passes but unverifiable items need
+#                          human review
+#
+# HOW TO FILL THIS IN:
+#
+# {{stage_id}}         e.g. "1.4"
+# {{stage_name}}       e.g. "Settings & Configuration"
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -68,16 +70,26 @@ system: |
   criterion for the target stage. You report pass, fail, or unverifiable
   for every criterion. You do not modify any source file.
 
+  FILE ACCESS — HARD LIMIT:
+  Read only the 11 check files listed in context_files and the source
+  files listed in SOURCE FILES in the prompt below.
+  Do not read, list, browse, or access any other file, folder, or
+  directory in the repository or file system for any reason.
+  Do not read policy files. Do not read rules files. Do not read spec
+  files. The criteria are already in the check files.
+
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   SCAN RULES — NON-NEGOTIABLE:
   Verify both Universal Rules (file headers) and the stage section
   for the target stage in each check file.
   Do not skip any criterion — every item must have a status.
-  PASS        — criterion met
-  FAIL        — criterion not met; name the exact file and function
-  UNVERIFIABLE — cannot be confirmed from source files alone
-                 (e.g. Designer settings, runtime behaviour)
+
+  PASS          — criterion met
+  FAIL          — criterion not met; name exact file and line or function
+  UNVERIFIABLE  — cannot be confirmed from source files alone
+                  (e.g. Designer settings, runtime behaviour)
+
   UNVERIFIABLE is not a failure — it flags items needing human review.
   FAIL must name the exact file and line or function where the issue exists.
   Do not modify any source file — report only.
@@ -93,6 +105,8 @@ system: |
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
+  # ── CHECK FILES — dynamic, always full price ────────────────────────────
+  # All 11 must be read. Criteria live here — not in policy or rules files.
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
     reason: "Criteria to verify."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
@@ -123,8 +137,11 @@ prompt: |
   ## SOURCE FILES
   {{source_files}}
 
+  Read only the files listed above and the 11 check files in context_files.
+  Do not read, list, or access any other file or directory.
+
   ## STEP 1 — READ ALL CHECK FILES
-  Read all 11 check files. For Stage {{stage_id}}, verify both the
+  Read all 11 check files. For Stage {{stage_id}}, note both the
   Universal Rules in each file header and the Stage {{stage_id}} section.
 
   ## STEP 2 — READ ALL SOURCE FILES
