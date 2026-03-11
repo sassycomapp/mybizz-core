@@ -234,8 +234,7 @@ unique_ids:
     server_payments.stripe_service: '1767524100224735345026007.0231'
     server_payments.stripe_webhooks: '176752414416080243824243.68105'
     server_settings: '1767523509544859421093707.7725'
-    server_settings.service: '1767524489400136523535705.68166'
-    server_settings.service2: '177322284447215211226576.16103'
+    server_settings.service: '177322284447215211226576.16103'
     server_settings.test_helpers: 4ZIBWZGKKMBBE2EU7BKRAG6BRSHFYFU2
     server_shared: '1767523531824810061422658.2552'
     server_shared.audit_logger: '1767524808160439814878168.0416'
