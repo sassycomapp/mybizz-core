@@ -1,4 +1,4 @@
-"""Server module for settings and configuration services"""
+"""Server module f"""
 
 import anvil.users
 import anvil.tables as tables
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_initial_config(business_name: str, user=None) -> dict:
-    """Create minimal config rows for a newly created client instance.
+  """Create minimal config rows for a newly created client instance.
 
     Args:
         business_name: The name of the business being registered.
@@ -28,38 +28,38 @@ def create_initial_config(business_name: str, user=None) -> dict:
         ValueError: If business_name is missing or empty.
         RuntimeError: If a Data Tables write fails.
     """
-    if not business_name or not business_name.strip():
-        raise ValueError("Business name is required")
+  if not business_name or not business_name.strip():
+    raise ValueError("Business name is required")
 
-    owner = user or anvil.users.get_user()
-    now = datetime.now()
-    key = 'business_profile'
-    value = {'business_name': business_name.strip()}
+  owner = user or anvil.users.get_user()
+  now = datetime.now()
+  key = 'business_profile'
+  value = {'business_name': business_name.strip()}
 
-    try:
-        existing = app_tables.config.get(key=key)
-        if existing:
-            existing['value'] = value
-            existing['category'] = 'system'
-            existing['updated_at'] = now
-            if owner:
-                existing['updated_by'] = owner
-        else:
-            app_tables.config.add_row(
-                key=key,
-                value=value,
-                category='system',
-                updated_at=now,
-                updated_by=owner,
-            )
-        logger.info("create_initial_config succeeded", extra={"key": key})
-        return {'success': True, 'data': {'key': key}}
-    except tables.TableError as exc:
-        logger.error("create_initial_config table error", exc_info=True)
-        raise RuntimeError("Failed to create initial config") from exc
-    except Exception as exc:
-        logger.error("create_initial_config unexpected error", exc_info=True)
-        raise RuntimeError("Failed to create initial config") from exc
+  try:
+    existing = app_tables.config.get(key=key)
+    if existing:
+      existing['value'] = value
+      existing['category'] = 'system'
+      existing['updated_at'] = now
+      if owner:
+        existing['updated_by'] = owner
+    else:
+      app_tables.config.add_row(
+        key=key,
+        value=value,
+        category='system',
+        updated_at=now,
+        updated_by=owner,
+      )
+    logger.info("create_initial_config succeeded", extra={"key": key})
+    return {'success': True, 'data': {'key': key}}
+  except tables.TableError as exc:
+    logger.error("create_initial_config table error", exc_info=True)
+    raise RuntimeError("Failed to create initial config") from exc
+  except Exception as exc:
+    logger.error("create_initial_config unexpected error", exc_info=True)
+    raise RuntimeError("Failed to create initial config") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ def create_initial_config(business_name: str, user=None) -> dict:
 
 @anvil.server.callable
 def get_business_profile() -> dict:
-    """Return all business_profile fields as a plain dict.
+  """Return all business_profile fields as a plain dict.
 
     The logo media object is converted to a URL string so it can be safely
     passed to the client and assigned to an Image component's source property.
@@ -77,56 +77,56 @@ def get_business_profile() -> dict:
         dict: {'success': True, 'data': {field: value, ...}}
               {'success': False, 'error': str}
     """
-    logger.info("get_business_profile called")
-    user = anvil.users.get_user()
-    if user is None:
-        return {'success': False, 'error': 'Not authenticated'}
+  logger.info("get_business_profile called")
+  user = anvil.users.get_user()
+  if user is None:
+    return {'success': False, 'error': 'Not authenticated'}
 
-    try:
-        rows = list(app_tables.business_profile.search())
-        row  = rows[0] if rows else None
+  try:
+    rows = list(app_tables.business_profile.search())
+    row  = rows[0] if rows else None
 
-        if row is None:
-            logger.debug("get_business_profile: no row found, returning empty dict")
-            return {'success': True, 'data': {}}
+    if row is None:
+      logger.debug("get_business_profile: no row found, returning empty dict")
+      return {'success': True, 'data': {}}
 
-        logo = row['logo']
-        # Convert media object to URL string; pass None if no logo stored
-        logo_url = logo.url if logo is not None else None
+    logo = row['logo']
+    # Convert media object to URL string; pass None if no logo stored
+    logo_url = logo.url if logo is not None else None
 
-        data = {
-            'business_name':  row['business_name'],
-            'tagline':        row['tagline'],
-            'description':    row['description'],
-            'logo':           logo_url,
-            'contact_email':  row['contact_email'],
-            'phone':          row['phone'],
-            'address_line_1': row['address_line_1'],
-            'address_line_2': row['address_line_2'],
-            'city':           row['city'],
-            'country':        row['country'],
-            'postal_code':    row['postal_code'],
-            'website_url':    row['website_url'],
-            'social_facebook':  row['social_facebook'],
-            'social_instagram': row['social_instagram'],
-            'social_x':         row['social_x'],
-            'social_linkedin':  row['social_linkedin'],
-            'updated_at':     row['updated_at'],
-        }
-        logger.debug("get_business_profile: returning profile")
-        return {'success': True, 'data': data}
+    data = {
+      'business_name':  row['business_name'],
+      'tagline':        row['tagline'],
+      'description':    row['description'],
+      'logo':           logo_url,
+      'contact_email':  row['contact_email'],
+      'phone':          row['phone'],
+      'address_line_1': row['address_line_1'],
+      'address_line_2': row['address_line_2'],
+      'city':           row['city'],
+      'country':        row['country'],
+      'postal_code':    row['postal_code'],
+      'website_url':    row['website_url'],
+      'social_facebook':  row['social_facebook'],
+      'social_instagram': row['social_instagram'],
+      'social_x':         row['social_x'],
+      'social_linkedin':  row['social_linkedin'],
+      'updated_at':     row['updated_at'],
+    }
+    logger.debug("get_business_profile: returning profile")
+    return {'success': True, 'data': data}
 
-    except tables.TableError as exc:
-        logger.error("get_business_profile table error", exc_info=True)
-        return {'success': False, 'error': str(exc)}
-    except Exception as exc:
-        logger.error("get_business_profile unexpected error", exc_info=True)
-        return {'success': False, 'error': 'An unexpected error occurred'}
+  except tables.TableError as exc:
+    logger.error("get_business_profile table error", exc_info=True)
+    return {'success': False, 'error': str(exc)}
+  except Exception as exc:
+    logger.error("get_business_profile unexpected error", exc_info=True)
+    return {'success': False, 'error': 'An unexpected error occurred'}
 
 
 @anvil.server.callable
 def save_business_profile(data: dict, logo_file=None) -> dict:
-    """Create or update the business_profile row.
+  """Create or update the business_profile row.
 
     Args:
         data:      Dict of business profile fields to write.
@@ -137,54 +137,54 @@ def save_business_profile(data: dict, logo_file=None) -> dict:
         dict: {'success': True, 'data': None}
               {'success': False, 'error': str}
     """
-    logger.info("save_business_profile called")
-    user = anvil.users.get_user()
-    if user is None:
-        return {'success': False, 'error': 'Not authenticated'}
+  logger.info("save_business_profile called")
+  user = anvil.users.get_user()
+  if user is None:
+    return {'success': False, 'error': 'Not authenticated'}
 
-    try:
-        now  = datetime.now()
-        rows = list(app_tables.business_profile.search())
-        row  = rows[0] if rows else None
+  try:
+    now  = datetime.now()
+    rows = list(app_tables.business_profile.search())
+    row  = rows[0] if rows else None
 
-        fields = {
-            'business_name':    data.get('business_name', ''),
-            'tagline':          data.get('tagline', ''),
-            'description':      data.get('description', ''),
-            'contact_email':    data.get('contact_email', ''),
-            'phone':            data.get('phone', ''),
-            'address_line_1':   data.get('address_line_1', ''),
-            'address_line_2':   data.get('address_line_2', ''),
-            'city':             data.get('city', ''),
-            'country':          data.get('country', ''),
-            'postal_code':      data.get('postal_code', ''),
-            'website_url':      data.get('website_url', ''),
-            'social_facebook':  data.get('social_facebook', ''),
-            'social_instagram': data.get('social_instagram', ''),
-            'social_x':         data.get('social_x', ''),
-            'social_linkedin':  data.get('social_linkedin', ''),
-            'updated_at':       now,
-        }
+    fields = {
+      'business_name':    data.get('business_name', ''),
+      'tagline':          data.get('tagline', ''),
+      'description':      data.get('description', ''),
+      'contact_email':    data.get('contact_email', ''),
+      'phone':            data.get('phone', ''),
+      'address_line_1':   data.get('address_line_1', ''),
+      'address_line_2':   data.get('address_line_2', ''),
+      'city':             data.get('city', ''),
+      'country':          data.get('country', ''),
+      'postal_code':      data.get('postal_code', ''),
+      'website_url':      data.get('website_url', ''),
+      'social_facebook':  data.get('social_facebook', ''),
+      'social_instagram': data.get('social_instagram', ''),
+      'social_x':         data.get('social_x', ''),
+      'social_linkedin':  data.get('social_linkedin', ''),
+      'updated_at':       now,
+    }
 
-        if logo_file is not None:
-            fields['logo'] = logo_file
+    if logo_file is not None:
+      fields['logo'] = logo_file
 
-        if row is None:
-            logger.debug("save_business_profile: creating new row")
-            app_tables.business_profile.add_row(**fields)
-        else:
-            logger.debug("save_business_profile: updating existing row")
-            row.update(**fields)
+    if row is None:
+      logger.debug("save_business_profile: creating new row")
+      app_tables.business_profile.add_row(**fields)
+    else:
+      logger.debug("save_business_profile: updating existing row")
+      row.update(**fields)
 
-        logger.info("save_business_profile: saved successfully")
-        return {'success': True, 'data': None}
+    logger.info("save_business_profile: saved successfully")
+    return {'success': True, 'data': None}
 
-    except tables.TableError as exc:
-        logger.error("save_business_profile table error", exc_info=True)
-        return {'success': False, 'error': str(exc)}
-    except Exception as exc:
-        logger.error("save_business_profile unexpected error", exc_info=True)
-        return {'success': False, 'error': 'An unexpected error occurred'}
+  except tables.TableError as exc:
+    logger.error("save_business_profile table error", exc_info=True)
+    return {'success': False, 'error': str(exc)}
+  except Exception as exc:
+    logger.error("save_business_profile unexpected error", exc_info=True)
+    return {'success': False, 'error': 'An unexpected error occurred'}
 
 
 # ---------------------------------------------------------------------------
@@ -193,7 +193,7 @@ def save_business_profile(data: dict, logo_file=None) -> dict:
 
 @anvil.server.callable
 def get_email_config() -> dict:
-    """Return email_config fields. smtp_password is never returned in plaintext.
+  """Return email_config fields. smtp_password is never returned in plaintext.
 
     Returns '***' if smtp_password is set, '' if not set.
 
@@ -201,47 +201,47 @@ def get_email_config() -> dict:
         dict: {'success': True, 'data': {field: value, ...}}
               {'success': False, 'error': str}
     """
-    logger.info("get_email_config called")
-    user = anvil.users.get_user()
-    if user is None:
-        return {'success': False, 'error': 'Not authenticated'}
+  logger.info("get_email_config called")
+  user = anvil.users.get_user()
+  if user is None:
+    return {'success': False, 'error': 'Not authenticated'}
 
-    try:
-        rows = list(app_tables.email_config.search())
-        row  = rows[0] if rows else None
+  try:
+    rows = list(app_tables.email_config.search())
+    row  = rows[0] if rows else None
 
-        if row is None:
-            logger.debug("get_email_config: no row found, returning empty dict")
-            return {'success': True, 'data': {}}
+    if row is None:
+      logger.debug("get_email_config: no row found, returning empty dict")
+      return {'success': True, 'data': {}}
 
-        # Never return smtp_password plaintext — mask it
-        password_display = '***' if row['smtp_password'] else ''
+      # Never return smtp_password plaintext — mask it
+    password_display = '***' if row['smtp_password'] else ''
 
-        data = {
-            'email_provider':  row['email_provider'],
-            'smtp_host':       row['smtp_host'],
-            'smtp_port':       row['smtp_port'],
-            'smtp_username':   row['smtp_username'],
-            'smtp_password':   password_display,
-            'from_email':      row['from_email'],
-            'from_name':       row['from_name'],
-            'configured':      row['configured'],
-            'configured_at':   row['configured_at'],
-        }
-        logger.debug("get_email_config: returning config")
-        return {'success': True, 'data': data}
+    data = {
+      'email_provider':  row['email_provider'],
+      'smtp_host':       row['smtp_host'],
+      'smtp_port':       row['smtp_port'],
+      'smtp_username':   row['smtp_username'],
+      'smtp_password':   password_display,
+      'from_email':      row['from_email'],
+      'from_name':       row['from_name'],
+      'configured':      row['configured'],
+      'configured_at':   row['configured_at'],
+    }
+    logger.debug("get_email_config: returning config")
+    return {'success': True, 'data': data}
 
-    except tables.TableError as exc:
-        logger.error("get_email_config table error", exc_info=True)
-        return {'success': False, 'error': str(exc)}
-    except Exception as exc:
-        logger.error("get_email_config unexpected error", exc_info=True)
-        return {'success': False, 'error': 'An unexpected error occurred'}
+  except tables.TableError as exc:
+    logger.error("get_email_config table error", exc_info=True)
+    return {'success': False, 'error': str(exc)}
+  except Exception as exc:
+    logger.error("get_email_config unexpected error", exc_info=True)
+    return {'success': False, 'error': 'An unexpected error occurred'}
 
 
 @anvil.server.callable
 def save_email_config(data: dict) -> dict:
-    """Create or update the email_config row.
+  """Create or update the email_config row.
 
     Always sets configured = False. Only test_email_connection() may set
     configured = True, ensuring the saved credentials have been verified.
@@ -254,47 +254,47 @@ def save_email_config(data: dict) -> dict:
         dict: {'success': True, 'data': None}
               {'success': False, 'error': str}
     """
-    logger.info("save_email_config called")
-    user = anvil.users.get_user()
-    if user is None:
-        return {'success': False, 'error': 'Not authenticated'}
+  logger.info("save_email_config called")
+  user = anvil.users.get_user()
+  if user is None:
+    return {'success': False, 'error': 'Not authenticated'}
 
-    try:
-        rows = list(app_tables.email_config.search())
-        row  = rows[0] if rows else None
+  try:
+    rows = list(app_tables.email_config.search())
+    row  = rows[0] if rows else None
 
-        fields = {
-            'smtp_host':     data.get('smtp_host', ''),
-            'smtp_port':     data.get('smtp_port'),
-            'smtp_username': data.get('smtp_username', ''),
-            'smtp_password': data.get('smtp_password', ''),
-            'from_email':    data.get('from_email', ''),
-            'from_name':     data.get('from_name', ''),
-            # Always reset configured — must re-test after any save
-            'configured':    False,
-        }
+    fields = {
+      'smtp_host':     data.get('smtp_host', ''),
+      'smtp_port':     data.get('smtp_port'),
+      'smtp_username': data.get('smtp_username', ''),
+      'smtp_password': data.get('smtp_password', ''),
+      'from_email':    data.get('from_email', ''),
+      'from_name':     data.get('from_name', ''),
+      # Always reset configured — must re-test after any save
+      'configured':    False,
+    }
 
-        if row is None:
-            logger.debug("save_email_config: creating new row")
-            app_tables.email_config.add_row(**fields)
-        else:
-            logger.debug("save_email_config: updating existing row")
-            row.update(**fields)
+    if row is None:
+      logger.debug("save_email_config: creating new row")
+      app_tables.email_config.add_row(**fields)
+    else:
+      logger.debug("save_email_config: updating existing row")
+      row.update(**fields)
 
-        logger.info("save_email_config: saved successfully")
-        return {'success': True, 'data': None}
+    logger.info("save_email_config: saved successfully")
+    return {'success': True, 'data': None}
 
-    except tables.TableError as exc:
-        logger.error("save_email_config table error", exc_info=True)
-        return {'success': False, 'error': str(exc)}
-    except Exception as exc:
-        logger.error("save_email_config unexpected error", exc_info=True)
-        return {'success': False, 'error': 'An unexpected error occurred'}
+  except tables.TableError as exc:
+    logger.error("save_email_config table error", exc_info=True)
+    return {'success': False, 'error': str(exc)}
+  except Exception as exc:
+    logger.error("save_email_config unexpected error", exc_info=True)
+    return {'success': False, 'error': 'An unexpected error occurred'}
 
 
 @anvil.server.callable
 def test_email_connection() -> dict:
-    """Send a real test email using the stored SMTP credentials.
+  """Send a real test email using the stored SMTP credentials.
 
     Reads smtp_host, smtp_port, smtp_username, smtp_password from
     email_config and sends a plain-text test message to the logged-in
@@ -307,34 +307,34 @@ def test_email_connection() -> dict:
         dict: {'success': True, 'data': 'Test email sent successfully to <email>'}
               {'success': False, 'error': <exact exception message>}
     """
-    logger.info("test_email_connection called")
-    user = anvil.users.get_user()
-    if user is None:
-        return {'success': False, 'error': 'Not authenticated'}
+  logger.info("test_email_connection called")
+  user = anvil.users.get_user()
+  if user is None:
+    return {'success': False, 'error': 'Not authenticated'}
 
-    try:
-        rows = list(app_tables.email_config.search())
-        row  = rows[0] if rows else None
+  try:
+    rows = list(app_tables.email_config.search())
+    row  = rows[0] if rows else None
 
-        if row is None:
-            return {'success': False, 'error': 'No email configuration found. Save your settings first.'}
+    if row is None:
+      return {'success': False, 'error': 'No email configuration found. Save your settings first.'}
 
-        smtp_host     = row['smtp_host']
-        smtp_port     = row['smtp_port']
-        smtp_username = row['smtp_username']
-        smtp_password = row['smtp_password']
-        from_email    = row['from_email']
-        from_name     = row['from_name']
-        to_email      = user['email']
+    smtp_host     = row['smtp_host']
+    smtp_port     = row['smtp_port']
+    smtp_username = row['smtp_username']
+    smtp_password = row['smtp_password']
+    from_email    = row['from_email']
+    from_name     = row['from_name']
+    to_email      = user['email']
 
-        if not all([smtp_host, smtp_port, smtp_username, smtp_password, from_email]):
-            return {'success': False, 'error': 'Email configuration is incomplete. Please fill in all fields.'}
+    if not all([smtp_host, smtp_port, smtp_username, smtp_password, from_email]):
+      return {'success': False, 'error': 'Email configuration is incomplete. Please fill in all fields.'}
 
-        logger.debug("test_email_connection: connecting to SMTP",
-                     extra={'smtp_host': smtp_host, 'smtp_port': smtp_port})
+    logger.debug("test_email_connection: connecting to SMTP",
+                 extra={'smtp_host': smtp_host, 'smtp_port': smtp_port})
 
-        msg = MIMEText(
-            "This is a test email from Mybizz.\n\n"
+    msg = MIMEText(
+      "This is a test email from Mybizz.\n\n"
             "Your SMTP configuration is working correctly."
         )
         msg['Subject'] = 'Mybizz — SMTP Test'
