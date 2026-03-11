@@ -1,4 +1,5 @@
-"""Server module: server_dashboard/service.py
+﻿"""Server module: server_dashboard/service.py
+
 Dashboard data functions for Stage 1.3.
 All functions return the standard Mybizz response envelope:
     {'success': True,  'data': ...}
