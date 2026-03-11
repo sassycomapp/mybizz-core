@@ -1,0 +1,210 @@
+---
+name: "Code Draft — Stage 1.4 Settings & Configuration"
+version: "1.0"
+stage: "1.4"
+task: "3-draft"
+phase: "CODE_DRAFT"
+model: "claude-sonnet-4-6"
+temperature: 0.1
+---
+
+system: |
+  You are a senior Anvil.works Python developer writing a code draft.
+  You produce every file a stage requires — client form(s) and server
+  module(s) — in one complete pass.
+  No TODOs. No placeholders. No stubs. Every function fully implemented.
+  The draft goes to a polish pass — but it must be substantively correct
+  and complete before it gets there.
+
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+  Forms are folders. Code lives in FormName/__init__.py — never FormName.py.
+  form_template.yaml is the Designer file — never modify it programmatically.
+  Read every existing target file before writing anything.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
+
+  CODING STANDARDS — NON-NEGOTIABLE:
+
+  RESPONSE ENVELOPE — ALL SERVER FUNCTIONS:
+  Every @anvil.server.callable returns exactly one of:
+    {'success': True, 'data': <r>}
+    {'success': False, 'error': str(e)}
+  No raw returns. No exceptions escaping to the client.
+
+  AUTHENTICATION — ALL SERVER FUNCTIONS:
+  First line after def: check anvil.users.get_user().
+  If None: return {'success': False, 'error': 'Not authenticated'}
+
+  LOGGING — SERVER MODULES ONLY:
+  logger = logging.getLogger(__name__) at module top.
+  INFO at function entry. DEBUG for internal steps.
+  WARNING for recoverable issues. ERROR for failures.
+  print() is forbidden in server code — no exceptions.
+
+  EXCEPTIONS:
+  No bare except. Named exceptions only. Specific before general.
+  Never swallow exceptions silently.
+
+  EVENT HANDLERS — CLIENT FORMS:
+  Handlers contain zero logic. They call methods only.
+  All logic lives in named methods on the form class.
+
+  FORM INITIALISATION:
+  Auth check (require_admin() or require_auth()) BEFORE init_components().
+  self.item set BEFORE init_components(**properties) in every form.
+  open_form() in __init__ → return immediately after.
+
+  DATA ACCESS:
+  No Data Tables access from client code. Ever.
+  All reads and writes go through @anvil.server.callable functions.
+
+  DESIGNER PROPERTIES:
+  Properties settable in Designer must NOT be set in code.
+  Properties not settable in Designer (e.g. LinearPanel orientation)
+  MUST be set in code with a comment explaining why.
+
+  TYPE HINTS AND DOCSTRINGS:
+  All public functions have type hints.
+  All non-trivial functions have docstrings: Args, Returns, Raises.
+
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
+
+context_files:
+  - ref_anvil_coding.md
+  - ref_anvil_coding_patterns.md
+  - policy_security.md
+
+prompt: |
+
+  ## SCHEMA — RELEVANT TABLES ONLY
+
+  business_profile: business_name (string), tagline (string),
+    description (string), logo (media), contact_email (string),
+    phone (string), address_line_1 (string), address_line_2 (string),
+    city (string), country (string), postal_code (string),
+    website_url (string), social_facebook (string),
+    social_instagram (string), social_x (string),
+    social_linkedin (string), updated_at (datetime)
+
+  email_config: email_provider (string), smtp_host (string),
+    smtp_port (number), smtp_username (string), smtp_password (string),
+    from_email (string), from_name (string),
+    configured (bool), configured_at (datetime)
+
+  payment_config: active_gateway (string),
+    stripe_publishable_key (string), stripe_secret_key (string),
+    stripe_connected (bool), stripe_connected_at (datetime),
+    paystack_public_key (string), paystack_secret_key (string),
+    paystack_connected (bool), paystack_connected_at (datetime),
+    paypal_client_id (string), paypal_secret (string),
+    paypal_connected (bool), paypal_connected_at (datetime),
+    test_mode (bool), configured_at (datetime)
+
+  theme_config: primary_color (string), accent_color (string),
+    font_family (string), header_style (string), updated_at (datetime)
+
+  ## STAGE SPEC
+
+  ### SettingsForm — client form
+
+  Tab bar: lp_tab_bar (LinearPanel), btn_tab_business, btn_tab_email,
+    btn_tab_payments, btn_tab_theme
+
+  Tab panels (one visible at a time):
+    col_business (default visible), col_email, col_payments, col_theme
+
+  Business tab: lbl_section_biz, txt_business_name, txt_tagline,
+    txt_description, lbl_section_contact, txt_contact_email,
+    txt_contact_phone, lbl_section_address, txt_address_line_1,
+    txt_address_line_2, txt_city, txt_country, txt_postal_code,
+    lbl_section_web, txt_website_url, txt_facebook, txt_instagram,
+    txt_social_x, txt_linkedin, lbl_section_logo, lbl_logo_hint,
+    img_logo_preview, fu_logo, lp_actions_business, btn_save_business
+
+  Email tab: lbl_section_smtp, lbl_provider, txt_smtp_host,
+    txt_smtp_port, txt_smtp_username, txt_smtp_password,
+    lbl_section_from, txt_from_email, txt_from_name,
+    lbl_config_status, lp_actions_email, btn_save_email, btn_test_email
+
+  Payments tab: lbl_section_gw, dd_active_gateway, cb_test_mode,
+    col_stripe, lbl_stripe, txt_stripe_pub, lbl_stripe_secret_note,
+      txt_stripe_sk, lbl_stripe_status,
+    col_paystack, lbl_paystack, txt_paystack_pub,
+      lbl_paystack_secret_note, txt_paystack_sk, lbl_paystack_status,
+    col_paypal, lbl_paypal, txt_paypal_id, lbl_paypal_secret_note,
+      txt_paypal_sk, lbl_paypal_status,
+    lp_actions_payments, btn_save_payments
+
+  Theme tab: lbl_section_colours, lbl_colour_hint, txt_primary_color,
+    txt_accent_color, lbl_section_font, dd_font_family,
+    lbl_section_layout, lbl_theme_deferred, dd_header_style,
+    lp_actions_theme, btn_save_theme
+
+  Behaviour:
+  - Four tab buttons switch panels. Active button role='filled',
+    others role='outlined'. Default: col_business visible.
+  - dd_active_gateway change shows matching gateway panel, hides others.
+  - load_business_profile(), load_email_config(), load_payment_config(),
+    load_theme_config() called from __init__ after initialisation.
+  - Save handlers validate then call server, show Notification or alert.
+  - btn_test_email validates then calls test_email_connection(),
+    writes result string directly to lbl_config_status.
+  - _save_payments() must NOT include stripe_secret_key,
+    paystack_secret_key, or paypal_secret in its outbound dict.
+  - Validation: invalid field → role='outlined-error', error text in
+    placeholder, text cleared. Reset: role='outlined', restore placeholder.
+  - business_name and contact_email required for business save.
+  - All six email fields required; smtp_port must be a valid integer.
+
+  ### server_settings/service.py — server module
+
+  Functions:
+    create_initial_config(business_name, user=None) — PRESERVE EXACTLY
+    get_business_profile() — auth check, return all fields, logo as URL
+    save_business_profile(data, logo_file=None) — auth check, upsert row
+    get_email_config() — auth check, smtp_password → '***'/'' never plaintext
+    save_email_config(data) — auth check, always sets configured=False
+    test_email_connection() — auth check, real SMTP send via smtplib,
+      on success sets configured=True and configured_at
+    get_payment_config() — auth check, all three secret keys → '***'/''
+    save_payment_config(data) — auth check, secret columns NEVER written,
+      _PAYMENT_SECRET_COLUMNS frozenset + defensive assert required
+    get_theme_config() — auth check, return all fields
+    save_theme_config(data) — auth check, upsert row
+
+  All four config tables are single-row. Pattern:
+    rows = list(app_tables.x.search()); row = rows[0] if rows else None
+
+  Security boundary: stripe_secret_key, paystack_secret_key, paypal_secret
+    are managed exclusively by Stage 1.5 Vault. save_payment_config() must
+    never write these columns under any circumstances.
+
+  ## TARGET FILES
+  client: C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py
+  server: C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py
+
+  ## SPECIFIC INSTRUCTIONS
+  SettingsForm __init__ order:
+    1. require_admin()
+    2. init_components(**properties)
+    3. self.lp_tab_bar.orientation = 'horizontal'
+       # Cannot be set in Designer — must be set in code
+    4. self.txt_smtp_password.hide_text = True
+    5. self.lbl_section_from.scale = 'small'
+       # Missing from Designer build — must be set in code
+    6. self.get_open_form().set_active_link('nav_settings')
+    7. Set all static label texts (logo hint, colour hint, theme
+       deferred notice, three vault notes)
+    8. Set dropdown items for dd_active_gateway, dd_font_family,
+       dd_header_style
+    9. _activate_tab('btn_tab_business')
+    10. Four load calls
+
+  server_settings: create_initial_config() uses the config table
+    (not business_profile) — preserve it exactly, do not touch it.
+
+  ## GENERATE
+  Read every existing target file first.
+  Produce every target file in full — client form first, then server module.
+  End each file with:  # CODE DRAFT COMPLETE — <filename>
+  End the full response with: # STAGE DRAFT COMPLETE — Stage 1.4 Settings & Configuration

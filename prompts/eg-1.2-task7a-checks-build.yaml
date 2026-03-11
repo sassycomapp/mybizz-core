@@ -1,130 +1,34 @@
 ---
-name: "Continue Checks — Generate & Maintain"
+name: "Checks Build — Stage 1.2 Authentication"
 version: "1.0"
-task: "checks-maintenance"
-phase: "CHECKS_MAINTENANCE"
-model: "grok-4.1-fast"
-apply_model: "morph-v3-large"
+stage: "1.2"
+task: "7a-checks-build"
+phase: "CHECKS_BUILD"
+model: "claude-sonnet-4-6"
 temperature: 0.05
 ---
 
 system: |
-  Senior Mybizz developer maintaining the continue.dev check files.
-  Check files live in .continue/checks/ and fire on every PR.
-  Each file covers one concern. Each file grows stage by stage —
-  new stages append a new section, never modify existing sections.
+  You are a senior Mybizz developer maintaining the continue.dev check files.
+  Check files live in .continue/checks/ and are verified on every stage
+  completion. Each file covers one concern. Each file grows stage by stage —
+  new stages append a new section, existing sections are never modified.
 
-  MCP SERVERS:
-    context7: C:\Users\dev-p\.continue\mcpServers\context7-mcp.yaml
+  Your job for this run: read the stage spec, derive new criteria for the
+  current stage, and append one new section to each of the 11 check files.
 
-context_files:
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
-    reason: "Stage definitions — derive correct section heading and criteria scope."
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
-    reason: "Security rules — source for security.md check criteria."
+  APPEND RULES — NON-NEGOTIABLE:
+  Never modify existing sections — append only.
+  Never repeat universal rules already in file headers.
+  Criteria must be specific and actionable — not "check security".
+  Each criterion must name the exact file, function, or component to check.
+  If a stage introduces nothing new for a check file, append a minimal
+  section: "## Stage X.Y — Name — No new criteria for this check."
+  Stage section heading must match the stage number exactly.
 
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
-    reason: "Compliance rules — source for compliance.md check criteria."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_development.md"
-    reason: "Development standards — source for code-quality.md and test-coverage.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature.md"
-    reason: "Naming rules — source for naming-conventions.md criteria."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature_components.md"
-    reason: "Component prefix rules — source for naming-conventions.md criteria."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
-    reason: "Coding rules — source for error-handling.md and code-quality.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
-    reason: "Response envelope and patterns — source for response-envelope.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
-    reason: "M3 component rules — source for m3-compliance.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_data_tables.md"
-    reason: "Data table rules — source for data-integrity.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_navigation.md"
-    reason: "Navigation rules — source for navigation.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
-    reason: "Data binding rules — source for data-binding.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
-    reason: "Form validation rules — source for data-binding.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
-    reason: "Testing standards — source for test-coverage.md."
-
-  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
-    reason: "Integration test patterns — source for test-coverage.md."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
-    reason: "Existing check — read before appending new stage section."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
-    reason: "Existing check — read before appending."
-
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
-    reason: "Existing check — read before appending."
-
-prompt: |
-  You are running at the completion of a stage. The stage number is provided
-  in the task description or branch name. Read it carefully.
-
-  ## STEP 1 — READ ALL EXISTING CHECK FILES
-  Read all 11 check files listed in context_files. Understand what is already
-  covered so you do not duplicate criteria.
-
-  ## STEP 2 — READ THE STAGE SPEC
-  Read spec_build_plan.md for the current stage. Extract:
-  - What forms are created
-  - What server functions are created
-  - What tables are created
-  - What navigation is added
-  - What integrations are introduced
-
-  ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
-  For each of the 11 check files, derive the stage-specific criteria:
-
-  Ask for each file: "What new things does this stage introduce that this
-  check needs to verify?" Only add criteria that are NEW to this stage.
-  Do not repeat universal rules already in the file header.
-
-  If a stage introduces nothing new for a particular check file, add a
-  minimal section: "## Stage {n} — {Name} — No new criteria for this check."
-
-  ## STEP 4 — APPEND SECTIONS
-  For each check file, append the new stage section at the end of the file.
-  Format exactly:
+  SECTION FORMAT — every appended section must use this format exactly:
 
   ## Stage {phase}.{stage} — {Stage Name}
 
@@ -135,24 +39,102 @@ prompt: |
 
   Pass if [clear pass condition].
 
-  ## RULES
-  - Never modify existing sections — append only
-  - Criteria must be specific and actionable — not "check security"
-  - Each criterion must name the exact file, function, or component to check
-  - If an Anvil API needs verification, use context7 to confirm before writing
-  - Stage section heading must match the stage number exactly
-  - Universal rules (already in file headers) must not be repeated in stage sections
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
-output_files:
+context_files:
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_build_plan.md"
+    reason: "Stage definitions — derive correct section heading and criteria scope."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security rules — source for security.md check criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
+    reason: "Compliance rules — source for compliance.md check criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_development.md"
+    reason: "Development standards — source for code-quality.md and test-coverage.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature.md"
+    reason: "Naming rules — source for naming-conventions.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_nomenclature_components.md"
+    reason: "Component prefix rules — source for naming-conventions.md criteria."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Coding rules — source for error-handling.md and code-quality.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "Response envelope and patterns — source for response-envelope.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_components.md"
+    reason: "M3 component rules — source for m3-compliance.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_data_tables.md"
+    reason: "Data table rules — source for data-integrity.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_navigation.md"
+    reason: "Navigation rules — source for navigation.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards.md"
+    reason: "Data binding rules — source for data-binding.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\spec_ui_standards_forms.md"
+    reason: "Form validation rules — source for data-binding.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
+    reason: "Testing standards — source for test-coverage.md."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
+    reason: "Integration test patterns — source for test-coverage.md."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
+    reason: "Existing check — read before appending new stage section."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
+    reason: "Existing check — read before appending."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
----
+    reason: "Existing check — read before appending."
+
+prompt: |
+
+  Stage to process: 1.2 — Authentication
+
+  ## STEP 1 — READ ALL EXISTING CHECK FILES
+  Read all 11 check files listed in context_files.
+  Understand what is already covered so you do not duplicate criteria.
+
+  ## STEP 2 — READ THE STAGE SPEC
+  Read spec_build_plan.md for Stage 1.2.
+  Extract:
+  - What forms are created or modified
+  - What server functions are created
+  - What tables are created or modified
+  - What navigation is added
+  - What integrations or security boundaries are introduced
+
+  ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
+  For each of the 11 check files ask:
+  "What does Stage 1.2 introduce that this check needs to verify?"
+  Only add criteria that are new to Stage 1.2.
+  Do not repeat universal rules already in the file header.
+  Do not repeat criteria already present in earlier stage sections.
+
+  ## STEP 4 — APPEND SECTIONS
+  Append one new section to each of the 11 check files.
+  Use the section format defined in the system block exactly.
+  If nothing new to add: append the minimal no-criteria section.
+
+  ## OUTPUT FILES
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\security.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\data-integrity.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\response-envelope.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\error-handling.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\code-quality.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\m3-compliance.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\navigation.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\data-binding.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\naming-conventions.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\compliance.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\test-coverage.md
+
+  End with: # CHECKS BUILD COMPLETE — Stage 1.2 Authentication

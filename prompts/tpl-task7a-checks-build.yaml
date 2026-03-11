@@ -1,0 +1,166 @@
+# ============================================================
+# CLAUDE USAGE NOTE — DELETE THIS ENTIRE BLOCK BEFORE RUNNING
+# ============================================================
+#
+# WHAT THIS TEMPLATE IS FOR:
+# Task 7a — Checks Build. Run once at the completion of each
+# stage. Reads the stage spec, derives new criteria for each
+# of the 11 check files, and appends a new stage section to
+# each file. Never modifies existing sections — append only.
+#
+# WHEN TO RUN:
+# After Task 6 (Uplink Testing) is complete and the stage is
+# considered done. Run before closing the stage.
+#
+# HOW THE CHECK FILES WORK:
+# 11 check files live in .continue/checks/. Each covers one
+# concern (security, data-integrity, response-envelope, etc.)
+# Each file grows stage by stage. Universal rules live in the
+# file header and are never repeated in stage sections.
+# Stage sections are append-only — never modify what is there.
+#
+# HOW TO FILL THIS IN:
+#
+# {{stage_id}}         e.g. "1.4"
+# {{stage_name}}       e.g. "Settings & Configuration"
+#
+# {{context_files}}
+#   Always include the full standard set below. Do not trim.
+#   Policy and rules files are the source of criteria —
+#   removing any one of them produces incomplete checks.
+#   Standard set:
+#     Rules sources (derive criteria from these):
+#       - spec_build_plan.md           — stage definitions
+#       - policy_security.md           — source for security.md
+#       - policy_security_compliance.md — source for compliance.md
+#       - policy_development.md        — source for code-quality.md, test-coverage.md
+#       - policy_nomenclature.md       — source for naming-conventions.md
+#       - policy_nomenclature_components.md — component prefix rules
+#       - ref_anvil_coding.md          — source for error-handling.md, code-quality.md
+#       - ref_anvil_coding_patterns.md — source for response-envelope.md
+#       - ref_anvil_components.md      — source for m3-compliance.md
+#       - ref_anvil_data_tables.md     — source for data-integrity.md
+#       - ref_anvil_navigation.md      — source for navigation.md
+#       - spec_ui_standards.md         — source for data-binding.md
+#       - spec_ui_standards_forms.md   — source for data-binding.md
+#       - ref_anvil_testing.md         — source for test-coverage.md
+#       - ref_anvil_testing_integration.md — source for test-coverage.md
+#     Existing check files (read before appending):
+#       - .continue/checks/security.md
+#       - .continue/checks/data-integrity.md
+#       - .continue/checks/response-envelope.md
+#       - .continue/checks/error-handling.md
+#       - .continue/checks/code-quality.md
+#       - .continue/checks/m3-compliance.md
+#       - .continue/checks/navigation.md
+#       - .continue/checks/data-binding.md
+#       - .continue/checks/naming-conventions.md
+#       - .continue/checks/compliance.md
+#       - .continue/checks/test-coverage.md
+#
+# SECTION FORMAT — NON-NEGOTIABLE:
+#   ## Stage {phase}.{stage} — {Stage Name}
+#
+#   Look for these issues and fix them:
+#
+#   - [specific, actionable criterion]
+#   - [specific, actionable criterion]
+#
+#   Pass if [clear pass condition].
+#
+# CACHING NOTE:
+#   The system block is static — cached after the first call.
+#   Stage-specific content lives in the prompt block only.
+#
+# DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
+# ============================================================
+
+---
+name: "Checks Build — Stage {{stage_id}} {{stage_name}}"
+version: "1.0"
+stage: "{{stage_id}}"
+task: "7a-checks-build"
+phase: "CHECKS_BUILD"
+model: "claude-sonnet-4-6"
+temperature: 0.05
+---
+
+system: |
+  You are a senior Mybizz developer maintaining the continue.dev check files.
+  Check files live in .continue/checks/ and are verified on every stage
+  completion. Each file covers one concern. Each file grows stage by stage —
+  new stages append a new section, existing sections are never modified.
+
+  Your job for this run: read the stage spec, derive new criteria for the
+  current stage, and append one new section to each of the 11 check files.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
+
+  APPEND RULES — NON-NEGOTIABLE:
+  Never modify existing sections — append only.
+  Never repeat universal rules already in file headers.
+  Criteria must be specific and actionable — not "check security".
+  Each criterion must name the exact file, function, or component to check.
+  If a stage introduces nothing new for a check file, append a minimal
+  section: "## Stage X.Y — Name — No new criteria for this check."
+  Stage section heading must match the stage number exactly.
+
+  SECTION FORMAT — every appended section must use this format exactly:
+
+  ## Stage {phase}.{stage} — {Stage Name}
+
+  Look for these issues and fix them:
+
+  - [specific, actionable criterion]
+  - [specific, actionable criterion]
+
+  Pass if [clear pass condition].
+
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
+
+context_files:
+{{context_files}}
+
+prompt: |
+
+  Stage to process: {{stage_id}} — {{stage_name}}
+
+  ## STEP 1 — READ ALL EXISTING CHECK FILES
+  Read all 11 check files listed in context_files.
+  Understand what is already covered so you do not duplicate criteria.
+
+  ## STEP 2 — READ THE STAGE SPEC
+  Read spec_build_plan.md for Stage {{stage_id}}.
+  Extract:
+  - What forms are created or modified
+  - What server functions are created
+  - What tables are created or modified
+  - What navigation is added
+  - What integrations or security boundaries are introduced
+
+  ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
+  For each of the 11 check files ask:
+  "What does Stage {{stage_id}} introduce that this check needs to verify?"
+  Only add criteria that are new to this stage.
+  Do not repeat universal rules already in the file header.
+  Do not repeat criteria already present in earlier stage sections.
+
+  ## STEP 4 — APPEND SECTIONS
+  Append one new section to each of the 11 check files.
+  Use the section format defined in the system block exactly.
+  If nothing new to add: append the minimal no-criteria section.
+
+  ## OUTPUT FILES
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\security.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\data-integrity.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\response-envelope.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\error-handling.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\code-quality.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\m3-compliance.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\navigation.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\data-binding.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\naming-conventions.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\compliance.md
+  C:\_Data\_Mybizz\mybizz-core\.continue\checks\test-coverage.md
+
+  End with: # CHECKS BUILD COMPLETE — Stage {{stage_id}} {{stage_name}}

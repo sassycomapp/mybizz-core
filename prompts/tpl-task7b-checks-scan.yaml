@@ -1,0 +1,140 @@
+# ============================================================
+# CLAUDE USAGE NOTE — DELETE THIS ENTIRE BLOCK BEFORE RUNNING
+# ============================================================
+#
+# WHAT THIS TEMPLATE IS FOR:
+# Task 7b — Checks Scan. Run against a specific stage's source
+# files. Reads all 11 check files, verifies every criterion
+# for the target stage against the source files, and produces
+# a scan report. Does not modify any source file.
+#
+# WHEN TO RUN:
+# After Task 7a (Checks Build) has appended the stage section
+# to all check files. The scan verifies the code against those
+# criteria before the stage is formally closed.
+#
+# HOW TO FILL THIS IN:
+#
+# {{stage_id}}         e.g. "1.4"
+# {{stage_name}}       e.g. "Settings & Configuration"
+#
+# {{source_files}}
+#   All source files for this stage — every file the agent
+#   must read to verify criteria. Include full paths and a
+#   one-line reason for each.
+#   Always include anvil.yaml for schema verification.
+#   Always include both test report files if they exist.
+#   Example:
+#     - path: "C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py"
+#       reason: "PRIMARY scan target — client form."
+#     - path: "C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py"
+#       reason: "PRIMARY scan target — server module."
+#     - path: "C:\_Data\_Mybizz\mybizz-core\anvil.yaml"
+#       reason: "Schema authority — verify table columns."
+#     - path: "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml"
+#       reason: "Test coverage verification."
+#     - path: "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-uplink-report.yaml"
+#       reason: "Test coverage verification."
+#
+# {{report_path}}
+#   Full path to the scan report yaml.
+#   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-checks-scan-report.yaml"
+#
+# VERDICT OPTIONS:
+#   PASSED             — all criteria pass or are unverifiable
+#   FAILED             — one or more criteria fail
+#   PASSED_WITH_WARNINGS — passes but unverifiable items need human review
+#
+# CACHING NOTE:
+#   System block is static — cached after the first call.
+#   Stage-specific content lives in the prompt block only.
+#
+# DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
+# ============================================================
+
+---
+name: "Checks Scan — Stage {{stage_id}} {{stage_name}}"
+version: "1.0"
+stage: "{{stage_id}}"
+task: "7b-checks-scan"
+phase: "CHECKS_SCAN"
+model: "claude-sonnet-4-6"
+temperature: 0.05
+---
+
+system: |
+  You are a senior Mybizz code reviewer running a checks scan.
+  You read the check files, read the source files, and verify every
+  criterion for the target stage. You report pass, fail, or unverifiable
+  for every criterion. You do not modify any source file.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
+
+  SCAN RULES — NON-NEGOTIABLE:
+  Verify both Universal Rules (file headers) and the stage section
+  for the target stage in each check file.
+  Do not skip any criterion — every item must have a status.
+  PASS        — criterion met
+  FAIL        — criterion not met; name the exact file and function
+  UNVERIFIABLE — cannot be confirmed from source files alone
+                 (e.g. Designer settings, runtime behaviour)
+  UNVERIFIABLE is not a failure — it flags items needing human review.
+  FAIL must name the exact file and line or function where the issue exists.
+  Do not modify any source file — report only.
+
+  REPORT FORMAT:
+  Fields: name, version, stage, phase, generated_by, run_timestamp,
+  verdict (PASSED / FAILED / PASSED_WITH_WARNINGS),
+  summary (total, passed, failed, unverifiable),
+  results (list: check_file, criterion, status, note),
+  developer_actions (FAIL items requiring human fix),
+  unverifiable (items requiring human review).
+
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
+
+context_files:
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\response-envelope.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\error-handling.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\code-quality.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\m3-compliance.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\navigation.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-binding.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\naming-conventions.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\compliance.md"
+    reason: "Criteria to verify."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
+    reason: "Criteria to verify."
+
+prompt: |
+
+  Stage to scan: {{stage_id}} — {{stage_name}}
+
+  ## SOURCE FILES
+  {{source_files}}
+
+  ## STEP 1 — READ ALL CHECK FILES
+  Read all 11 check files. For Stage {{stage_id}}, verify both the
+  Universal Rules in each file header and the Stage {{stage_id}} section.
+
+  ## STEP 2 — READ ALL SOURCE FILES
+  Read every source file listed above in full.
+
+  ## STEP 3 — VERIFY EACH CRITERION
+  For every criterion in every check file, verify it against the source files.
+  Mark each criterion PASS, FAIL, or UNVERIFIABLE per the scan rules above.
+
+  ## STEP 4 — WRITE REPORT
+  Write the scan report to: {{report_path}}
+
+  End with: # CHECKS SCAN COMPLETE — Stage {{stage_id}} {{stage_name}}

@@ -1,0 +1,154 @@
+---
+name: "Local Testing — Stage 1.4 Settings & Configuration"
+version: "1.0"
+stage: "1.4"
+task: "5-local"
+phase: "TEST_LOCAL"
+model: "claude-sonnet-4-6"
+temperature: 0.05
+---
+
+system: |
+  You are a senior Anvil.works QA engineer writing and running pure logic
+  tests for a single stage of the Mybizz platform. One test file covers
+  the entire stage. You write the tests, run them, remediate any failures,
+  and produce the final report — all in a single run.
+  The report reflects only the current state of the code. Developer actions
+  are listed only if something cannot be auto-remediated.
+
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+  Anvil form modules are NOT named after the form.
+  Every form folder contains __init__.py — this is the file to read.
+  NEVER reference SettingsForm.py — it does not exist.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST RUN ───────────────────────────────────
+
+  TESTING STANDARDS — NON-NEGOTIABLE:
+
+  SCOPE — PURE LOGIC ONLY:
+  Test only functions whose execution path contains no Anvil imports,
+  no network calls, no Data Tables access, and no @anvil.server.callable
+  dependency. Any function that cannot be isolated from the Anvil runtime
+  belongs in Task 6 Uplink Testing — do not attempt to mock it here.
+
+  TEST CATEGORIES — APPLY TO EVERY TESTABLE FUNCTION:
+  Happy path   — valid inputs that should pass
+  Boundary     — values at the exact edge of rules
+  Adversarial  — SQL injection, XSS, null bytes, Unicode, emoji,
+                 very long strings, whitespace-only, control characters
+  Edge case    — empty string, None, wrong type, case sensitivity,
+                 leading/trailing spaces
+
+  REMEDIATION RULES:
+  Never weaken a security check to pass a test — fix the code.
+  Never modify a test to match wrong behaviour — fix the code.
+  All remediations must conform to ref_anvil_coding.md standards.
+  Re-run after every remediation to confirm the fix holds.
+
+  RUN RECORD — FORMAT:
+  One entry per test. Fields: id, function, category, description,
+  input, expected, status (PASSED/FAILED), actual, remediated (bool).
+  Populated after tests are run — not before.
+
+  REPORT — FORMAT:
+  Reflects current state only — not history.
+  Fields: name, version, stage, phase, generated_by, run_timestamp,
+  verdict (PASSED / FAILED / PASSED_WITH_ACTIONS), summary
+  (total_tests, passed, failed, auto_remediated), passing list,
+  failing list, developer_actions list.
+  developer_actions is empty if all tests pass after remediation.
+
+# ── END STATIC BLOCK ────────────────────────────────────────────────────────
+
+context_files:
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Coding standards — all remediations must conform."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
+    reason: "Response envelope and masking patterns — source of truth for masking behaviour."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
+    reason: "Pure logic extraction pattern — how to isolate functions for pytest."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security requirements — source of adversarial and boundary test cases."
+
+prompt: |
+
+  ## SOURCE FILES
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\settings\\SettingsForm\\__init__.py"
+    reason: "Validation logic — _validate_business(), _validate_email(),
+             _set_field_error(), _clear_field_error()."
+
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_settings\\service.py"
+    reason: "Masking logic — get_email_config(), get_payment_config(),
+             save_payment_config() secret column exclusion."
+
+  ## TEST CATEGORIES REQUIRED
+
+  1. _validate_business() — business_name required
+     False when empty, whitespace-only, or None. True when populated.
+
+  2. _validate_business() — contact_email required
+     False when empty, whitespace-only, or None. True when populated.
+
+  3. _validate_email() — from_email required
+     False when empty or whitespace-only. True when populated.
+
+  4. _validate_email() — smtp_port must be numeric
+     False for 'abc', '0.5', ''. True for '587', '0', '65535', '-1'.
+     Cover boundary: '0', '65535', '587', '-1', '0.5', 'abc', '', ' '.
+
+  5. Hex colour validation — #RRGGBB format
+     If hex validation logic exists: '#1A73E8' valid, '#ZZZ' invalid,
+     'no-hash' invalid, '#1A73E8FF' too long, '' empty, None.
+     If no hex validation function exists: note as developer_action
+     (missing validation — not a test failure).
+
+  6. _save_payments() outbound dict — secret keys absent
+     stripe_secret_key, paystack_secret_key, and paypal_secret must
+     NOT be present as keys in the outbound dict under any circumstances.
+
+  7. get_email_config() masking — smtp_password never plaintext
+     '***' when smtp_password has a value. '' when empty or None.
+     Never the raw value under any input.
+
+  8. get_payment_config() masking — all three secret keys never plaintext
+     stripe_secret_key, paystack_secret_key, paypal_secret:
+     '***' when set. '' when empty or None. Never the raw value.
+
+  ## OUTPUT FILES
+  Test file:   C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py
+  Run record:  C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
+  Report:      C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml
+
+  Run command: pytest -v --import-mode=importlib tests/test_1.4_settings.py
+
+  ## STEP 1 — IDENTIFY TESTABLE FUNCTIONS
+  Read both source files in full.
+  Identify every function whose logic can be tested without Anvil or network.
+  List them before writing any tests.
+
+  ## STEP 2 — WRITE TESTS
+  Write complete pytest tests covering all eight categories above.
+  Cover all four test categories for every testable function.
+  Write the complete test file to:  C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings.py
+  Write the initial run record (status blank) to: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
+
+  ## STEP 3 — RUN TESTS
+  Execute: pytest -v --import-mode=importlib tests/test_1.4_settings.py
+  Record pass/fail for each test in: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-run.yaml
+
+  ## STEP 4 — REMEDIATE FAILURES
+  For each failed test:
+    1. Identify root cause in the source function
+    2. Fix the function — conform to ref_anvil_coding.md
+    3. Re-run to confirm it passes
+    4. Never weaken a security check to pass a test
+    5. Never modify a test to match wrong behaviour
+
+  ## STEP 5 — WRITE REPORT
+  Write final state to: C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-local-report.yaml
+  Current state only — not history.
+  developer_actions lists only items requiring human intervention.
+  If all tests pass after remediation, developer_actions is empty.
+
+  End with: # LOCAL TESTING COMPLETE — Stage 1.4 Settings & Configuration

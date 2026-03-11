@@ -1,0 +1,897 @@
+﻿name: "1.4 Settings — Local Test Run Record"
+version: "1.0"
+stage: "1.4"
+phase: "TEST_LOCAL"
+status: "COMPLETE"
+run_timestamp: "2026-03-10T00:00:00"
+generated_by: "claude-sonnet-4-6"
+
+summary:
+  total_tests: 101
+  passed: 100
+  failed: 0
+  skipped: 1
+  auto_remediated: 0
+
+tests:
+  # ── Category 1 — _validate_business() business_name ──────────────────────
+
+  - id: "C1-01"
+    function: "_validate_business_logic"
+    category: "happy"
+    description: "Populated name and email returns True"
+    input: {business_name: "Acme Corp", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-02"
+    function: "_validate_business_logic"
+    category: "happy"
+    description: "Name with surrounding spaces returns True (strip applied)"
+    input: {business_name: "  Acme Corp  ", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-03"
+    function: "_validate_business_logic"
+    category: "boundary"
+    description: "Single character name returns True"
+    input: {business_name: "A", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-04"
+    function: "_validate_business_logic"
+    category: "boundary"
+    description: "255-char name returns True"
+    input: {business_name: "A*255", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-05"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Empty name returns False"
+    input: {business_name: "", contact_email: "owner@acme.com"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C1-06"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Whitespace-only name returns False"
+    input: {business_name: "   ", contact_email: "owner@acme.com"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C1-07"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Tab-only name returns False"
+    input: {business_name: "\t", contact_email: "owner@acme.com"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C1-08"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Newline-only name returns False"
+    input: {business_name: "\n", contact_email: "owner@acme.com"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C1-09"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "SQL injection in name returns True (presence check only)"
+    input: {business_name: "'; DROP TABLE users; --", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-10"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "XSS in name returns True"
+    input: {business_name: "<script>alert(1)</script>", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-11"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Null byte in name returns True"
+    input: {business_name: "Acme\x00Corp", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-12"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "10000-char name returns True"
+    input: {business_name: "A*10000", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-13"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Unicode name returns True"
+    input: {business_name: "Ünïcödé Büsïnëss", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-14"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Emoji in name returns True"
+    input: {business_name: "Acme 🚀 Corp", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C1-15"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Control chars in name returns True"
+    input: {business_name: "Acme\x01\x02Corp", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  # ── Category 2 — _validate_business() contact_email ──────────────────────
+
+  - id: "C2-01"
+    function: "_validate_business_logic"
+    category: "happy"
+    description: "Populated email returns True"
+    input: {business_name: "Acme Corp", contact_email: "owner@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-02"
+    function: "_validate_business_logic"
+    category: "boundary"
+    description: "Single char email returns True"
+    input: {business_name: "Acme Corp", contact_email: "x"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-03"
+    function: "_validate_business_logic"
+    category: "boundary"
+    description: "Max-length email returns True"
+    input: {business_name: "Acme Corp", contact_email: "a*255@example.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-04"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Empty email returns False"
+    input: {business_name: "Acme Corp", contact_email: ""}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C2-05"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Whitespace-only email returns False"
+    input: {business_name: "Acme Corp", contact_email: "   "}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C2-06"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Tab-only email returns False"
+    input: {business_name: "Acme Corp", contact_email: "\t"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C2-07"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Newline-only email returns False"
+    input: {business_name: "Acme Corp", contact_email: "\n"}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C2-08"
+    function: "_validate_business_logic"
+    category: "edge"
+    description: "Both fields empty returns False"
+    input: {business_name: "", contact_email: ""}
+    expected: false
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C2-09"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "SQL injection in email returns True"
+    input: {business_name: "Acme", contact_email: "' OR '1'='1"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-10"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "XSS in email returns True"
+    input: {business_name: "Acme", contact_email: "<img src=x onerror=alert(1)>"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-11"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Null byte in email returns True"
+    input: {business_name: "Acme", contact_email: "owner\x00@acme.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-12"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "10000-char email returns True"
+    input: {business_name: "Acme", contact_email: "e*10000"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-13"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Unicode email returns True"
+    input: {business_name: "Acme", contact_email: "üser@büsiness.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C2-14"
+    function: "_validate_business_logic"
+    category: "adversarial"
+    description: "Emoji email returns True"
+    input: {business_name: "Acme", contact_email: "user@🚀.com"}
+    expected: true
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  # ── Category 3 — _validate_email() required fields ────────────────────────
+
+  - id: "C3-01"
+    function: "_validate_email_logic"
+    category: "happy"
+    description: "All six fields populated returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C3-02"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_host empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-03"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_host whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-04"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_port empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-05"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_port whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-06"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_username empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-07"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_username whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-08"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_password empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-09"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "smtp_password whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-10"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "from_email empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-11"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "from_email whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-12"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "from_name empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-13"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "from_name whitespace returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-14"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "All six fields empty returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C3-15"
+    function: "_validate_email_logic"
+    category: "boundary"
+    description: "Single char per field returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  # ── Category 4 — smtp_port numeric ────────────────────────────────────────
+
+  - id: "C4-01"
+    function: "_validate_email_logic"
+    category: "happy"
+    description: "Port '587' returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-02"
+    function: "_validate_email_logic"
+    category: "happy"
+    description: "Port '465' returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-03"
+    function: "_validate_email_logic"
+    category: "happy"
+    description: "Port '25' returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-04"
+    function: "_validate_email_logic"
+    category: "boundary"
+    description: "Port '0' returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-05"
+    function: "_validate_email_logic"
+    category: "boundary"
+    description: "Port '65535' returns True"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-06"
+    function: "_validate_email_logic"
+    category: "boundary"
+    description: "Port '-1' returns True (int parse succeeds)"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-07"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port 'abc' returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-08"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port 'smtp' returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-09"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port '587abc' returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-10"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port '0.5' returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-11"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port emoji returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-12"
+    function: "_validate_email_logic"
+    category: "edge"
+    description: "Port '  587  ' (padded) returns True after strip"
+    status: "PASSED"
+    actual: true
+    remediated: false
+
+  - id: "C4-13"
+    function: "_validate_email_logic"
+    category: "adversarial"
+    description: "SQL injection port returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-14"
+    function: "_validate_email_logic"
+    category: "adversarial"
+    description: "XSS port returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  - id: "C4-15"
+    function: "_validate_email_logic"
+    category: "adversarial"
+    description: "Null byte port returns False"
+    status: "PASSED"
+    actual: false
+    remediated: false
+
+  # ── Category 5 — Hex colour validation ────────────────────────────────────
+
+  - id: "C5-01"
+    function: "_validate_hex (MISSING)"
+    category: "developer_action"
+    description: "No hex validation function found in either source file — skipped"
+    status: "SKIPPED"
+    actual: "developer_action recorded — see developer_actions in report"
+    remediated: false
+
+  # ── Category 6 — _save_payments() outbound dict ───────────────────────────
+
+  - id: "C6-01"
+    function: "_SAVE_PAYMENTS_OUTBOUND_KEYS"
+    category: "security"
+    description: "stripe_secret_key absent from outbound dict"
+    status: "PASSED"
+    actual: "key not present"
+    remediated: false
+
+  - id: "C6-02"
+    function: "_SAVE_PAYMENTS_OUTBOUND_KEYS"
+    category: "security"
+    description: "paystack_secret_key absent from outbound dict"
+    status: "PASSED"
+    actual: "key not present"
+    remediated: false
+
+  - id: "C6-03"
+    function: "_SAVE_PAYMENTS_OUTBOUND_KEYS"
+    category: "security"
+    description: "paypal_secret absent from outbound dict"
+    status: "PASSED"
+    actual: "key not present"
+    remediated: false
+
+  - id: "C6-04"
+    function: "_PAYMENT_SECRET_COLUMNS"
+    category: "security"
+    description: "No intersection between _PAYMENT_SECRET_COLUMNS and outbound keys"
+    status: "PASSED"
+    actual: "intersection is empty frozenset"
+    remediated: false
+
+  - id: "C6-05"
+    function: "_SAVE_PAYMENTS_OUTBOUND_KEYS"
+    category: "happy"
+    description: "Expected safe public keys present in outbound dict"
+    status: "PASSED"
+    actual: "all five safe keys confirmed present"
+    remediated: false
+
+  - id: "C6-06"
+    function: "_PAYMENT_SECRET_COLUMNS"
+    category: "boundary"
+    description: "_PAYMENT_SECRET_COLUMNS contains exactly the three secret fields"
+    status: "PASSED"
+    actual: "frozenset matches exactly"
+    remediated: false
+
+  # ── Category 7 — smtp_password masking ────────────────────────────────────
+
+  - id: "C7-01"
+    function: "mask_password"
+    category: "happy"
+    description: "Set password 'secret123' returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-02"
+    function: "mask_password"
+    category: "happy"
+    description: "10000-char password returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-03"
+    function: "mask_password"
+    category: "boundary"
+    description: "Single char password returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-04"
+    function: "mask_password"
+    category: "boundary"
+    description: "Stored value '***' returns '***' (truthy — mask it)"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-05"
+    function: "mask_password"
+    category: "boundary"
+    description: "Whitespace-only password returns '***' (truthy)"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-06"
+    function: "mask_password"
+    category: "edge"
+    description: "Empty string returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C7-07"
+    function: "mask_password"
+    category: "edge"
+    description: "None returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C7-08"
+    function: "mask_password"
+    category: "security"
+    description: "Raw value never returned"
+    status: "PASSED"
+    actual: "result != raw confirmed"
+    remediated: false
+
+  - id: "C7-09"
+    function: "mask_password"
+    category: "adversarial"
+    description: "SQL injection value masked, never raw"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-10"
+    function: "mask_password"
+    category: "adversarial"
+    description: "XSS value masked, never raw"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-11"
+    function: "mask_password"
+    category: "adversarial"
+    description: "Unicode password masked, never raw"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C7-12"
+    function: "mask_password"
+    category: "adversarial"
+    description: "Emoji password masked, never raw"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  # ── Category 8 — payment secret masking ───────────────────────────────────
+
+  - id: "C8-01"
+    function: "mask_secret (stripe_secret_key)"
+    category: "happy"
+    description: "Set stripe_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-02"
+    function: "mask_secret (stripe_secret_key)"
+    category: "edge"
+    description: "Empty stripe_secret_key returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-03"
+    function: "mask_secret (stripe_secret_key)"
+    category: "edge"
+    description: "None stripe_secret_key returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-04"
+    function: "mask_secret (stripe_secret_key)"
+    category: "security"
+    description: "stripe_secret_key raw value never returned"
+    status: "PASSED"
+    actual: "result != raw confirmed"
+    remediated: false
+
+  - id: "C8-05"
+    function: "mask_secret (stripe_secret_key)"
+    category: "boundary"
+    description: "Whitespace stripe_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-06"
+    function: "mask_secret (stripe_secret_key)"
+    category: "boundary"
+    description: "Stored '***' stripe_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-07"
+    function: "mask_secret (paystack_secret_key)"
+    category: "happy"
+    description: "Set paystack_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-08"
+    function: "mask_secret (paystack_secret_key)"
+    category: "edge"
+    description: "Empty paystack_secret_key returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-09"
+    function: "mask_secret (paystack_secret_key)"
+    category: "edge"
+    description: "None paystack_secret_key returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-10"
+    function: "mask_secret (paystack_secret_key)"
+    category: "security"
+    description: "paystack_secret_key raw value never returned"
+    status: "PASSED"
+    actual: "result != raw confirmed"
+    remediated: false
+
+  - id: "C8-11"
+    function: "mask_secret (paystack_secret_key)"
+    category: "boundary"
+    description: "Whitespace paystack_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-12"
+    function: "mask_secret (paystack_secret_key)"
+    category: "boundary"
+    description: "Stored '***' paystack_secret_key returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-13"
+    function: "mask_secret (paypal_secret)"
+    category: "happy"
+    description: "Set paypal_secret returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-14"
+    function: "mask_secret (paypal_secret)"
+    category: "edge"
+    description: "Empty paypal_secret returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-15"
+    function: "mask_secret (paypal_secret)"
+    category: "edge"
+    description: "None paypal_secret returns ''"
+    status: "PASSED"
+    actual: ""
+    remediated: false
+
+  - id: "C8-16"
+    function: "mask_secret (paypal_secret)"
+    category: "security"
+    description: "paypal_secret raw value never returned"
+    status: "PASSED"
+    actual: "result != raw confirmed"
+    remediated: false
+
+  - id: "C8-17"
+    function: "mask_secret (paypal_secret)"
+    category: "boundary"
+    description: "Whitespace paypal_secret returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-18"
+    function: "mask_secret (paypal_secret)"
+    category: "boundary"
+    description: "Stored '***' paypal_secret returns '***'"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-19"
+    function: "mask_secret"
+    category: "adversarial"
+    description: "SQL injection value masked across all three fields"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-20"
+    function: "mask_secret"
+    category: "adversarial"
+    description: "XSS value masked across all three fields"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-21"
+    function: "mask_secret"
+    category: "adversarial"
+    description: "Unicode value masked across all three fields"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-22"
+    function: "mask_secret"
+    category: "adversarial"
+    description: "10000-char secret masked"
+    status: "PASSED"
+    actual: "***"
+    remediated: false
+
+  - id: "C8-23"
+    function: "mask_secret"
+    category: "adversarial"
+    description: "Null byte secret masked"
+    status: "PASSED"
+    actual: "***"
+    remediated: false

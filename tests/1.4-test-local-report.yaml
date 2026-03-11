@@ -1,0 +1,59 @@
+﻿name: "Stage 1.4 Settings & Configuration — Local Test Report"
+version: "1.0"
+stage: "1.4"
+phase: "TEST_LOCAL"
+generated_by: "claude-sonnet-4-6"
+run_timestamp: "2026-03-10T00:00:00"
+verdict: "PASSED_WITH_ACTIONS"
+
+summary:
+  total_tests: 101
+  passed: 100
+  failed: 0
+  skipped: 1
+  auto_remediated: 0
+
+passing:
+  - category: "Cat 1 — _validate_business() business_name"
+    count: 15
+    coverage: "happy, boundary, edge, adversarial (SQL injection, XSS, null byte, 10000-char, unicode, emoji, control chars)"
+
+  - category: "Cat 2 — _validate_business() contact_email"
+    count: 14
+    coverage: "happy, boundary, edge (empty, whitespace, tab, newline, both-empty), adversarial (SQL injection, XSS, null byte, 10000-char, unicode, emoji)"
+
+  - category: "Cat 3 — _validate_email() all six fields required"
+    count: 15
+    coverage: "happy (all populated), edge (each field empty + whitespace individually, all empty), boundary (single char per field)"
+
+  - category: "Cat 4 — _validate_email() smtp_port numeric"
+    count: 15
+    coverage: "happy (587, 465, 25), boundary (0, 65535, -1, padded spaces), edge (alpha, word, mixed, float, emoji), adversarial (SQL injection, XSS, null byte)"
+
+  - category: "Cat 6 — _save_payments() outbound dict secret keys absent"
+    count: 6
+    coverage: "stripe_secret_key absent, paystack_secret_key absent, paypal_secret absent, no intersection with _PAYMENT_SECRET_COLUMNS, safe keys present, frozenset exact contents"
+
+  - category: "Cat 7 — get_email_config() smtp_password masking"
+    count: 12
+    coverage: "happy (set value), boundary (single char, stored '***', whitespace-only), edge (empty string, None), security (raw never returned), adversarial (SQL injection, XSS, unicode, emoji)"
+
+  - category: "Cat 8 — get_payment_config() all three secret keys masking"
+    count: 23
+    coverage: "stripe_secret_key, paystack_secret_key, paypal_secret — each: happy (set), edge (empty, None), boundary (whitespace, stored '***'), security (raw never returned); adversarial (SQL injection, XSS, unicode, 10000-char, null byte)"
+
+failing: []
+
+developer_actions:
+  - id: "DA-01"
+    severity: "MEDIUM"
+    location: "client_code/settings/SettingsForm/__init__.py — _save_theme()"
+    action: >
+      Hex colour validation missing. Add _validate_hex(value: str) -> bool
+      to SettingsForm before _save_theme() is called.
+      Valid: '#1A73E8' (# + exactly 6 uppercase hex digits).
+      Invalid: '#ZZZ', 'no-hash', '#1A73E8FF' (8 digits), '' (empty),
+      None, '##1A73E8' (double hash), '#1a73e8' (lowercase).
+      Call _validate_hex() on both txt_primary_color.text and
+      txt_accent_color.text inside _save_theme() before the server call.
+      Add tests in this file under TestHexColourValidation once implemented.

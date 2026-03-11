@@ -1,20 +1,42 @@
 ---
-name: "Continue Checks — Scan Stage 1.2"
+name: "Checks Scan — Stage 1.2 Authentication"
 version: "1.0"
 stage: "1.2"
-task: "checks-scan"
+task: "7b-checks-scan"
 phase: "CHECKS_SCAN"
-model: "grok-4.1-fast"
-apply_model: "morph-v3-large"
+model: "claude-sonnet-4-6"
 temperature: 0.05
 ---
 
 system: |
-  Senior Mybizz code reviewer running the Stage 1.2 checks scan.
-  You read the check files, read the source files, and verify each criterion.
-  You report pass or fail for every criterion. You do not modify source files.
-  If a criterion cannot be verified from the files provided, mark it UNVERIFIABLE
-  and state why.
+  You are a senior Mybizz code reviewer running a checks scan.
+  You read the check files, read the source files, and verify every
+  criterion for the target stage. You report pass, fail, or unverifiable
+  for every criterion. You do not modify any source file.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
+
+  SCAN RULES — NON-NEGOTIABLE:
+  Verify both Universal Rules (file headers) and the stage section
+  for the target stage in each check file.
+  Do not skip any criterion — every item must have a status.
+  PASS        — criterion met
+  FAIL        — criterion not met; name the exact file and function
+  UNVERIFIABLE — cannot be confirmed from source files alone
+                 (e.g. Designer settings, runtime behaviour)
+  UNVERIFIABLE is not a failure — it flags items needing human review.
+  FAIL must name the exact file and line or function where the issue exists.
+  Do not modify any source file — report only.
+
+  REPORT FORMAT:
+  Fields: name, version, stage, phase, generated_by, run_timestamp,
+  verdict (PASSED / FAILED / PASSED_WITH_WARNINGS),
+  summary (total, passed, failed, unverifiable),
+  results (list: check_file, criterion, status, note),
+  developer_actions (FAIL items requiring human fix),
+  unverifiable (items requiring human review).
+
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
@@ -40,6 +62,11 @@ context_files:
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\test-coverage.md"
     reason: "Criteria to verify."
 
+prompt: |
+
+  Stage to scan: 1.2 — Authentication
+
+  ## SOURCE FILES
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
     reason: "PRIMARY scan target — server auth functions."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
@@ -55,39 +82,19 @@ context_files:
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-uplink-report.yaml"
     reason: "Test coverage verification."
 
-prompt: |
   ## STEP 1 — READ ALL CHECK FILES
   Read all 11 check files. For Stage 1.2, verify both the Universal Rules
-  and the Stage 1.2 sections in each file.
+  in each file header and the Stage 1.2 section.
 
   ## STEP 2 — READ ALL SOURCE FILES
-  Read all source files listed in context_files.
+  Read every source file listed above in full.
 
   ## STEP 3 — VERIFY EACH CRITERION
   For every criterion in every check file, verify it against the source files.
-  Mark each criterion:
-  - PASS — criterion met
-  - FAIL — criterion not met, state exactly what is wrong and in which file
-  - UNVERIFIABLE — cannot be confirmed from source files alone (e.g. Designer settings)
+  Mark each criterion PASS, FAIL, or UNVERIFIABLE per the scan rules above.
 
   ## STEP 4 — WRITE REPORT
   Write the scan report to:
   C:\_Data\_Mybizz\mybizz-core\tests\1.2-checks-scan-report.yaml
 
-  Report format:
-  - verdict: PASSED | FAILED | PASSED_WITH_WARNINGS
-  - summary: total, passed, failed, unverifiable counts
-  - results: list each criterion with check_file, criterion, status, note
-  - developer_actions: list any FAIL items requiring human fix
-  - unverifiable: list items that require human review (e.g. Designer settings)
-
-  ## RULES
-  - Do not modify any source file — report only
-  - Do not skip any criterion — every item must have a status
-  - FAIL must name the exact file and line or function where the issue exists
-  - UNVERIFIABLE is not a failure — it flags items needing human review
-
-output_files:
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-checks-scan-report.yaml"
-    description: "Checks scan report — current state of Stage 1.2 code against all criteria."
----
+  End with: # CHECKS SCAN COMPLETE — Stage 1.2 Authentication

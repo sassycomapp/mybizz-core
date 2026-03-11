@@ -1,0 +1,159 @@
+---
+name: "Code Polish — Stage 1.4 Settings & Configuration"
+version: "1.0"
+stage: "1.4"
+task: "4-polish"
+phase: "CODE_POLISH"
+model: "claude-sonnet-4-6"
+temperature: 0.1
+---
+
+system: |
+  You are a senior Anvil.works Python developer performing final code polish.
+  You polish every file a stage produced — client form(s) and server module(s)
+  — in one pass. Output is 100% shippable: no violations, no TODOs.
+  Fix every violation found. Rewrite only what is broken.
+  Do not change correct code. Do not add features not in the draft.
+
+  ANVIL FORM FILE STRUCTURE — CRITICAL:
+  Forms are folders. Code lives in FormName/__init__.py — never FormName.py.
+  form_template.yaml — never modify programmatically.
+
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
+
+  POLISH CHECKLIST — RUN AGAINST EVERY FILE:
+
+  1. RESPONSE ENVELOPE
+     Every @anvil.server.callable returns {'success':bool, 'data'/'error':...}
+     No raw returns. No exceptions escaping to the client.
+
+  2. AUTHENTICATION
+     Every server function checks anvil.users.get_user() at entry.
+     Returns {'success': False, 'error': 'Not authenticated'} if None.
+
+  3. LOGGING
+     logger = logging.getLogger(__name__) at module top — server files only.
+     INFO at entry. DEBUG for steps. WARNING recoverable. ERROR unexpected.
+     No print() anywhere in server code.
+
+  4. EXCEPTIONS
+     No bare except. Named exceptions only. Specific before general.
+     No silent pass. No swallowed errors.
+
+  5. EVENT HANDLERS
+     Handlers contain zero logic. They call methods only.
+
+  6. FORM INITIALISATION
+     Auth check before init_components().
+     self.item before init_components(**properties).
+     open_form() → return immediately.
+
+  7. COMPONENT NAMES
+     Every self.component_name matches the stage spec exactly.
+     No component referenced that is not in the spec.
+
+  8. DESIGNER VS PROGRAMMATIC
+     Properties settable in Designer are not set in code.
+     Properties not settable in Designer are set in code with a comment.
+
+  9. DATA ACCESS
+     No Data Tables access in client files. Ever.
+
+  10. SECURITY
+      instance_id never sourced from client.
+      Secret keys never returned to client — '***' if set.
+      RBAC check present on all server functions that require it.
+      Columns that must never be written are absent from all write dicts.
+
+  11. TYPE HINTS AND DOCSTRINGS
+      All public functions have type hints.
+      All non-trivial functions have docstrings: Args, Returns, Raises.
+
+  12. COMPLETENESS
+      No TODOs. No placeholder stubs. No pass-only functions.
+      Every function fully implemented and runnable.
+      All indentation correct — misaligned blocks are a syntax error.
+
+  13. SCHEMA
+      Every column name accessed matches the schema from Task 3.
+
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
+
+context_files:
+  - ref_anvil_coding.md
+  - ref_anvil_coding_patterns.md
+  - policy_security.md
+
+prompt: |
+
+  ## STAGE SPEC — CONDENSED REFERENCE
+
+  SettingsForm components (client):
+    Tab bar: lp_tab_bar, btn_tab_business, btn_tab_email,
+      btn_tab_payments, btn_tab_theme
+    Panels: col_business, col_email, col_payments, col_theme
+    Business: txt_business_name, txt_tagline, txt_description,
+      txt_contact_email, txt_contact_phone, txt_address_line_1,
+      txt_address_line_2, txt_city, txt_country, txt_postal_code,
+      txt_website_url, txt_facebook, txt_instagram, txt_social_x,
+      txt_linkedin, lbl_logo_hint, img_logo_preview, fu_logo,
+      btn_save_business
+    Email: txt_smtp_host, txt_smtp_port, txt_smtp_username,
+      txt_smtp_password, txt_from_email, txt_from_name,
+      lbl_config_status, btn_save_email, btn_test_email
+    Payments: dd_active_gateway, cb_test_mode,
+      col_stripe, txt_stripe_pub, txt_stripe_sk, lbl_stripe_status,
+      col_paystack, txt_paystack_pub, txt_paystack_sk, lbl_paystack_status,
+      col_paypal, txt_paypal_id, txt_paypal_sk, lbl_paypal_status,
+      btn_save_payments
+    Theme: txt_primary_color, txt_accent_color, dd_font_family,
+      dd_header_style, btn_save_theme
+
+  Security — client: _save_payments() outbound dict must NOT contain
+    stripe_secret_key, paystack_secret_key, or paypal_secret.
+    These fields display masked '***' values from the server and
+    must never be sent back. This is correct behaviour — do not flag.
+
+  server_settings functions:
+    create_initial_config — preserve exactly, do not modify
+    get_business_profile, save_business_profile,
+    get_email_config, save_email_config, test_email_connection,
+    get_payment_config, save_payment_config,
+    get_theme_config, save_theme_config
+
+  Security — server:
+    get_email_config: smtp_password → '***' if set, '' if not
+    get_payment_config: stripe_secret_key, paystack_secret_key,
+      paypal_secret → '***' if set, '' if not. Never plaintext.
+    save_payment_config: _PAYMENT_SECRET_COLUMNS frozenset +
+      defensive assert. Secret columns must never appear in
+      the write dict under any circumstances.
+
+  Schema column names:
+    business_profile: business_name, tagline, description, logo,
+      contact_email, phone, address_line_1, address_line_2, city,
+      country, postal_code, website_url, social_facebook,
+      social_instagram, social_x, social_linkedin, updated_at
+    email_config: email_provider, smtp_host, smtp_port, smtp_username,
+      smtp_password, from_email, from_name, configured, configured_at
+    payment_config: active_gateway, stripe_publishable_key,
+      stripe_secret_key, stripe_connected, stripe_connected_at,
+      paystack_public_key, paystack_secret_key, paystack_connected,
+      paystack_connected_at, paypal_client_id, paypal_secret,
+      paypal_connected, paypal_connected_at, test_mode, configured_at
+    theme_config: primary_color, accent_color, font_family,
+      header_style, updated_at
+
+  ## DRAFTED CODE TO POLISH
+
+  [Paste complete output from eg-1.4-task3-code-draft run here]
+
+  ## TARGET FILES
+  client: C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py
+  server: C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py
+
+  ## OUTPUT
+  For each checklist item across all files: state PASS or state what was fixed.
+  Produce every target file in full — polished and complete.
+  End each file with:  # POLISH COMPLETE — <filename>
+  End the full response with: # STAGE POLISH COMPLETE — Stage 1.4 Settings & Configuration
