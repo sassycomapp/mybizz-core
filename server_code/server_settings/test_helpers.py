@@ -1,4 +1,4 @@
-﻿"""
+"""
 Test helper server functions for Stage 1.4 Uplink integration tests.
 
 IMPORTANT: These functions are for automated testing only.
