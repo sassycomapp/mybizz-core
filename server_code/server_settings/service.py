@@ -1,4 +1,6 @@
 """Server module for settings and configuration services."""
+"""Server module for settings and configuration services"""
+
 import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
