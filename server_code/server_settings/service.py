@@ -1,4 +1,3 @@
-"""Server module for settings and configuration services."""
 """Server module for settings and configuration services"""
 
 import anvil.users
