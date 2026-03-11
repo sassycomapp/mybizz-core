@@ -3,104 +3,87 @@
 # ============================================================
 #
 # WHAT THIS TEMPLATE IS FOR:
-# This is the prompt template for Task 6 — Uplink Testing.
-# It covers all integration tests for a single stage in one
-# test file. The agent reads the safety protocol, verifies
-# schema, writes tests, runs them against the live Anvil app
-# via Uplink, remediates auto-fixable failures, and produces
-# the final report — all in a single run.
+# Task 6 — Uplink Testing. One prompt per stage. Always one
+# test file covering the entire stage. Never split.
+# The agent verifies schema, writes tests, runs them against
+# the live Anvil app via Uplink, remediates auto-fixable
+# failures, and produces the final report — all in a single run.
 #
 # WHAT UPLINK TESTING MEANS:
 # Integration tests against the live Anvil app — real tables,
 # real data, real @anvil.server.callable functions. The Anvil
 # Uplink connection must be active before running this prompt.
-# Tests that cannot connect to Anvil belong here, not in
-# Task 5 (Local Testing).
+# Pure logic functions already covered in Task 5 must NOT be
+# duplicated here.
 #
 # SAFETY PROTOCOL — NON-NEGOTIABLE:
-# All test data must use the sentinel value prefix (see below).
-# Every test must define cleanup steps before it runs.
-# A backup must exist before any test writes to live tables.
-# If backup cannot be confirmed: stop, do not run tests.
+# Step 1 is a human gate only. The agent asks the developer
+# for confirmation. The agent does NOT touch the file system,
+# list directories, or create anything during Step 1.
+# All test data must use the sentinel prefix defined below.
+# For single-row config tables: capture pre-test state and
+# restore after every test. Never delete config rows.
+#
+# TOKEN AND CACHE RULES — NON-NEGOTIABLE:
+# The system block is static — cached after the first call.
+# Never move stage-specific content into the system block.
+# anvil.yaml is never read in full. The schema excerpt lists
+# only the tables this stage touches. The agent reads anvil.yaml
+# only to verify those specific tables and columns — nothing else.
+# Do not pass session documents, handover files, or task plans
+# to this agent — for the developer conversation only.
+# The agent reads only the files listed in SOURCE FILES.
+# It does not read, list, or access anything else.
 #
 # HOW TO FILL THIS IN:
 #
-# {{stage_id}}
-#   e.g. "1.4"
-#
-# {{stage_name}}
-#   e.g. "Settings & Configuration"
+# {{stage_id}}         e.g. "1.4"
+# {{stage_name}}       e.g. "Settings & Configuration"
 #
 # {{sentinel_prefix}}
-#   The prefix used to tag all test data so it can be found
-#   and cleaned up. e.g. "TEST_" for emails, names, keys.
-#   All test rows, users, or records created must use this
-#   prefix so cleanup can identify them unambiguously.
+#   The prefix used to tag all test data. e.g. "TEST_"
+#   For single-row config tables: pre-test capture + restore
+#   pattern applies. Never delete config rows.
 #
-# {{schema_tables_to_verify}}
-#   List the exact tables and columns that must exist before
-#   tests run. Agent will read anvil.yaml and confirm.
-#   If a table or column is missing, affected tests are
-#   skipped and a developer_action is raised — never fail
-#   silently.
+# {{schema_excerpt}}
+#   List ONLY the tables and columns this stage touches.
+#   Never the full anvil.yaml. Extract only what the functions
+#   under test actually use.
 #   Example:
-#     - users: role, account_status, last_login
-#     - tbl_rate_limits: identifier, count, reset_time
+#     - email_config: smtp_host, smtp_port, smtp_username,
+#         smtp_password, from_email, from_name, configured
+#     - payment_config: active_gateway, stripe_publishable_key,
+#         stripe_secret_key, test_mode
 #
 # {{server_functions_to_test}}
-#   List every @anvil.server.callable function in scope for
-#   this stage. For each function, list the test scenarios
-#   required. Be explicit — do not leave coverage decisions
-#   to the agent.
+#   Every @anvil.server.callable function in scope.
+#   For each function list the test scenarios explicitly.
+#   Do not leave coverage decisions to the agent.
 #   Example:
-#     authenticate_user:
-#       - Valid credentials → success + role returned
-#       - Wrong password → failure, no role leaked
-#       - Rate limit: 10 failures → 11th blocked
-#     create_user:
-#       - Valid new user → success, role=owner set
-#       - Duplicate email → error, no duplicate created
+#     get_email_config:
+#       - Authenticated, smtp_password set → returned as '***'
+#       - Authenticated, smtp_password empty → returned as ''
+#       - Unauthenticated → failure, 'Not authenticated'
 #
-# {{source_files_to_test}}
-#   Full paths to the server module(s) under test.
-#   Always include anvil.yaml for schema verification.
+# {{source_files}}
+#   The server module under test and anvil.yaml only.
+#   Never include client files, session documents, or anything
+#   beyond what is needed to write and run the integration tests.
 #   Example:
-#     - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
-#       reason: "PRIMARY — all @anvil.server.callable functions."
+#     - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_settings\\service.py"
+#       reason: "PRIMARY — all @anvil.server.callable functions under test."
 #     - path: "C:\\_Data\\_Mybizz\\mybizz-core\\anvil.yaml"
-#       reason: "Schema authority — confirm tables and columns."
+#       reason: "Schema verification only — agent reads only the tables
+#                listed in the schema excerpt."
 #
 # {{test_file_path}}
-#   Full path to the pytest/Uplink test file to produce and run.
 #   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\test_1.4_settings_uplink.py"
 #
 # {{run_record_path}}
-#   Full path to the test run record yaml.
 #   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-uplink-run.yaml"
 #
 # {{report_path}}
-#   Full path to the final state report yaml.
 #   e.g. "C:\_Data\_Mybizz\mybizz-core\tests\1.4-test-uplink-report.yaml"
-#
-# {{context_files_for_this_task}}
-#   Standard set for Uplink testing:
-#     - ref_anvil_testing_integration.md  — safety protocol, sentinel values, cleanup
-#     - ref_anvil_testing.md              — Level 2 test structure, Uplink connection
-#     - policy_security.md               — source for adversarial integration tests
-#     - ref_anvil_coding.md              — standards, all remediations must conform
-#   Only add files beyond this set if genuinely required for the stage.
-#
-# REMEDIATION RULES:
-#   Auto-fixable: wrong logic, missing validation in source code → fix and re-run.
-#   Not auto-fixable: schema gaps, missing columns, Uplink/secrets issues,
-#     anything requiring Designer changes → write developer_action, do not guess.
-#   Never weaken a security check to pass a test — fix the code.
-#   Never modify a test to match wrong behaviour — fix the code.
-#
-# CACHING NOTE:
-#   The system block and TESTING STANDARDS block are static and
-#   will be cached after the first run. Keep all stage-specific
-#   content in the TASK SECTION at the bottom.
 #
 # DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
 # ============================================================
@@ -120,48 +103,39 @@ system: |
   integration tests for a single stage of the Mybizz platform.
   Tests run against the live Anvil app via Uplink — real tables, real data.
   You write the tests, run them, remediate auto-fixable failures, flag the
-  rest, and produce the final report.
-  The report reflects only the current state of the code — not the history
-  of what was wrong. Developer actions are listed only if something cannot
-  be auto-remediated.
+  rest, and produce the final report — all in a single run.
+  The report reflects only the current state of the code. Developer actions
+  are listed only if something cannot be auto-remediated.
 
-  ANVIL FORM FILE STRUCTURE — CRITICAL:
-  Anvil form modules are NOT named after the form.
-  Every form folder contains __init__.py — this is the file to read.
-  NEVER reference FormName.py — it does not exist.
+# ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
-# ── STATIC BLOCK — CACHED AFTER FIRST RUN ───────────────────────────────────
-
-  TESTING STANDARDS — NON-NEGOTIABLE:
-
-  SAFETY PROTOCOL — EXECUTE BEFORE ANY TEST RUNS:
-  1. Confirm a backup exists before proceeding.
-     If backup cannot be confirmed: stop, write developer_action, do not run.
-  2. All test data uses the sentinel prefix defined in this prompt.
-     No test row, user, or record may be created without the sentinel prefix.
-  3. Every test must define its cleanup steps before it executes.
-     Cleanup runs after every test regardless of pass or fail.
-  4. After all tests: confirm no sentinel-prefixed data remains in any table.
-     If cleanup is incomplete: run cleanup and note in report.
+  FILE ACCESS — HARD LIMIT:
+  Read only the files listed in SOURCE FILES in the prompt below.
+  Do not read, list, browse, or access any other file, folder,
+  or directory in the repository or file system for any reason.
 
   SCOPE — LIVE INTEGRATION ONLY:
-  Test only @anvil.server.callable functions that require the Anvil runtime,
-  live tables, or the Anvil Users service. Pure logic functions with no
-  network dependency belong in Task 5 Local Testing — do not duplicate them.
+  Test only @anvil.server.callable functions. Do not duplicate
+  pure logic tests already covered in Task 5 Local Testing.
+
+  SINGLE-ROW TABLE PATTERN:
+  Config tables hold at most one row. Never delete a config row.
+  Before every test: capture the full current row state.
+  After every test: restore the row to its captured state,
+  regardless of pass or fail.
 
   TEST CATEGORIES — APPLY TO EVERY CALLABLE FUNCTION:
   Happy path   — valid inputs, expected success response
   Auth failure — unauthenticated call → not authenticated error
-  Validation   — missing or malformed required fields → clear error
   Adversarial  — SQL injection, XSS, oversized input in string fields
-  Edge case    — duplicate records, empty tables, None values
+  Edge case    — empty tables, None values, boundary conditions
 
   REMEDIATION RULES:
-  Auto-fixable (fix source, re-run): wrong logic, missing server-side validation.
-  Not auto-fixable (write developer_action): schema gaps, missing columns,
-    Uplink/secrets issues, Designer-only settings, environment configuration.
-  Never weaken a security check to pass a test — fix the code.
-  Never modify a test to match wrong behaviour — fix the code.
+  Auto-fixable (fix source, re-run): wrong logic, missing validation.
+  Not auto-fixable (write developer_action): schema gaps, Uplink issues,
+    Designer settings, environment configuration.
+  Never weaken a security check to pass a test.
+  Never modify a test to match wrong behaviour.
   All remediations must conform to ref_anvil_coding.md standards.
 
   RUN RECORD — FORMAT:
@@ -178,26 +152,45 @@ system: |
   passing list, failing list, skipped list, developer_actions list.
   developer_actions is empty if all tests pass after remediation.
 
-# ── END STATIC BLOCK ────────────────────────────────────────────────────────
+# ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
 context_files:
-{{context_files_for_this_task}}
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
+    reason: "Safety protocol, sentinel values, cleanup patterns."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing.md"
+    reason: "Level 2 test structure and Uplink connection pattern."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
+    reason: "Security requirements — source for adversarial integration tests."
+  - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding.md"
+    reason: "Coding standards — all remediations must conform."
 
 prompt: |
 
+  ## STEP 1 — SAFETY CHECK — HUMAN GATE
+  Do not read any file. Do not list any directory. Do not create anything.
+  Ask the developer: "Have you taken a manual backup before this run?
+  Reply YES to continue or NO to stop."
+  If the reply is not YES: write developer_action "Manual backup required
+  before Uplink tests", stop here, do not proceed.
+
   ## SOURCE FILES
-  {{source_files_to_test}}
+  {{source_files}}
+
+  Read only the files listed above. Do not read, list, or access any
+  other file or directory in the repository or file system.
 
   ## SENTINEL PREFIX
-  All test data created during this run must use the prefix: {{sentinel_prefix}}
-  This applies to every email address, name, key, or identifier written to
-  any table. Cleanup must find and remove all rows matching this prefix.
+  All test data written during this run must use the prefix: {{sentinel_prefix}}
+  For single-row config tables: capture pre-test state, restore after every
+  test. Never delete a config row.
 
-  ## SCHEMA — TABLES TO VERIFY BEFORE TESTING
-  Read anvil.yaml and confirm these tables and columns exist:
-  {{schema_tables_to_verify}}
-  If a required table or column is missing: write a developer_action for each
-  gap and skip all tests that depend on the missing structure.
+  ## STEP 2 — VERIFY SCHEMA
+  Read anvil.yaml. Verify only the tables and columns listed below exist.
+  Do not read or report on any other part of anvil.yaml.
+  For any missing table or column: write developer_action, mark all
+  dependent tests as SKIPPED.
+
+  {{schema_excerpt}}
 
   ## SERVER FUNCTIONS AND TEST SCENARIOS
   {{server_functions_to_test}}
@@ -207,41 +200,33 @@ prompt: |
   Run record:  {{run_record_path}}
   Report:      {{report_path}}
 
-  ## STEP 1 — SAFETY CHECK
-  Confirm backup exists.
-  If not confirmed: write developer_action "Confirm backup before running
-  Uplink tests", stop here.
-
-  ## STEP 2 — VERIFY SCHEMA
-  Read anvil.yaml. Confirm all tables and columns listed above exist.
-  For any gap: write developer_action, mark dependent tests as SKIPPED.
-
   ## STEP 3 — WRITE TESTS
-  Write complete Uplink integration tests covering all scenarios listed above.
-  Every test must define cleanup steps before it executes.
+  Write complete Uplink integration tests covering all scenarios above.
+  Every test must capture pre-test state and restore it after,
+  regardless of pass or fail.
   Write the complete test file to: {{test_file_path}}
   Write the initial run record (status blank) to: {{run_record_path}}
 
   ## STEP 4 — RUN TESTS
   Execute all tests via Uplink against the live app.
-  Run cleanup after every test regardless of pass or fail.
-  Record pass/fail/skipped for each test in: {{run_record_path}}
+  Restore pre-test state after every test regardless of pass or fail.
+  Record pass/fail/skipped in: {{run_record_path}}
 
   ## STEP 5 — REMEDIATE AUTO-FIXABLE FAILURES
   For each failed test:
-    1. Determine if it is auto-fixable (code logic) or not (schema, environment)
+    1. Determine if auto-fixable (code logic) or not (schema, environment)
     2. If auto-fixable: fix the source function, re-run to confirm
-    3. If not auto-fixable: write a developer_action, do not attempt a fix
+    3. If not auto-fixable: write developer_action, do not attempt a fix
     4. Never weaken a security check to pass a test
     5. Never modify a test to match wrong behaviour
 
   ## STEP 6 — CLEANUP VERIFICATION
-  Confirm no sentinel-prefixed data remains in any table.
-  If any remains: run cleanup, note in report.
+  Confirm all tables touched during this run are in their pre-test state.
+  If any row remains modified: restore and note in report.
 
   ## STEP 7 — WRITE REPORT
   Write final state to: {{report_path}}
-  Report shows current state only — not history of what was wrong.
+  Current state only — not history.
   developer_actions lists only items requiring human intervention.
   If all tests pass after remediation, developer_actions is empty.
 

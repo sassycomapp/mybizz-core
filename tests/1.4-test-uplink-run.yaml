@@ -1,0 +1,349 @@
+﻿---
+name: "Uplink Test Run Record -- Stage 1.4 Settings & Configuration"
+version: "1.0"
+stage: "1.4"
+phase: "TEST_UPLINK"
+generated_by: "claude-sonnet-4-6"
+run_timestamp: null
+
+tests:
+  - id: T001
+    function: get_business_profile
+    category: happy_path
+    description: "Authenticated, row exists -> success, all fields returned"
+    input: "authenticated user; row seeded with TEST_Happy Corp"
+    expected: "success=True, all 17 fields present in data dict"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T002
+    function: get_business_profile
+    category: edge_case
+    description: "Authenticated, table empty -> success, empty dict returned"
+    input: "authenticated user; table cleared via helper"
+    expected: "success=True, data={}"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T003
+    function: get_business_profile
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T004
+    function: get_business_profile
+    category: edge_case
+    description: "logo field returned as URL string or None, never raw media object"
+    input: "authenticated user; existing row"
+    expected: "logo value is str or None"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T005
+    function: save_business_profile
+    category: happy_path
+    description: "Authenticated, valid data -> success, row written correctly"
+    input: "authenticated user; full valid data dict with TEST_ prefix"
+    expected: "success=True; fetched row matches written data"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T006
+    function: save_business_profile
+    category: edge_case
+    description: "Authenticated, no existing row -> success, new row created"
+    input: "authenticated user; table cleared; minimal data dict"
+    expected: "success=True; new row exists with business_name=TEST_Brand New Corp"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T007
+    function: save_business_profile
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T008
+    function: save_business_profile
+    category: adversarial
+    description: "SQL injection string in business_name -> stored safely as plain string"
+    input: "business_name: TEST_'; DROP TABLE business_profile; --"
+    expected: "success=True; value stored verbatim; no exception leak"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T009
+    function: save_business_profile
+    category: adversarial
+    description: "XSS string in business_name -> stored safely as plain string"
+    input: "business_name: TEST_<script>alert('xss')</script>"
+    expected: "success=True; value stored verbatim"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T010
+    function: save_business_profile
+    category: adversarial
+    description: "10000-char string in description -> stored safely without exception"
+    input: "description: TEST_ + 9995 x 'A' (total 10000 chars)"
+    expected: "success=True; full string stored and retrievable"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T011
+    function: save_business_profile
+    category: edge_case
+    description: "logo_file=None -> existing logo column value not modified"
+    input: "authenticated user; logo_file=None passed explicitly"
+    expected: "logo value unchanged after save"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T012
+    function: get_email_config
+    category: happy_path
+    description: "smtp_password set -> returned as '***', never plaintext"
+    input: "authenticated user; smtp_password=TEST_supersecret saved first"
+    expected: "smtp_password == '***'; plaintext not in response"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T013
+    function: get_email_config
+    category: edge_case
+    description: "smtp_password empty or None -> returned as ''"
+    input: "authenticated user; smtp_password='' saved"
+    expected: "smtp_password == ''"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T014
+    function: get_email_config
+    category: edge_case
+    description: "Authenticated, table empty -> success, empty dict"
+    input: "authenticated user; table cleared via helper"
+    expected: "success=True, data={}"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T015
+    function: get_email_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T016
+    function: save_email_config
+    category: happy_path
+    description: "Authenticated, valid data -> success, configured set to False"
+    input: "authenticated user; full valid SMTP data dict"
+    expected: "success=True; configured==False in fetched row"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T017
+    function: save_email_config
+    category: edge_case
+    description: "Row already has configured=True -> reset to False after save"
+    input: "authenticated user; configured forced to True via helper; then save called"
+    expected: "configured==False after save"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T018
+    function: save_email_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T019
+    function: get_payment_config
+    category: happy_path
+    description: "All three secret keys set -> each returned as '***', never plaintext"
+    input: "authenticated user; secrets set via helper"
+    expected: "stripe_secret_key=='***', paystack_secret_key=='***', paypal_secret=='***'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T020
+    function: get_payment_config
+    category: edge_case
+    description: "Secret keys empty or None -> each returned as ''"
+    input: "authenticated user; secrets cleared via helper"
+    expected: "stripe_secret_key=='', paystack_secret_key=='', paypal_secret==''"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T021
+    function: get_payment_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T022
+    function: save_payment_config
+    category: happy_path
+    description: "Authenticated, valid non-secret data -> success, row written"
+    input: "authenticated user; non-secret fields only"
+    expected: "success=True; active_gateway and publishable key written correctly"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T023
+    function: save_payment_config
+    category: adversarial
+    description: "stripe_secret_key in data dict -> column value in DB unchanged"
+    input: "stripe_secret_key: TEST_INJECTED_STRIPE_SK in data dict"
+    expected: "stripe_secret_key column unchanged after save"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T024
+    function: save_payment_config
+    category: adversarial
+    description: "paystack_secret_key in data dict -> column value in DB unchanged"
+    input: "paystack_secret_key: TEST_INJECTED_PAYSTACK_SK in data dict"
+    expected: "paystack_secret_key column unchanged after save"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T025
+    function: save_payment_config
+    category: adversarial
+    description: "paypal_secret in data dict -> column value in DB unchanged"
+    input: "paypal_secret: TEST_INJECTED_PAYPAL_SK in data dict"
+    expected: "paypal_secret column unchanged after save"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T026
+    function: save_payment_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T027
+    function: get_theme_config
+    category: happy_path
+    description: "Authenticated, row exists -> success, all fields returned"
+    input: "authenticated user; row seeded with TEST_ values"
+    expected: "success=True; all 5 fields present; values match written data"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T028
+    function: get_theme_config
+    category: edge_case
+    description: "Authenticated, table empty -> success, empty dict"
+    input: "authenticated user; table cleared via helper"
+    expected: "success=True, data={}"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T029
+    function: get_theme_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T030
+    function: save_theme_config
+    category: happy_path
+    description: "Authenticated, valid data -> success, row written correctly"
+    input: "authenticated user; full valid data dict with TEST_ prefix"
+    expected: "success=True; fetched row matches written data; updated_at present"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
+
+  - id: T031
+    function: save_theme_config
+    category: auth_failure
+    description: "Unauthenticated -> failure, 'Not authenticated'"
+    input: "no logged-in user"
+    expected: "success=False, error contains 'Not authenticated'"
+    status: null
+    actual: null
+    remediated: false
+    skip_reason: null
