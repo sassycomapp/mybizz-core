@@ -530,6 +530,15 @@ db_schema:
       type: datetime
     server: full
     title: contact_campaigns
+  contact_counter:
+    client: none
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      client_hidden: false
+      name: value
+      type: number
+    server: full
+    title: contact_counter
   contact_events:
     client: none
     columns:
@@ -564,6 +573,11 @@ db_schema:
       type: bool
     server: full
     title: contact_events
+  contact_submissions:
+    client: none
+    columns: []
+    server: full
+    title: contact_submissions
   contacts:
     client: none
     columns:
@@ -1206,6 +1220,11 @@ db_schema:
       type: string
     server: full
     title: kb_categories
+  landing_pages:
+    client: none
+    columns: []
+    server: full
+    title: landing_pages
   lead_captures:
     client: none
     columns:
@@ -1252,6 +1271,11 @@ db_schema:
       type: number
     server: full
     title: lead_captures
+  leads:
+    client: none
+    columns: []
+    server: full
+    title: leads
   pages:
     client: none
     columns:
@@ -1875,6 +1899,32 @@ db_schema:
       type: simpleObject
     server: full
     title: Users
+  vault:
+    client: none
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      client_hidden: false
+      name: name
+      type: string
+    - admin_ui: {order: 1, width: 200}
+      client_hidden: false
+      name: value
+      type: string
+    - admin_ui: {order: 2, width: 200}
+      client_hidden: false
+      name: created_at
+      type: datetime
+    - admin_ui: {order: 3, width: 200}
+      client_hidden: false
+      name: updated_at
+      type: datetime
+    - admin_ui: {order: 4, width: 200}
+      client_hidden: false
+      name: updated_by
+      target: users
+      type: link_single
+    server: full
+    title: vault
   webhook_log:
     client: none
     columns:
