@@ -30,3 +30,17 @@ Look for these issues and fix them:
 - All three forms — no `Label` component present anywhere; all text uses `Text` or `Heading` components only
 
 Pass if: all three auth forms use BlankLayout, all inputs use `role='outlined'`, `txt_password.hide_text = True` is set in code, no `Label` components are present, and button hierarchy is correct (max 1 filled-button per form).
+
+## Stage 1.4 — Settings & Configuration
+
+Look for these issues and fix them:
+
+- `SettingsForm/__init__.py` — the form uses a manual tab pattern (four `btn_tab_*` buttons + four `col_*` panels toggled by `_activate_tab`); the active tab button must use `role='filled'` and inactive tab buttons must use `role='outlined'` — flag if any tab button uses `role='filled-button'` (wrong role name for this pattern) or has no role set
+- `SettingsForm/__init__.py` — `self.lp_tab_bar.orientation = 'horizontal'` is set in code because it cannot be set in the Designer; confirm `lp_tab_bar` is a `LinearPanel` component — flag if a `FlowPanel` or `ColumnPanel` is used instead
+- `SettingsForm/__init__.py` — `self.txt_smtp_password.hide_text = True` is set in `__init__`; confirm no `type='password'` assignment is attempted anywhere in the file (M3 does not support this in code)
+- `SettingsForm/__init__.py` — all TextBox components used for data entry (`txt_business_name`, `txt_contact_email`, `txt_smtp_host`, `txt_smtp_port`, `txt_smtp_username`, `txt_smtp_password`, `txt_from_email`, `txt_from_name`, `txt_primary_color`, `txt_accent_color`) must use `role='outlined'` as their default state — flag any that have no role or use a different role
+- `SettingsForm/__init__.py` — `_set_field_error` sets `role='outlined-error'` and clears the text; `_clear_field_error` resets to `role='outlined'` — confirm no field is left in `outlined-error` state after a successful save (i.e. `_clear_field_error` is called for all validated fields that pass)
+- `SettingsForm/__init__.py` — `dd_active_gateway` and `dd_font_family` and `dd_header_style` are `DropdownMenu` components; confirm all three have `role='outlined'` set (either in Designer or in code)
+- `SettingsForm/__init__.py` — `img_logo_preview` is an `Image` component; confirm it uses the `img_` prefix as required for multi-image forms
+
+Pass if: tab buttons use `role='filled'`/`role='outlined'` (not `filled-button`), `lp_tab_bar` is a `LinearPanel`, `hide_text = True` is used instead of `type='password'`, all data-entry TextBoxes default to `role='outlined'`, error fields are cleared after successful validation, and all three DropdownMenus have `role='outlined'`.

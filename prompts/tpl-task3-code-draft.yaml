@@ -11,6 +11,74 @@
 # forces it. If forced: note it as a workaround, not a design
 # decision. Prefer trimming the stage spec first.
 #
+# ── COMPLIANCE RULES — MANDATORY BEFORE FILLING ─────────────
+# Before filling this template I must read:
+#   policy_security.md
+#   ref_anvil_coding.md
+#   ref_anvil_coding_patterns.md
+# and apply every applicable rule to the spec I am writing.
+# I do not leave compliance to the polish pass.
+# The draft must be compliant on submission.
+#
+# Specific rules that have caused failures and must be
+# explicitly included in {{stage_spec}} and
+# {{specific_instructions}} wherever they apply:
+#
+# EXCEPTION HIERARCHY — server modules:
+#   Catch specific before general: named exception before
+#   Exception. When a defensive assert is used as a
+#   programmer-error guard, add:
+#     except AssertionError: raise
+#   BEFORE any broader handler. Add an inline comment:
+#     # Hard fail — programmer error, must not be swallowed
+#   AssertionError is a subclass of Exception. If the general
+#   handler catches it first, the guard is silently disabled.
+#
+# ERROR MESSAGES — server modules:
+#   Named exceptions (e.g. tables.TableError) must return a
+#   generic user-facing string — never str(exc).
+#   Pattern: return {'success': False, 'error': 'A data error occurred'}
+#   Keep logger.error(..., exc_info=True) so the real message
+#   is logged server-side.
+#   The general Exception handler already uses a generic
+#   message. Every named handler must do the same.
+#
+# CLIENT-SIDE EXCEPTION HANDLING:
+#   Every anvil.server.call(...) in a client form must be
+#   wrapped in try/except catching both:
+#     anvil.server.TimeoutError
+#     anvil.server.AnvilWrappedError
+#   separately, with a user-friendly message for each.
+#   This is not optional. Every call site. No exceptions.
+#
+# DOCSTRINGS — every function, not just non-trivial ones:
+#   All three sections required: Args, Returns, Raises.
+#   "None" is an acceptable value for any section.
+#   Example: Raises: None — all exceptions caught in envelope
+#   This applies to private client methods (_save_*, _load_*)
+#   as well as public server callables.
+#
+# PII IN LOGS — server modules:
+#   No personal data in plain text in any log entry.
+#   Email addresses: log domain only — email.split('@')[-1]
+#   Never log full email addresses, passwords, or keys.
+#
+# UNUSED IMPORTS:
+#   Do not import modules that are not used. If a module was
+#   imported speculatively and not referenced, remove it.
+#   The polish pass will catch this but it should not reach
+#   polish in the first place.
+#
+# FILE ENCODING:
+#   All output files must be written in UTF-8 encoding.
+#   On Windows, Continue.dev may default to the system
+#   encoding (Windows-1252 or similar). Files written in
+#   non-UTF-8 encoding cannot be uploaded to Claude.ai.
+#   This instruction is in the static block and applies to
+#   every file the agent writes.
+#
+# ── END COMPLIANCE RULES ─────────────────────────────────────
+#
 # CACHING STRATEGY:
 # The system block and CODING STANDARDS are static — cached
 # after the first call in a session. They must remain identical
@@ -24,19 +92,19 @@
 #
 # {{schema_excerpt}}  — target: under 30 lines
 #   Include: only the exact tables and columns this stage
-#   reads or writes.
-#   Exclude: tables not touched, column types, indexes,
-#   metadata, any other anvil.yaml content.
+#   reads or writes. Name and type only — no admin_ui,
+#   no client_hidden, no metadata.
 #   Never pass the full anvil.yaml.
 #
 # {{stage_spec}}  — as short as possible while complete
-#   Include: component names (no descriptions), function
-#   signatures, security boundaries, single-row table
-#   patterns, columns that must never be written, Designer
-#   properties that must be set in code (with reason why).
+#   Include: component names, function signatures, security
+#   boundaries, single-row table patterns, columns that must
+#   never be written, Designer properties that must be set
+#   in code (with reason why), exception hierarchy where
+#   specific handlers are required, client-side try/except
+#   pattern for every anvil.server.call.
 #   Exclude: business rationale, UI aesthetics, descriptions
-#   of what components look like, anything the agent does not
-#   need to produce correct code.
+#   of what components look like.
 #
 # {{specific_instructions}}
 #   Include: Designer workarounds, preserved functions that
@@ -58,9 +126,6 @@
 #
 # {{target_files}}
 #   Full path for every file this stage produces.
-#   Example:
-#     client: C:\_Data\_Mybizz\mybizz-core\client_code\vault\VaultForm\__init__.py
-#     server: C:\_Data\_Mybizz\mybizz-core\server_code\server_vault\service.py
 #
 # FILE ACCESS RULE:
 #   The agent reads only the existing target files and the
@@ -72,7 +137,7 @@
 
 ---
 name: "Code Draft — Stage {{stage_id}} {{stage_name}}"
-version: "1.0"
+version: "2.0"
 stage: "{{stage_id}}"
 task: "3-draft"
 phase: "CODE_DRAFT"
@@ -101,6 +166,9 @@ system: |
 
   CODING STANDARDS — NON-NEGOTIABLE:
 
+  FILE ENCODING:
+  Write all output files in UTF-8 encoding.
+
   RESPONSE ENVELOPE — ALL SERVER FUNCTIONS:
   Every @anvil.server.callable returns exactly one of:
     {'success': True, 'data': <result>}
@@ -113,13 +181,28 @@ system: |
 
   LOGGING — SERVER MODULES ONLY:
   logger = logging.getLogger(__name__) at module top.
-  INFO at function entry. DEBUG for internal steps.
-  WARNING for recoverable issues. ERROR for failures.
+  logger.info() at entry of every @anvil.server.callable.
+  DEBUG for internal steps. WARNING recoverable. ERROR unexpected.
+  No personal data in log entries — email domain only, never full address.
   print() is forbidden in server code — no exceptions.
 
-  EXCEPTIONS:
+  EXCEPTIONS — SERVER MODULES:
   No bare except. Named exceptions only. Specific before general.
   Never swallow exceptions silently.
+  Named exception handlers (e.g. tables.TableError) must return a
+  generic user-facing string — never str(exc). Keep logger.error
+  with exc_info=True so the real message is logged server-side.
+    Correct:   return {'success': False, 'error': 'A data error occurred'}
+    Wrong:     return {'success': False, 'error': str(exc)}
+  When a defensive assert is a programmer-error guard, add:
+    except AssertionError: raise  # Hard fail — must not be swallowed
+  BEFORE any broader handler. AssertionError is a subclass of
+  Exception — the general handler will swallow it otherwise.
+
+  CLIENT-SIDE SERVER CALLS:
+  Every anvil.server.call(...) must be wrapped in try/except.
+  Catch anvil.server.TimeoutError and anvil.server.AnvilWrappedError
+  separately. Show a user-friendly message for each. No raw tracebacks.
 
   EVENT HANDLERS — CLIENT FORMS:
   Handlers contain zero logic. They call methods only.
@@ -127,7 +210,6 @@ system: |
 
   FORM INITIALISATION:
   Auth check (require_admin() or require_auth()) BEFORE init_components().
-  self.item set BEFORE init_components(**properties) in every form.
   open_form() in __init__ → return immediately after.
 
   DATA ACCESS:
@@ -140,8 +222,12 @@ system: |
   MUST be set in code with a comment explaining why.
 
   TYPE HINTS AND DOCSTRINGS:
-  All public functions have type hints.
-  All non-trivial functions have docstrings: Args, Returns, Raises.
+  All public and private functions have type hints.
+  Every function has a docstring with all three sections:
+    Args, Returns, Raises — "None" is acceptable for any section.
+
+  IMPORTS:
+  Import only modules that are used. No speculative imports.
 
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 

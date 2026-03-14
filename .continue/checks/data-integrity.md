@@ -22,3 +22,17 @@ Look for these issues and fix them:
 - `rate_limits` table — confirm the table exists in `anvil.yaml` with columns: `identifier` (string), `count` (number), `reset_time` (datetime), `last_request` (datetime); flag if `check_rate_limit` in `server_shared/utilities.py` references columns not present in the schema
 
 Pass if: all new `users` columns are present in `anvil.yaml`, `create_user` writes correct defaults, `last_login` is updated on auth, and `rate_limits` table schema matches what `check_rate_limit` accesses.
+
+## Stage 1.4 — Settings & Configuration
+
+Look for these issues and fix them:
+
+- `server_settings/service.py` — `get_business_profile` reads from `app_tables.business_profile` without an `instance_id` filter; confirm this table is single-row-per-instance by design and that no cross-tenant rows can exist — flag if the table has an `instance_id` column that is not being filtered
+- `server_settings/service.py` — `get_email_config`, `get_payment_config`, and `get_theme_config` all use `list(app_tables.<table>.search())` and take `rows[0]` — confirm each of these tables (`email_config`, `payment_config`, `theme_config`) is defined as single-row-per-instance in `anvil.yaml` and has no `instance_id` column that would require filtering
+- `server_settings/service.py` — `save_business_profile` writes an `updated_at` datetime field; confirm the `business_profile` table has an `updated_at` column of type `datetime` in `anvil.yaml`
+- `server_settings/service.py` — `save_email_config` always sets `configured = False` on every save; confirm the `email_config` table has a `configured` column of type `bool` and a `configured_at` column of type `datetime` in `anvil.yaml`
+- `server_settings/service.py` — `save_payment_config` writes `stripe_connected`, `paystack_connected`, and `paypal_connected` boolean columns; confirm all three exist in `anvil.yaml` for the `payment_config` table
+- `server_settings/service.py` — `test_email_connection` updates `configured = True` and `configured_at = now` on the `email_config` row after a successful SMTP send; confirm neither field is written anywhere else that could bypass the live-test requirement
+- `server_settings/service.py` — `create_initial_config` writes to `app_tables.config` using `key` and `value` columns; confirm the `config` table has columns `key` (string), `value` (simpleObject), `category` (string), `updated_at` (datetime), and `updated_by` (link to users) in `anvil.yaml`
+
+Pass if: all four settings tables (`business_profile`, `email_config`, `payment_config`, `theme_config`) are confirmed single-row-per-instance in `anvil.yaml`, all columns accessed in `service.py` exist in the schema, `configured` is only set to `True` by `test_email_connection`, and `create_initial_config` columns match the `config` table schema.

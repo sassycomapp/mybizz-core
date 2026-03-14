@@ -26,3 +26,18 @@ Look for these issues and fix them:
 - Any test data written to Data Tables during uplink tests must use `source='Test'` sentinel — flag any uplink test that creates rows without this field set
 
 Pass if: `tests/1.2-auth/` exists with test files for password validation, all four service functions, and both RBAC decorators; no test file imports `anvil`; both report files are present; and all uplink test data uses `source='Test'`.
+
+## Stage 1.4 — Settings & Configuration
+
+Look for these issues and fix them:
+
+- `tests/1.4-settings/` directory must exist and contain at least one test file — flag if the directory is absent or empty
+- `server_settings/service.py` — `_validate_business` and `_validate_email` logic in `SettingsForm` is client-side; confirm that corresponding pure-logic validation tests exist in `tests/1.4-settings/test_settings_validation.py` covering: empty business name fails, empty contact email fails, empty SMTP fields fail, non-numeric port fails, valid port passes
+- `server_settings/service.py` — `save_payment_config` contains a `_PAYMENT_SECRET_COLUMNS` guard; a pure-logic test must exist verifying that the fields dict built in `save_payment_config` never contains any of the three secret column names — this test must not import `anvil`
+- `server_settings/service.py` — `test_email_connection` SMTP logic must have uplink integration tests in `tests/1.4-settings/` covering: no config row returns error, incomplete config returns error, successful send sets `configured=True`
+- All test files in `tests/1.4-settings/` must contain zero `import anvil` statements for pure-logic tests — flag any pure-logic test file that imports `anvil`
+- Uplink test report must exist at `tests/1.4-settings-test-uplink-report.yaml` — flag if absent
+- Local test report must exist at `tests/1.4-settings-test-local-report.yaml` — flag if absent
+- Any test data written to Data Tables during uplink tests must use `source='Test'` sentinel — flag any uplink test that creates rows in `business_profile`, `email_config`, `payment_config`, or `theme_config` without a mechanism to identify and clean up test rows
+
+Pass if: `tests/1.4-settings/` exists with test files for validation logic and the secret-column guard, uplink tests cover `test_email_connection` scenarios, no pure-logic test imports `anvil`, both report files are present, and all uplink test data is identifiable for cleanup.

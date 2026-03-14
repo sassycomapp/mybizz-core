@@ -16,6 +16,14 @@
 # cannot be tested without Anvil or a network connection,
 # it belongs in Task 6 (Uplink Testing), not here.
 #
+# FILE ENCODING:
+#   All output files must be written in UTF-8 encoding.
+#   On Windows, Continue.dev may default to the system
+#   encoding (Windows-1252 or similar). Files written in
+#   non-UTF-8 encoding cannot be uploaded to Claude.ai.
+#   This instruction is in the static block and applies to
+#   every file the agent writes.
+#
 # CACHING STRATEGY:
 # The system block and TESTING STANDARDS are static — cached
 # after the first call in a session. Run this in its own
@@ -99,6 +107,9 @@ system: |
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   TESTING STANDARDS — NON-NEGOTIABLE:
+
+  FILE ENCODING:
+  Write all output files in UTF-8 encoding.
 
   SCOPE — PURE LOGIC ONLY:
   Test only functions whose execution path contains no Anvil imports,

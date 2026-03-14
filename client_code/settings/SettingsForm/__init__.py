@@ -314,7 +314,7 @@ class SettingsForm(SettingsFormTemplate):
 
     def _save_payments(self) -> None:
         """Save the payment gateway configuration."""
-                # Secret key fields (txt_stripe_sk, txt_paystack_sk, txt_paypal_sk) display
+        # Secret key fields (txt_stripe_sk, txt_paystack_sk, txt_paypal_sk) display
         # masked '***' values loaded from the server and must never be sent back.
         # Secret keys are managed exclusively via The Vault (Stage 1.5).
         data = {
@@ -335,7 +335,10 @@ class SettingsForm(SettingsFormTemplate):
         self._save_theme()
 
     def _save_theme(self) -> None:
-        """Save the theme configuration."""
+        """Validate hex colour fields and save the theme configuration."""
+        if not self._validate_theme():
+            return
+
         data = {
             'primary_color': self.txt_primary_color.text,
             'accent_color':  self.txt_accent_color.text,
@@ -372,6 +375,28 @@ class SettingsForm(SettingsFormTemplate):
         field             = getattr(self, field_name)
         field.role        = 'outlined'
         field.placeholder = _PLACEHOLDERS.get(field_name, '')
+
+    def _validate_hex(self, value: str) -> bool:
+        """Return True if value is a valid CSS hex colour string.
+
+        Accepts 3-digit (#RGB) and 6-digit (#RRGGBB) forms, case-insensitive.
+        A blank/empty value is considered valid — the field is optional.
+
+        Args:
+            value: The string to validate, e.g. '#1A73E8'.
+
+        Returns:
+            True if value is empty or a valid hex colour; False otherwise.
+        """
+        value = value.strip()
+        if not value:
+            return True
+        if not value.startswith('#'):
+            return False
+        hex_part = value[1:]
+        if len(hex_part) not in (3, 6):
+            return False
+        return all(c in '0123456789abcdefABCDEF' for c in hex_part)
 
     def _validate_business(self) -> bool:
         """Validate required Business tab fields.
@@ -427,6 +452,26 @@ class SettingsForm(SettingsFormTemplate):
             except ValueError:
                 self._set_field_error('txt_smtp_port', 'Port must be a number')
                 valid = False
+
+        return valid
+
+    def _validate_theme(self) -> bool:
+        """Validate hex colour fields on the Theme tab.
+
+        Returns:
+            True if both colour fields are empty or valid hex values, False otherwise.
+        """
+        valid = True
+
+        if not self._validate_hex(self.txt_primary_color.text):
+            alert("Primary colour must be a valid hex value, e.g. #1A73E8",
+                  title="Validation Error")
+            valid = False
+
+        if not self._validate_hex(self.txt_accent_color.text):
+            alert("Accent colour must be a valid hex value, e.g. #FF5722",
+                  title="Validation Error")
+            valid = False
 
         return valid
 

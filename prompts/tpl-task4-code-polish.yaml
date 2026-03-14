@@ -6,14 +6,56 @@
 # Task 4 — Code Polish. One prompt per stage. Polishes every
 # file produced by the Task 3 draft in one pass.
 #
+# ── COMPLIANCE RULES — MANDATORY BEFORE FILLING ─────────────
+# Before filling this template I must read:
+#   policy_security.md
+#   ref_anvil_coding.md
+#   ref_anvil_coding_patterns.md
+# I must verify the draft output against every applicable rule
+# before submitting the polish prompt. The checklist below
+# must be run mentally against the draft — do not rely solely
+# on the agent to find violations.
+#
+# Known failure patterns to check in the draft before running:
+#
+# EXCEPTION HANDLING:
+#   - Every named handler (e.g. tables.TableError) returns
+#     a generic string — never str(exc)
+#   - Defensive assert guards have except AssertionError: raise
+#     BEFORE any broader except clause
+#   - Every anvil.server.call in client code is wrapped in
+#     try/except catching TimeoutError and AnvilWrappedError
+#     separately
+#
+# DOCSTRINGS:
+#   - Every function (public and private, client and server)
+#     has all three sections: Args, Returns, Raises
+#   - "None" is acceptable. Missing sections are a FAIL.
+#
+# LOGGING:
+#   - No full email addresses or personal data in any log entry
+#   - logger.info() at entry of every @anvil.server.callable
+#
+# IMPORTS:
+#   - No unused imports anywhere in any file
+#
+# FILE ENCODING:
+#   All output files must be written in UTF-8 encoding.
+#   On Windows, Continue.dev may default to the system
+#   encoding (Windows-1252 or similar). Files written in
+#   non-UTF-8 encoding cannot be uploaded to Claude.ai.
+#   This instruction is in the static block and applies to
+#   every file the agent writes.
+#
+# ── END COMPLIANCE RULES ─────────────────────────────────────
+#
 # CACHING STRATEGY:
 # Run Task 4 in the same session as Task 3. The system block
 # and POLISH CHECKLIST were cached during Task 3 — that cache
 # applies here, saving roughly 90% on the static block cost.
 # Starting a new session for Task 4 loses that cache entirely.
 # The drafted code ({{drafted_code}}) is always dynamic and
-# always costs full price — it cannot be cached. This is the
-# single largest token cost in the entire workflow.
+# always costs full price — it cannot be cached.
 #
 # TOKEN BOUNDARIES — READ BEFORE FILLING:
 #
@@ -25,15 +67,15 @@
 #   decision.
 #
 # {{stage_spec_condensed}}  — target: under 30 lines
-#   This is a checklist aid only — not a full spec restatement.
+#   Checklist aid only — not a full spec restatement.
 #   Include: component names, function names, security rules
 #   (masked fields, columns never written), column names per
-#   table. Nothing else. No descriptions, no rationale.
+#   table, exception hierarchy where specific handlers apply.
+#   Nothing else. No descriptions, no rationale.
 #
 # {{context_files}}  — identical to Task 3, no additions
 #   Same lean set as Task 3. Do not add anvil.yaml.
 #   Do not add session documents or task plans.
-#   Every file added costs full price on this call.
 #
 # {{target_files}}
 #   Full paths — identical to the Task 3 call.
@@ -43,7 +85,7 @@
 
 ---
 name: "Code Polish — Stage {{stage_id}} {{stage_name}}"
-version: "1.0"
+version: "2.0"
 stage: "{{stage_id}}"
 task: "4-polish"
 phase: "CODE_POLISH"
@@ -70,6 +112,9 @@ system: |
 
   POLISH CHECKLIST — RUN AGAINST EVERY FILE:
 
+  FILE ENCODING:
+  Write all output files in UTF-8 encoding.
+
   1. RESPONSE ENVELOPE
      Every @anvil.server.callable returns {'success':bool, 'data'/'error':...}
      No raw returns. No exceptions escaping to the client.
@@ -80,49 +125,71 @@ system: |
 
   3. LOGGING
      logger = logging.getLogger(__name__) at module top — server files only.
-     INFO at entry. DEBUG for steps. WARNING recoverable. ERROR unexpected.
+     logger.info() at entry of every @anvil.server.callable.
+     DEBUG for steps. WARNING recoverable. ERROR with exc_info=True unexpected.
+     No personal data in log entries — email domain only, never full address.
      No print() anywhere in server code.
 
-  4. EXCEPTIONS
+  4. EXCEPTIONS — SERVER
      No bare except. Named exceptions only. Specific before general.
+     Named exception handlers return generic user-facing strings only —
+     never str(exc). Keep logger.error(exc_info=True) server-side.
+       Correct:   return {'success': False, 'error': 'A data error occurred'}
+       Wrong:     return {'success': False, 'error': str(exc)}
+     Defensive assert guards: except AssertionError: raise must appear
+     BEFORE any broader except clause.
+       # Hard fail — programmer error, must not be swallowed
+     AssertionError is a subclass of Exception — verify it is not
+     reachable by the general handler.
      No silent pass. No swallowed errors.
 
-  5. EVENT HANDLERS
+  5. CLIENT-SIDE SERVER CALLS
+     Every anvil.server.call(...) is wrapped in try/except.
+     anvil.server.TimeoutError caught separately — timeout message shown.
+     anvil.server.AnvilWrappedError caught separately — error message shown.
+     No raw tracebacks exposed to the user at any call site.
+
+  6. EVENT HANDLERS
      Handlers contain zero logic. They call methods only.
 
-  6. FORM INITIALISATION
+  7. FORM INITIALISATION
      Auth check before init_components().
-     self.item before init_components(**properties).
      open_form() → return immediately.
 
-  7. COMPONENT NAMES
+  8. COMPONENT NAMES
      Every self.component_name matches the stage spec exactly.
      No component referenced that is not in the spec.
 
-  8. DESIGNER VS PROGRAMMATIC
+  9. DESIGNER VS PROGRAMMATIC
      Properties settable in Designer are not set in code.
      Properties not settable in Designer are set in code with a comment.
 
-  9. DATA ACCESS
-     No Data Tables access in client files. Ever.
+  10. DATA ACCESS
+      No Data Tables access in client files. Ever.
 
-  10. SECURITY
+  11. SECURITY
       instance_id never sourced from client.
-      Secret keys never returned to client — '***' if set, '' if not set.
+      Secret keys never returned to client — '***' if set, '' if not.
       RBAC check present on all server functions that require it.
       Columns that must never be written are absent from all write dicts.
 
-  11. TYPE HINTS AND DOCSTRINGS
-      All public functions have type hints.
-      All non-trivial functions have docstrings: Args, Returns, Raises.
+  12. TYPE HINTS AND DOCSTRINGS
+      All public and private functions have type hints.
+      Every function has a docstring with all three sections:
+        Args, Returns, Raises — "None" is acceptable for any section.
+      No function has a partial docstring. All three sections or none.
 
-  12. COMPLETENESS
+  13. IMPORTS
+      No unused imports in any file.
+      Every imported module is referenced at least once in the file.
+
+  14. COMPLETENESS
       No TODOs. No placeholder stubs. No pass-only functions.
       Every function fully implemented and runnable.
       All indentation correct — misaligned blocks are a syntax error.
 
-  13. SCHEMA
-      Every column name accessed matches the schema from Task 3.
+  15. SCHEMA
+      Every column name accessed matches the schema provided.
 
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 

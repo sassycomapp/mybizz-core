@@ -21,3 +21,13 @@ Look for these issues and fix them:
 - No `@router.route` decorator on `LoginForm`, `SignupForm`, or `PasswordResetForm` — auth forms use `open_form()` navigation, not the Routing dependency
 
 Pass if: post-login navigation uses `navigate_by_role()` only, the startup form routes by role before `init_components()`, all `open_form()` calls in auth forms are immediately followed by `return`, and no auth form uses `@router.route`.
+
+## Stage 1.4 — Settings & Configuration
+
+Look for these issues and fix them:
+
+- `SettingsForm/__init__.py` — `self.get_open_form().set_active_link('nav_settings')` is called in `__init__`; confirm `set_active_link` is defined on `AdminLayout` and accepts the string `'nav_settings'` — flag if the method does not exist on the layout or if the argument does not match the NavigationLink attribute name in `AdminLayout`
+- `SettingsForm/__init__.py` — `SettingsForm` must be opened via the `nav_settings` NavigationLink in `AdminLayout`, not via a direct `open_form('SettingsForm')` call from any other form — flag any non-layout code that calls `open_form('SettingsForm')` directly
+- `SettingsForm/__init__.py` — `require_admin()` is called before `init_components()`; if `require_admin()` calls `open_form(...)` internally, that call must be immediately followed by `return` inside `require_admin` — flag if execution can continue in `SettingsForm.__init__` after a redirect
+
+Pass if: `set_active_link('nav_settings')` matches the NavigationLink attribute name in `AdminLayout`, `SettingsForm` is not opened via `open_form` from non-layout code, and any redirect inside `require_admin()` is followed by `return` so `SettingsForm.__init__` does not continue executing.

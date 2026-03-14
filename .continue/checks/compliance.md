@@ -22,3 +22,13 @@ Look for these issues and fix them:
 - `server_auth/service.py` — `reset_password` must return an identical response for registered and unregistered emails — flag any code path that produces a different message, status code, or timing for the two cases
 
 Pass if: `SignupForm` contains visible Terms and Privacy links, the agree-terms checkbox gates the signup call, `audit_log` writes are present and silently fail-safe, no plain-text emails appear in logs, and `reset_password` returns identical responses for all email inputs.
+
+## Stage 1.4 — Settings & Configuration
+
+Look for these issues and fix them:
+
+- `server_settings/service.py` — `get_email_config` masks `smtp_password` before returning it to the client; confirm no SMTP password is written to any log entry at any level — flag any `logger.*` call in `service.py` that could include the password value
+- `server_settings/service.py` — `get_payment_config` masks all three secret keys before returning; confirm no secret key value is written to any log entry — flag any `logger.*` call that could include a key value
+- `SettingsForm/__init__.py` — the Payments tab displays masked `'***'` values in `txt_stripe_sk`, `txt_paystack_sk`, and `txt_paypal_sk`; these fields must be read-only or clearly labelled as Vault-managed — flag if the UI presents them as editable fields that the user is expected to fill in (they are managed via The Vault in Stage 1.5)
+
+Pass if: no SMTP password or payment secret key value appears in any log entry in `service.py`, and the masked secret key fields in `SettingsForm` are presented as informational (Vault-managed) rather than as editable inputs.

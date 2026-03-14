@@ -1,7 +1,7 @@
 ---
-name: "Checks Scan — Stage 1.2 Authentication"
+name: "Checks Scan — Stage 1.4 Settings & Configuration"
 version: "2.1"
-stage: "1.2"
+stage: "1.4"
 task: "7b-checks-scan"
 phase: "CHECKS_SCAN"
 model: "claude-sonnet-4-6"
@@ -44,8 +44,8 @@ system: |
 
   REPORT FORMAT (YAML):
   name: "Checks Scan Report"
-  stage: "1.2"
-  stage_name: "Authentication"
+  stage: "1.4"
+  stage_name: "Settings & Configuration"
   verdict: PASSED | FAILED | PASSED_WITH_WARNINGS
   summary:
     total_criteria: n
@@ -93,49 +93,81 @@ context_files:
     reason: "Criteria — read once."
 
 prompt: |
-  Stage to scan: 1.2 — Authentication
-  Total criteria: 138
-  Stop the moment your running count reaches 138.
+  Stage to scan: 1.4 — Settings & Configuration
+  Total criteria: 147
+  Stop the moment your running count reaches 147.
 
   ## SOURCE FILES — read these and nothing else
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\LoginForm\\__init__.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\settings\\SettingsForm\\__init__.py"
     reason: "Client scan target — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\SignupForm\\__init__.py"
-    reason: "Client scan target — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\auth\\PasswordResetForm\\__init__.py"
-    reason: "Client scan target — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\service.py"
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_settings\\service.py"
     reason: "Server scan target — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_auth\\rbac.py"
-    reason: "Server scan target — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-local-report.yaml"
-    reason: "Test coverage verification — read once."
-  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\tests\\1.2-test-uplink-report.yaml"
-    reason: "Test coverage verification — read once."
   - inline_schema: |
-      # Schema excerpt — users, rate_limits
-      users:
+      # Schema excerpt — business_profile, email_config, payment_config, theme_config
+      business_profile:
         client: none
         columns:
-          - name: email,            type: string
-          - name: role,             type: string
-          - name: permissions,      type: simpleObject
-          - name: account_status,   type: string
-          - name: last_login,       type: datetime
-          - name: password_hash,    type: string
-          - name: enabled,          type: bool
-      rate_limits:
+          - name: business_name,    type: string
+          - name: tagline,          type: string
+          - name: description,      type: string
+          - name: logo,             type: media
+          - name: contact_email,    type: string
+          - name: phone,            type: string
+          - name: address_line_1,   type: string
+          - name: address_line_2,   type: string
+          - name: city,             type: string
+          - name: country,          type: string
+          - name: postal_code,      type: string
+          - name: website_url,      type: string
+          - name: social_facebook,  type: string
+          - name: social_instagram, type: string
+          - name: social_x,         type: string
+          - name: social_linkedin,  type: string
+          - name: created_at,       type: datetime
+          - name: updated_at,       type: datetime
+      email_config:
         client: none
         columns:
-          - name: identifier,       type: string
-          - name: count,            type: number
-          - name: reset_time,       type: datetime
-          - name: last_request,     type: datetime
+          - name: email_provider,   type: string
+          - name: smtp_host,        type: string
+          - name: smtp_port,        type: number
+          - name: smtp_username,    type: string
+          - name: smtp_password,    type: string
+          - name: from_email,       type: string
+          - name: from_name,        type: string
+          - name: configured,       type: bool
+          - name: configured_at,    type: datetime
+      payment_config:
+        client: none
+        columns:
+          - name: active_gateway,         type: string
+          - name: test_mode,              type: bool
+          - name: configured_at,          type: datetime
+          - name: stripe_publishable_key, type: string
+          - name: stripe_secret_key,      type: string
+          - name: stripe_connected,       type: bool
+          - name: stripe_connected_at,    type: datetime
+          - name: paystack_public_key,    type: string
+          - name: paystack_secret_key,    type: string
+          - name: paystack_connected,     type: bool
+          - name: paystack_connected_at,  type: datetime
+          - name: paypal_client_id,       type: string
+          - name: paypal_secret,          type: string
+          - name: paypal_connected,       type: bool
+          - name: paypal_connected_at,    type: datetime
+      theme_config:
+        client: none
+        columns:
+          - name: primary_color,    type: string
+          - name: accent_color,     type: string
+          - name: font_family,      type: string
+          - name: header_style,     type: string
+          - name: updated_at,       type: datetime
     reason: "Schema reference — already in prompt, no file read needed."
 
   ## STEP 1 — Read all 11 check files (once each, do not re-read)
-  Extract every criterion: Universal Rules header + Stage 1.2 section.
-  You must have exactly 138 criteria when done.
+  Extract every criterion: Universal Rules header + Stage 1.4 section.
+  You must have exactly 147 criteria when done.
   If your count differs, note the discrepancy in the report summary
   and proceed — do not open any file to resolve it.
 
@@ -146,8 +178,8 @@ prompt: |
   Work through your list one by one. Assign PASS, FAIL, or UNVERIFIABLE.
   If uncertain: mark UNVERIFIABLE immediately — do not re-read any file.
   Increment your count after each verdict.
-  When count = 138: stop immediately.
+  When count = 147: stop immediately.
 
   ## STEP 4 — Write report
-  Output to: C:\_Data\_Mybizz\mybizz-core\tests\1.2-checks-scan-report.yaml
-  End with: # CHECKS SCAN COMPLETE — Stage 1.2 Authentication
+  Output to: C:\_Data\_Mybizz\mybizz-core\tests\1.4-checks-scan-report.yaml
+  End with: # CHECKS SCAN COMPLETE — Stage 1.4 Settings & Configuration

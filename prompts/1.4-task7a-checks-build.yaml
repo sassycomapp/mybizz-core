@@ -1,106 +1,7 @@
-# ============================================================
-# CLAUDE USAGE NOTE — DELETE THIS ENTIRE BLOCK BEFORE RUNNING
-# ============================================================
-#
-# WHAT THIS TEMPLATE IS FOR:
-# Task 7a — Checks Build. Run once at the completion of each
-# stage. Reads the actual source files built in the stage,
-# derives new criteria for each of the 11 check files, and
-# appends a new stage section to each file. Never modifies
-# existing sections — append only.
-#
-# WHEN TO RUN:
-# After Task 6 (Uplink Testing) is complete. Run before
-# closing the stage. Run in its own session.
-#
-# ── PREREQUISITES — BEFORE RUNNING ──────────────────────────
-# The following files must exist in the rules folder:
-#   C:\Users\dev-p\.continue\rules\
-#     policy_security.md               ← must exist
-#     policy_security_compliance.md    ← must exist
-#     policy_development.md            ← must exist
-#     policy_nomenclature.md           ← must exist
-#     policy_nomenclature_components.md ← must exist
-#     ref_anvil_coding.md              ← must exist
-#     ref_anvil_coding_patterns.md     ← must exist
-#     ref_anvil_components.md          ← must exist
-#     ref_anvil_data_tables.md         ← must exist
-#     ref_anvil_navigation.md          ← must exist
-#     ref_anvil_testing.md             ← must exist
-#     ref_anvil_testing_integration.md ← must exist
-#     spec_ui_standards.md             ← must exist
-#     spec_ui_standards_forms.md       ← must exist
-#
-# Do NOT run this prompt if any file above is missing.
-# The agent will silently produce incomplete criteria.
-#
-# The following folder must exist with all 11 .md files:
-#   C:\_Data\_Mybizz\mybizz-core\.continue\checks\
-#     security.md, data-integrity.md, response-envelope.md,
-#     error-handling.md, code-quality.md, m3-compliance.md,
-#     navigation.md, data-binding.md, naming-conventions.md,
-#     compliance.md, test-coverage.md
-#
-# If the checks folder is empty or missing, do not run this
-# prompt until all 11 files exist with at least a header.
-# ── END PREREQUISITES ────────────────────────────────────────
-#
-# CRITICAL — SOURCE FILES ARE THE AUTHORITY, NOT THE SPEC:
-# The agent derives criteria from the ACTUAL SOURCE FILES
-# built in this stage — not from spec_build_plan.md or any
-# other planning document.
-# Specs describe intent. Source files are truth.
-# Criteria derived from spec rather than source will reference
-# things that do not exist and will fail the 7b scan as
-# phantom criteria. This is the single most important rule
-# in this template.
-#
-# FILE ENCODING:
-#   All output files must be written in UTF-8 encoding.
-#   On Windows, Continue.dev may default to the system
-#   encoding (Windows-1252 or similar). Files written in
-#   non-UTF-8 encoding cannot be uploaded to Claude.ai.
-#   This instruction is in the static block and applies to
-#   every check file the agent appends to.
-#
-# CACHING STRATEGY:
-# The system block is static — cached after the first call.
-# The 14 policy and rules source files are static between
-# stages — eligible for caching within a session.
-# The 11 check files are dynamic — always full price.
-# This task is inherently expensive. Do not add any file
-# beyond the standard set.
-#
-# TOKEN BOUNDARIES — READ BEFORE FILLING:
-#
-# {{source_files}}  — actual built files only
-#   Include: every client form __init__.py and every server
-#   module produced by this stage.
-#   Exclude: anvil.yaml, test files, spec files, session
-#   documents, handover files, task plans.
-#   Example:
-#     - path: "C:\_Data\_Mybizz\mybizz-core\client_code\settings\SettingsForm\__init__.py"
-#       reason: "Source — derive criteria from what was actually built."
-#     - path: "C:\_Data\_Mybizz\mybizz-core\server_code\server_settings\service.py"
-#       reason: "Source — derive criteria from what was actually built."
-#
-# {{stage_id}}         e.g. "1.4"
-# {{stage_name}}       e.g. "Settings & Configuration"
-#
-# APPEND-ONLY RULE — CRITICAL:
-# The agent appends one new section to each of the 11 files.
-# It never rewrites, restructures, or replaces existing content.
-# If the agent produces a complete file rather than an appended
-# section: do not save the output. Correct the prompt and
-# re-run. The agent has no memory of the previous attempt.
-#
-# DELETE THIS ENTIRE NOTE BEFORE RUNNING THE PROMPT.
-# ============================================================
-
 ---
-name: "Checks Build — Stage {{stage_id}} {{stage_name}}"
+name: "Checks Build — Stage 1.4 Settings & Configuration"
 version: "1.0"
-stage: "{{stage_id}}"
+stage: "1.4"
 task: "7a-checks-build"
 phase: "CHECKS_BUILD"
 model: "claude-sonnet-4-6"
@@ -123,15 +24,7 @@ system: |
   Specs describe intent. Source files are truth.
   Every criterion you write must be verifiable against the actual source code.
 
-  FILE ACCESS — HARD LIMIT:
-  Read only the files listed in context_files and the source files in the prompt.
-  Do not read, list, or access any other file or directory for any reason.
-  If you believe you need a file not listed: stop and ask. Do not proceed.
-
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
-
-  FILE ENCODING:
-  Write all output files in UTF-8 encoding.
 
   APPEND RULES — NON-NEGOTIABLE:
   Never modify existing sections — append only.
@@ -159,7 +52,6 @@ system: |
 
 context_files:
   # ── POLICY AND RULES SOURCES — static, cache-eligible ──────────────────
-  # These files are the criteria sources. Do not trim. Do not add to.
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
     reason: "Source for security.md criteria."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security_compliance.md"
@@ -189,7 +81,6 @@ context_files:
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_testing_integration.md"
     reason: "Source for test-coverage.md criteria."
   # ── CHECK FILES — dynamic, always full price ────────────────────────────
-  # All 11 must be read before appending to avoid duplicating criteria.
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\security.md"
     reason: "Read before append — avoid duplicating existing criteria."
   - path: "C:\\_Data\\_Mybizz\\mybizz-core\\.continue\\checks\\data-integrity.md"
@@ -215,10 +106,13 @@ context_files:
 
 prompt: |
 
-  Stage to process: {{stage_id}} — {{stage_name}}
+  Stage to process: 1.4 — Settings & Configuration
 
   ## SOURCE FILES — CRITERIA DERIVED FROM THESE ONLY
-  {{source_files}}
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\client_code\\settings\\SettingsForm\\__init__.py"
+    reason: "Source — derive criteria from what was actually built."
+  - path: "C:\\_Data\\_Mybizz\\mybizz-core\\server_code\\server_settings\\service.py"
+    reason: "Source — derive criteria from what was actually built."
 
   Read these source files first. Every criterion you write must be
   grounded in what these files actually contain. Do not derive criteria
@@ -229,15 +123,15 @@ prompt: |
   Understand what is already covered so you do not duplicate criteria.
 
   ## STEP 2 — READ THE SOURCE FILES
-  Read every source file listed above in full.
+  Read both source files listed above in full.
   Identify: every form component, every server function, every table
   column accessed, every security boundary enforced, every validation
   rule implemented. These facts are the only basis for new criteria.
 
   ## STEP 3 — DERIVE NEW CRITERIA PER CHECK FILE
   For each of the 11 check files ask:
-  "What does Stage {{stage_id}} actually introduce — visible in the
-  source files — that this check needs to verify?"
+  "What does Stage 1.4 actually introduce — visible in the source
+  files — that this check needs to verify?"
   Add only criteria verifiable against the source files.
   Do not add criteria for things not present in the source files.
   Do not repeat universal rules from file headers.
@@ -261,4 +155,4 @@ prompt: |
   C:\_Data\_Mybizz\mybizz-core\.continue\checks\compliance.md
   C:\_Data\_Mybizz\mybizz-core\.continue\checks\test-coverage.md
 
-  End with: # CHECKS BUILD COMPLETE — Stage {{stage_id}} {{stage_name}}
+  End with: # CHECKS BUILD COMPLETE — Stage 1.4 Settings & Configuration

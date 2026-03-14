@@ -24,6 +24,14 @@
 # For single-row config tables: capture pre-test state and
 # restore after every test. Never delete config rows.
 #
+# FILE ENCODING:
+#   All output files must be written in UTF-8 encoding.
+#   On Windows, Continue.dev may default to the system
+#   encoding (Windows-1252 or similar). Files written in
+#   non-UTF-8 encoding cannot be uploaded to Claude.ai.
+#   This instruction is in the static block and applies to
+#   every file the agent writes.
+#
 # CACHING STRATEGY:
 # The system block is static — cached after the first call.
 # Run this in its own session. Do not combine with Task 5.
@@ -95,6 +103,9 @@ system: |
   or directory in the repository or file system for any reason.
   When reading anvil.yaml: locate only the tables listed in the
   schema excerpt. Do not read or process any other section.
+
+  FILE ENCODING:
+  Write all output files in UTF-8 encoding.
 
   SCOPE — LIVE INTEGRATION ONLY:
   Test only @anvil.server.callable functions. Do not duplicate

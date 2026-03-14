@@ -17,6 +17,11 @@ system: |
   Your job for this run: read the stage spec, derive new criteria for the
   current stage, and append one new section to each of the 11 check files.
 
+  FILE ACCESS — HARD LIMIT:
+  Read only the files listed in context_files and the source files in the prompt.
+  Do not read, list, or access any other file or directory for any reason.
+  If you believe you need a file not listed: stop and ask. Do not proceed.
+
 # ── STATIC BLOCK — CACHED AFTER FIRST CALL ──────────────────────────────────
 
   APPEND RULES — NON-NEGOTIABLE:

@@ -1,6 +1,6 @@
 ---
 name: "Code Polish — Stage 1.4 Settings & Configuration"
-version: "1.0"
+version: "2.0"
 stage: "1.4"
 task: "4-polish"
 phase: "CODE_POLISH"
@@ -37,49 +37,71 @@ system: |
 
   3. LOGGING
      logger = logging.getLogger(__name__) at module top — server files only.
-     INFO at entry. DEBUG for steps. WARNING recoverable. ERROR unexpected.
+     logger.info() at entry of every @anvil.server.callable.
+     DEBUG for steps. WARNING recoverable. ERROR with exc_info=True unexpected.
+     No personal data in log entries — email domain only, never full address.
      No print() anywhere in server code.
 
-  4. EXCEPTIONS
+  4. EXCEPTIONS — SERVER
      No bare except. Named exceptions only. Specific before general.
+     Named exception handlers return generic user-facing strings only —
+     never str(exc). Keep logger.error(exc_info=True) server-side.
+       Correct:   return {'success': False, 'error': 'A data error occurred'}
+       Wrong:     return {'success': False, 'error': str(exc)}
+     Defensive assert guards: except AssertionError: raise must appear
+     BEFORE any broader except clause.
+       # Hard fail — programmer error, must not be swallowed
+     AssertionError is a subclass of Exception — verify it is not
+     reachable by the general handler.
      No silent pass. No swallowed errors.
 
-  5. EVENT HANDLERS
+  5. CLIENT-SIDE SERVER CALLS
+     Every anvil.server.call(...) is wrapped in try/except.
+     anvil.server.TimeoutError caught separately — timeout message shown.
+     anvil.server.AnvilWrappedError caught separately — error message shown.
+     No raw tracebacks exposed to the user at any call site.
+
+  6. EVENT HANDLERS
      Handlers contain zero logic. They call methods only.
 
-  6. FORM INITIALISATION
+  7. FORM INITIALISATION
      Auth check before init_components().
-     self.item before init_components(**properties).
      open_form() → return immediately.
 
-  7. COMPONENT NAMES
+  8. COMPONENT NAMES
      Every self.component_name matches the stage spec exactly.
      No component referenced that is not in the spec.
 
-  8. DESIGNER VS PROGRAMMATIC
+  9. DESIGNER VS PROGRAMMATIC
      Properties settable in Designer are not set in code.
      Properties not settable in Designer are set in code with a comment.
 
-  9. DATA ACCESS
-     No Data Tables access in client files. Ever.
+  10. DATA ACCESS
+      No Data Tables access in client files. Ever.
 
-  10. SECURITY
+  11. SECURITY
       instance_id never sourced from client.
-      Secret keys never returned to client — '***' if set, '' if not set.
+      Secret keys never returned to client — '***' if set, '' if not.
       RBAC check present on all server functions that require it.
       Columns that must never be written are absent from all write dicts.
 
-  11. TYPE HINTS AND DOCSTRINGS
-      All public functions have type hints.
-      All non-trivial functions have docstrings: Args, Returns, Raises.
+  12. TYPE HINTS AND DOCSTRINGS
+      All public and private functions have type hints.
+      Every function has a docstring with all three sections:
+        Args, Returns, Raises — "None" is acceptable for any section.
+      No function has a partial docstring. All three sections or none.
 
-  12. COMPLETENESS
+  13. IMPORTS
+      No unused imports in any file.
+      Every imported module is referenced at least once in the file.
+
+  14. COMPLETENESS
       No TODOs. No placeholder stubs. No pass-only functions.
       Every function fully implemented and runnable.
       All indentation correct — misaligned blocks are a syntax error.
 
-  13. SCHEMA
-      Every column name accessed matches the schema from Task 3.
+  15. SCHEMA
+      Every column name accessed matches the schema provided.
 
 # ── END STATIC BLOCK ─────────────────────────────────────────────────────────
 
@@ -89,13 +111,13 @@ context_files:
   - path: "C:\\Users\\dev-p\\.continue\\rules\\ref_anvil_coding_patterns.md"
     reason: "Response envelope and masking patterns."
   - path: "C:\\Users\\dev-p\\.continue\\rules\\policy_security.md"
-    reason: "Security boundaries — secret key handling, RBAC."
+    reason: "Security boundaries — secret key handling, RBAC, PII in logs."
 
 prompt: |
 
   ## STAGE SPEC — CONDENSED REFERENCE
 
-  SettingsForm components (client):
+  SettingsForm components:
     Tab bar: lp_tab_bar, btn_tab_business, btn_tab_email,
       btn_tab_payments, btn_tab_theme
     Panels: col_business, col_email, col_payments, col_theme
@@ -109,32 +131,30 @@ prompt: |
       txt_smtp_password, txt_from_email, txt_from_name,
       lbl_config_status, btn_save_email, btn_test_email
     Payments: dd_active_gateway, cb_test_mode,
-      col_stripe, txt_stripe_pub, txt_stripe_sk, lbl_stripe_status,
-      col_paystack, txt_paystack_pub, txt_paystack_sk, lbl_paystack_status,
-      col_paypal, txt_paypal_id, txt_paypal_sk, lbl_paypal_status,
-      btn_save_payments
+      col_stripe, txt_stripe_pub, lbl_stripe_secret_note,
+      txt_stripe_sk, lbl_stripe_status,
+      col_paystack, txt_paystack_pub, lbl_paystack_secret_note,
+      txt_paystack_sk, lbl_paystack_status,
+      col_paypal, txt_paypal_id, lbl_paypal_secret_note,
+      txt_paypal_sk, lbl_paypal_status, btn_save_payments
     Theme: txt_primary_color, txt_accent_color, dd_font_family,
       dd_header_style, btn_save_theme
 
-  Security — client: _save_payments() outbound dict must NOT contain
-    stripe_secret_key, paystack_secret_key, or paypal_secret.
-    These fields display masked '***' values from the server and
-    must never be sent back. This is correct behaviour — do not flag.
-
-  server_settings functions:
-    create_initial_config — preserve exactly, do not modify
-    get_business_profile, save_business_profile,
-    get_email_config, save_email_config, test_email_connection,
-    get_payment_config, save_payment_config,
-    get_theme_config, save_theme_config
+  Security — client:
+    _save_payments() outbound dict must NOT contain stripe_secret_key,
+    paystack_secret_key, or paypal_secret. These are Vault-managed.
+    Masked '***' values from the server must never be sent back.
 
   Security — server:
-    get_email_config: smtp_password → '***' if set, '' if not set
-    get_payment_config: stripe_secret_key, paystack_secret_key,
-      paypal_secret → '***' if set, '' if not set. Never plaintext.
-    save_payment_config: _PAYMENT_SECRET_COLUMNS frozenset +
-      defensive assert. Secret columns must never appear in
-      the write dict under any circumstances.
+    get_email_config: smtp_password → '***' if set, '' if not. Never plaintext.
+    get_payment_config: stripe_secret_key, paystack_secret_key, paypal_secret
+      → '***' if set, '' if not. Never plaintext.
+    save_payment_config: _PAYMENT_SECRET_COLUMNS frozenset guard +
+      defensive assert + except AssertionError: raise before broader handlers.
+    test_email_connection: reads credentials from table only — no parameters.
+      Exception order: SMTPAuthenticationError → SMTPException → socket.error
+      → tables.TableError → Exception.
+      Log smtp_host only — never log email addresses or passwords.
 
   Schema column names:
     business_profile: business_name, tagline, description, logo,
@@ -143,11 +163,11 @@ prompt: |
       social_instagram, social_x, social_linkedin, updated_at
     email_config: email_provider, smtp_host, smtp_port, smtp_username,
       smtp_password, from_email, from_name, configured, configured_at
-    payment_config: active_gateway, stripe_publishable_key,
-      stripe_secret_key, stripe_connected, stripe_connected_at,
-      paystack_public_key, paystack_secret_key, paystack_connected,
-      paystack_connected_at, paypal_client_id, paypal_secret,
-      paypal_connected, paypal_connected_at, test_mode, configured_at
+    payment_config: active_gateway, test_mode, configured_at,
+      stripe_publishable_key, stripe_secret_key, stripe_connected,
+      stripe_connected_at, paystack_public_key, paystack_secret_key,
+      paystack_connected, paystack_connected_at, paypal_client_id,
+      paypal_secret, paypal_connected, paypal_connected_at
     theme_config: primary_color, accent_color, font_family,
       header_style, updated_at
 

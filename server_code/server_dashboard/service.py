@@ -127,7 +127,17 @@ def get_storage_usage() -> dict:
 
 def _safe_revenue(user) -> float:
     """Sum total_amount from invoice rows for the current calendar month.
-    Returns 0.0 if the invoice table does not exist or has no rows."""
+
+    STUB — returns 0.0 at Stage 1.3. Wire in Stage 1.7.
+    Stage 1.7 note: invoice table schema is in spec_database_schema.md (tables 32–35).
+    Confirm correct owner/filter column before wiring.
+
+    Args:
+        user: The authenticated users row.
+
+    Returns:
+        float: Total revenue for the current month, or 0.0 if unavailable.
+    """
     try:
         invoice_table = getattr(app_tables, 'invoice', None)
         if invoice_table is None:
@@ -136,7 +146,6 @@ def _safe_revenue(user) -> float:
         month_start = datetime(today.year, today.month, 1)
         total = 0.0
         for row in invoice_table.search(
-            instance_id=user,
             status='paid',
             paid_at=q.greater_than_or_equal_to(month_start),
         ):
@@ -149,7 +158,17 @@ def _safe_revenue(user) -> float:
 
 def _safe_bookings(user) -> int:
     """Count confirmed bookings for the current calendar month.
-    Returns 0 if the bookings table does not exist."""
+
+    STUB — returns 0 at Stage 1.3. Wire in Stage 1.7.
+    Stage 1.7 note: bookings table (table 11) uses customer_id (link to customers),
+    not a direct user link. Filter by customer_id — resolve user → customer row first.
+
+    Args:
+        user: The authenticated users row.
+
+    Returns:
+        int: Confirmed booking count for the current month, or 0 if unavailable.
+    """
     try:
         bookings_table = getattr(app_tables, 'bookings', None)
         if bookings_table is None:
@@ -157,7 +176,6 @@ def _safe_bookings(user) -> int:
         today = date.today()
         month_start = datetime(today.year, today.month, 1)
         return len(list(bookings_table.search(
-            instance_id=user,
             status='confirmed',
             start_datetime=q.greater_than_or_equal_to(month_start),
         )))
@@ -168,13 +186,22 @@ def _safe_bookings(user) -> int:
 
 def _safe_customers(user) -> int:
     """Count total active contacts.
-    Returns 0 if the contacts table does not exist."""
+
+    STUB — returns 0 at Stage 1.3. Wire in Stage 1.7.
+    Stage 1.7 note: contacts table is in spec_database_schema.md (tables 47–53).
+    Confirm correct filter column before wiring.
+
+    Args:
+        user: The authenticated users row.
+
+    Returns:
+        int: Active contact count, or 0 if unavailable.
+    """
     try:
         contacts_table = getattr(app_tables, 'contacts', None)
         if contacts_table is None:
             return 0
         return len(list(contacts_table.search(
-            instance_id=user,
             status=q.any_of('Lead', 'Customer'),
         )))
     except Exception:
@@ -184,7 +211,17 @@ def _safe_customers(user) -> int:
 
 def _safe_time_entries(user) -> float:
     """Sum billable hours from time_entries for the current calendar month.
-    Returns 0.0 if the time_entries table does not exist."""
+
+    STUB — returns 0.0 at Stage 1.3. Wire in Stage 1.7.
+    Stage 1.7 note: time_entries table is in spec_database_schema.md (tables 43–46).
+    Confirm correct owner/filter column before wiring.
+
+    Args:
+        user: The authenticated users row.
+
+    Returns:
+        float: Total billable hours for the current month, or 0.0 if unavailable.
+    """
     try:
         te_table = getattr(app_tables, 'time_entries', None)
         if te_table is None:
@@ -193,7 +230,6 @@ def _safe_time_entries(user) -> float:
         month_start = datetime(today.year, today.month, 1)
         total = 0.0
         for row in te_table.search(
-            instance_id=user,
             is_billable=True,
             start_time=q.greater_than_or_equal_to(month_start),
         ):
@@ -206,12 +242,21 @@ def _safe_time_entries(user) -> float:
 
 def _safe_currency(user) -> str:
     """Read system currency symbol from the config table.
-    Returns 'R' (ZAR) as the default if config is not yet set."""
+
+    Returns 'R' (ZAR) as the default if config is not yet set.
+
+    Args:
+        user: The authenticated users row — used as the client_id filter.
+
+    Returns:
+        str: Currency symbol, e.g. 'R', or 'R' as default.
+    """
     try:
         config_table = getattr(app_tables, 'config', None)
         if config_table is None:
             return 'R'
-        row = config_table.get(instance_id=user, key='system_currency')
+        # config table uses client_id (link to users) as the owner column
+        row = config_table.get(client_id=user, key='system_currency')
         if row:
             value = row.get('value') or {}
             return value.get('symbol', 'R')
