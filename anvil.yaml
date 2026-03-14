@@ -575,7 +575,36 @@ db_schema:
     title: contact_events
   contact_submissions:
     client: none
-    columns: []
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      client_hidden: false
+      name: name
+      type: string
+    - admin_ui: {order: 1, width: 200}
+      client_hidden: false
+      name: email
+      type: string
+    - admin_ui: {order: 2, width: 200}
+      client_hidden: false
+      name: phone
+      type: string
+    - admin_ui: {order: 3, width: 200}
+      client_hidden: false
+      name: message
+      type: string
+    - admin_ui: {order: 4, width: 200}
+      client_hidden: false
+      name: submitted_date
+      type: datetime
+    - admin_ui: {order: 5, width: 200}
+      client_hidden: false
+      name: status
+      type: string
+    - admin_ui: {order: 6, width: 200}
+      client_hidden: false
+      name: client_id
+      target: users
+      type: link_single
     server: full
     title: contact_submissions
   contacts:
@@ -1222,7 +1251,48 @@ db_schema:
     title: kb_categories
   landing_pages:
     client: none
-    columns: []
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      client_hidden: false
+      name: title
+      type: string
+    - admin_ui: {order: 1, width: 200}
+      client_hidden: false
+      name: slug
+      type: string
+    - admin_ui: {order: 2, width: 200}
+      client_hidden: false
+      name: template_type
+      type: string
+    - admin_ui: {order: 3, width: 200}
+      client_hidden: false
+      name: config
+      type: simpleObject
+    - admin_ui: {order: 4, width: 200}
+      client_hidden: false
+      name: status
+      type: string
+    - admin_ui: {order: 5, width: 200}
+      client_hidden: false
+      name: created_at
+      type: datetime
+    - admin_ui: {order: 6, width: 200}
+      client_hidden: false
+      name: published_date
+      type: datetime
+    - admin_ui: {order: 7, width: 200}
+      client_hidden: false
+      name: views_count
+      type: number
+    - admin_ui: {order: 8, width: 200}
+      client_hidden: false
+      name: conversions_count
+      type: number
+    - admin_ui: {order: 9, width: 200}
+      client_hidden: false
+      name: client_id
+      target: users
+      type: link_single
     server: full
     title: landing_pages
   lead_captures:
@@ -1273,7 +1343,41 @@ db_schema:
     title: lead_captures
   leads:
     client: none
-    columns: []
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      client_hidden: false
+      name: email
+      type: string
+    - admin_ui: {order: 1, width: 200}
+      client_hidden: false
+      name: name
+      type: string
+    - admin_ui: {order: 2, width: 200}
+      client_hidden: false
+      name: phone
+      type: string
+    - admin_ui: {order: 3, width: 200}
+      client_hidden: false
+      name: source
+      type: string
+    - admin_ui: {order: 4, width: 200}
+      client_hidden: false
+      name: landing_page_id
+      target: landing_pages
+      type: link_single
+    - admin_ui: {order: 5, width: 200}
+      client_hidden: false
+      name: captured_date
+      type: datetime
+    - admin_ui: {order: 6, width: 200}
+      client_hidden: false
+      name: status
+      type: string
+    - admin_ui: {order: 7, width: 200}
+      client_hidden: false
+      name: client_id
+      target: users
+      type: link_single
     server: full
     title: leads
   pages:
