@@ -11,11 +11,21 @@ import socket
 from email.mime.text import MIMEText
 from datetime import datetime
 
+from server_shared.vault_service import get_vault_secret, set_vault_secret, list_vault_secrets
+
 logger = logging.getLogger(__name__)
+
+# Default timezone for all new client instances.
+# Clients may change this via business profile settings after onboarding.
+_DEFAULT_TIMEZONE = 'Africa/Johannesburg'
 
 
 def create_initial_config(business_name: str, user=None) -> dict:
     """Create minimal config rows for a newly created client instance.
+
+    Bootstraps business_profile with the business name and the default
+    timezone (Africa/Johannesburg). All other profile fields are left
+    empty for the Owner to complete via the settings UI.
 
     Args:
         business_name: The name of the business being registered.
@@ -34,7 +44,10 @@ def create_initial_config(business_name: str, user=None) -> dict:
     owner = user or anvil.users.get_user()
     now = datetime.now()
     key = 'business_profile'
-    value = {'business_name': business_name.strip()}
+    value = {
+        'business_name': business_name.strip(),
+        'timezone': _DEFAULT_TIMEZONE,
+    }
 
     try:
         existing = app_tables.config.get(key=key)
@@ -106,6 +119,7 @@ def get_business_profile() -> dict:
             'city':           row['city'],
             'country':        row['country'],
             'postal_code':    row['postal_code'],
+            'timezone':       row['timezone'],
             'website_url':    row['website_url'],
             'social_facebook':  row['social_facebook'],
             'social_instagram': row['social_instagram'],
@@ -158,6 +172,7 @@ def save_business_profile(data: dict, logo_file=None) -> dict:
             'city':             data.get('city', ''),
             'country':          data.get('country', ''),
             'postal_code':      data.get('postal_code', ''),
+            'timezone':         data.get('timezone', _DEFAULT_TIMEZONE),
             'website_url':      data.get('website_url', ''),
             'social_facebook':  data.get('social_facebook', ''),
             'social_instagram': data.get('social_instagram', ''),
@@ -214,8 +229,13 @@ def get_email_config() -> dict:
             logger.debug("get_email_config: no row found, returning empty dict")
             return {'success': True, 'data': {}}
 
-        # Never return smtp_password plaintext — mask it
-        password_display = '***' if row['smtp_password'] else ''
+        # Never return smtp_password plaintext — check vault for presence, mask it
+        try:
+            vault_names = list_vault_secrets().get('data') or []
+            password_display = '***' if 'smtp_password' in vault_names else ''
+        except Exception:
+            logger.warning("get_email_config: could not check vault for smtp_password")
+            password_display = '***' if row['smtp_password'] else ''
 
         data = {
             'email_provider':  row['email_provider'],
@@ -263,11 +283,26 @@ def save_email_config(data: dict) -> dict:
         rows = list(app_tables.email_config.search())
         row  = rows[0] if rows else None
 
+        # Route smtp_password to the Vault — never write it to email_config.
+        # Only write to Vault when a real value is provided (not empty, not '***').
+        incoming_password = data.get('smtp_password', '')
+        if incoming_password and incoming_password != '***':
+            vault_result = set_vault_secret('smtp_password', incoming_password)
+            if not vault_result['success']:
+                logger.error(
+                    "save_email_config: failed to store smtp_password in vault",
+                    extra={'error': vault_result.get('error')},
+                )
+                return {
+                    'success': False,
+                    'error': 'Could not store email password securely. Please try again.',
+                }
+
         fields = {
             'smtp_host':     data.get('smtp_host', ''),
             'smtp_port':     data.get('smtp_port'),
             'smtp_username': data.get('smtp_username', ''),
-            'smtp_password': data.get('smtp_password', ''),
+            # smtp_password column intentionally not written — stored in Vault
             'from_email':    data.get('from_email', ''),
             'from_name':     data.get('from_name', ''),
             # Always reset configured — must re-test after any save
@@ -322,10 +357,21 @@ def test_email_connection() -> dict:
         smtp_host     = row['smtp_host']
         smtp_port     = row['smtp_port']
         smtp_username = row['smtp_username']
-        smtp_password = row['smtp_password']
         from_email    = row['from_email']
         from_name     = row['from_name']
         to_email      = user['email']
+
+        # Retrieve smtp_password from the Vault — never from the table
+        try:
+            smtp_password = get_vault_secret('smtp_password')
+        except Exception:
+            return {
+                'success': False,
+                'error': (
+                    'SMTP password has not been configured in the Vault. '
+                    'Save your email settings first.'
+                ),
+            }
 
         if not all([smtp_host, smtp_port, smtp_username, smtp_password, from_email]):
             return {'success': False, 'error': 'Email configuration is incomplete. Please fill in all fields.'}
@@ -409,10 +455,17 @@ def get_payment_config() -> dict:
             logger.debug("get_payment_config: no row found, returning empty dict")
             return {'success': True, 'data': {}}
 
-        # Mask all three secret keys — never return plaintext to client
-        stripe_sk_display   = '***' if row['stripe_secret_key']   else ''
-        paystack_sk_display = '***' if row['paystack_secret_key'] else ''
-        paypal_sk_display   = '***' if row['paypal_secret']       else ''
+        # Mask all three secret keys — check vault for presence, never return plaintext
+        try:
+            vault_names         = list_vault_secrets().get('data') or []
+            stripe_sk_display   = '***' if 'stripe_secret_key'   in vault_names else ''
+            paystack_sk_display = '***' if 'paystack_secret_key' in vault_names else ''
+            paypal_sk_display   = '***' if 'paypal_secret'       in vault_names else ''
+        except Exception:
+            logger.warning("get_payment_config: could not check vault for secret keys")
+            stripe_sk_display   = '***' if row['stripe_secret_key']   else ''
+            paystack_sk_display = '***' if row['paystack_secret_key'] else ''
+            paypal_sk_display   = '***' if row['paypal_secret']       else ''
 
         data = {
             'active_gateway':         row['active_gateway'],
@@ -469,8 +522,29 @@ def save_payment_config(data: dict) -> dict:
         rows = list(app_tables.payment_config.search())
         row  = rows[0] if rows else None
 
+        # Route secret keys to the Vault before building the safe write dict.
+        # Only write to Vault when a real value is provided (not empty, not '***').
+        _VAULT_KEY_MAP = {
+            'stripe_secret_key':   'stripe_secret_key',
+            'paystack_secret_key': 'paystack_secret_key',
+            'paypal_secret':       'paypal_secret',
+        }
+        for data_key, vault_name in _VAULT_KEY_MAP.items():
+            incoming = data.get(data_key, '')
+            if incoming and incoming != '***':
+                vault_result = set_vault_secret(vault_name, incoming)
+                if not vault_result['success']:
+                    logger.error(
+                        "save_payment_config: failed to store secret in vault",
+                        extra={'key': data_key, 'error': vault_result.get('error')},
+                    )
+                    return {
+                        'success': False,
+                        'error': f'Could not store {data_key} securely. Please try again.',
+                    }
+
         # Build write dict from the explicit safe-column list only.
-        # _PAYMENT_SECRET_COLUMNS are never written here under any circumstances.
+        # _PAYMENT_SECRET_COLUMNS are never written to the table under any circumstances.
         fields = {
             'active_gateway':         data.get('active_gateway', ''),
             'test_mode':              bool(data.get('test_mode', True)),
@@ -598,6 +672,3 @@ def save_theme_config(data: dict) -> dict:
 
 
 # POLISH COMPLETE — server_settings service module
-
-
-

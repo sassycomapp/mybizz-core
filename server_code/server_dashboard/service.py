@@ -129,8 +129,10 @@ def _safe_revenue(user) -> float:
     """Sum total_amount from invoice rows for the current calendar month.
 
     STUB — returns 0.0 at Stage 1.3. Wire in Stage 1.7.
-    Stage 1.7 note: invoice table schema is in spec_database_schema.md (tables 32–35).
-    Confirm correct owner/filter column before wiring.
+    Stage 1.7 note: invoice (table 32) has NO instance_id column. Owner is
+    resolved via customer_id (link_single to customers). Resolve owner →
+    customers row first; filter invoice by that customer_row. Return 0.0 if
+    no customer row exists for this owner.
 
     Args:
         user: The authenticated users row.
@@ -142,10 +144,14 @@ def _safe_revenue(user) -> float:
         invoice_table = getattr(app_tables, 'invoice', None)
         if invoice_table is None:
             return 0.0
+        customer_row = app_tables.customers.get(user_id=user)
+        if customer_row is None:
+            return 0.0
         today = date.today()
         month_start = datetime(today.year, today.month, 1)
         total = 0.0
         for row in invoice_table.search(
+            customer_id=customer_row,
             status='paid',
             paid_at=q.greater_than_or_equal_to(month_start),
         ):
@@ -161,7 +167,8 @@ def _safe_bookings(user) -> int:
 
     STUB — returns 0 at Stage 1.3. Wire in Stage 1.7.
     Stage 1.7 note: bookings table (table 11) uses customer_id (link to customers),
-    not a direct user link. Filter by customer_id — resolve user → customer row first.
+    not a direct user link. Resolve owner → customers row first; filter bookings
+    by that customer_row. Return 0 if no customer row exists for this owner.
 
     Args:
         user: The authenticated users row.
@@ -173,9 +180,13 @@ def _safe_bookings(user) -> int:
         bookings_table = getattr(app_tables, 'bookings', None)
         if bookings_table is None:
             return 0
+        customer_row = app_tables.customers.get(user_id=user)
+        if customer_row is None:
+            return 0
         today = date.today()
         month_start = datetime(today.year, today.month, 1)
         return len(list(bookings_table.search(
+            customer_id=customer_row,
             status='confirmed',
             start_datetime=q.greater_than_or_equal_to(month_start),
         )))
@@ -185,11 +196,12 @@ def _safe_bookings(user) -> int:
 
 
 def _safe_customers(user) -> int:
-    """Count total active contacts.
+    """Count total active contacts belonging to this business owner.
 
     STUB — returns 0 at Stage 1.3. Wire in Stage 1.7.
-    Stage 1.7 note: contacts table is in spec_database_schema.md (tables 47–53).
-    Confirm correct filter column before wiring.
+    Stage 1.7 note: contacts (table 47) uses instance_id (link_single to users)
+    as its owner column. Status values in scope: 'Lead', 'Customer'
+    (Inactive excluded from active count).
 
     Args:
         user: The authenticated users row.
@@ -202,6 +214,7 @@ def _safe_customers(user) -> int:
         if contacts_table is None:
             return 0
         return len(list(contacts_table.search(
+            instance_id=user,
             status=q.any_of('Lead', 'Customer'),
         )))
     except Exception:
@@ -210,11 +223,12 @@ def _safe_customers(user) -> int:
 
 
 def _safe_time_entries(user) -> float:
-    """Sum billable hours from time_entries for the current calendar month.
+    """Sum business-wide billable hours from time_entries for the current calendar month.
 
-    STUB — returns 0.0 at Stage 1.3. Wire in Stage 1.7.
-    Stage 1.7 note: time_entries table is in spec_database_schema.md (tables 43–46).
-    Confirm correct owner/filter column before wiring.
+    time_entries (table 45) has no instance_id column. Owner is resolved via
+    customer_id (link_single to customers). Metric is business-wide billable
+    hours across all staff — not owner-only. Decision recorded in devlog entry 13.
+    Returns 0.0 if no customer row exists for this owner.
 
     Args:
         user: The authenticated users row.
@@ -226,10 +240,14 @@ def _safe_time_entries(user) -> float:
         te_table = getattr(app_tables, 'time_entries', None)
         if te_table is None:
             return 0.0
+        customer_row = app_tables.customers.get(user_id=user)
+        if customer_row is None:
+            return 0.0
         today = date.today()
         month_start = datetime(today.year, today.month, 1)
         total = 0.0
         for row in te_table.search(
+            customer_id=customer_row,
             is_billable=True,
             start_time=q.greater_than_or_equal_to(month_start),
         ):
