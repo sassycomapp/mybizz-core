@@ -605,6 +605,19 @@ db_schema:
       name: client_id
       target: users
       type: link_single
+    - admin_ui: {order: 7, width: 200}
+      client_hidden: false
+      name: submission_id
+      type: string
+    - admin_ui: {order: 8, width: 200}
+      client_hidden: false
+      name: instance_id
+      target: users
+      type: link_single
+    - admin_ui: {order: 9, width: 200}
+      client_hidden: false
+      name: auto_reply_sent
+      type: bool
     server: full
     title: contact_submissions
   contacts:
@@ -1278,7 +1291,7 @@ db_schema:
       type: datetime
     - admin_ui: {order: 6, width: 200}
       client_hidden: false
-      name: published_date
+      name: published_at
       type: datetime
     - admin_ui: {order: 7, width: 200}
       client_hidden: false
@@ -1293,6 +1306,19 @@ db_schema:
       name: client_id
       target: users
       type: link_single
+    - admin_ui: {order: 10, width: 200}
+      client_hidden: false
+      name: page_id
+      type: string
+    - admin_ui: {order: 11, width: 200}
+      client_hidden: false
+      name: instance_id
+      target: users
+      type: link_single
+    - admin_ui: {order: 12, width: 200}
+      client_hidden: false
+      name: updated_at
+      type: datetime
     server: full
     title: landing_pages
   lead_captures:
@@ -1367,7 +1393,7 @@ db_schema:
       type: link_single
     - admin_ui: {order: 5, width: 200}
       client_hidden: false
-      name: captured_date
+      name: captured_at
       type: datetime
     - admin_ui: {order: 6, width: 200}
       client_hidden: false
@@ -1377,6 +1403,25 @@ db_schema:
       client_hidden: false
       name: client_id
       target: users
+      type: link_single
+    - admin_ui: {order: 8, width: 200}
+      client_hidden: false
+      name: lead_id
+      type: string
+    - admin_ui: {order: 9, width: 200}
+      client_hidden: false
+      name: instance_id
+      target: users
+      type: link_single
+    - admin_ui: {order: 10, width: 200}
+      client_hidden: false
+      name: capture_id
+      target: lead_captures
+      type: link_single
+    - admin_ui: {order: 11, width: 200}
+      client_hidden: false
+      name: converted_to_contact_id
+      target: contacts
       type: link_single
     server: full
     title: leads
