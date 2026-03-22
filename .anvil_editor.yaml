@@ -248,3 +248,5 @@ unique_ids:
     server_shared.ticket_service: '1767524642769242285990121.88467'
     server_shared.utilities: '1767524512784235425936777.61548'
     server_shared.validators: '1767524538320363157362312.7643'
+    server_shared.vault_service: WZMOAJW26HCTM6P26KYKXADIDSF7CKCE
+    server_shared.vault_totp_service: MVUXFLLEPPX6LR4E3WGM2IK4RHMYSH6G
