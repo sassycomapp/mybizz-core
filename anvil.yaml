@@ -831,10 +831,6 @@ db_schema:
       client_hidden: null
       name: campaign_settings
       type: simpleObject
-    - admin_ui: {width: 200}
-      client_hidden: false
-      name: zoho_campaign_id
-      type: string
     server: full
     title: email_campaigns
   email_config:
